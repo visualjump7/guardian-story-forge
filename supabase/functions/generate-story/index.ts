@@ -137,6 +137,43 @@ The story should naturally incorporate the theme of "${theme.name}" (${theme.des
 
     console.log("Story created successfully:", story.id);
 
+    // Generate cover image automatically
+    console.log("Generating cover image...");
+    try {
+      const imagePrompt = `Create a vibrant 3D animated illustration in Pixar/DreamWorks style. Feature ${heroName} as the main character in a ${storyType} setting. Scene: ${cleanContent.substring(0, 200)}. Art style: colorful, family-friendly, high-quality 3D CGI animation with soft lighting, expressive characters, and magical atmosphere. Disney/Pixar quality rendering with rich details and warm colors.`;
+
+      const imageResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${LOVABLE_API_KEY}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          model: "google/gemini-2.5-flash-image-preview",
+          messages: [
+            { role: "user", content: imagePrompt }
+          ],
+          modalities: ["image", "text"]
+        }),
+      });
+
+      if (imageResponse.ok) {
+        const imageData = await imageResponse.json();
+        const imageUrl = imageData.choices?.[0]?.message?.images?.[0]?.image_url?.url;
+
+        if (imageUrl) {
+          await supabase
+            .from("stories")
+            .update({ cover_image_url: imageUrl })
+            .eq("id", story.id);
+          console.log("Cover image generated and saved");
+        }
+      }
+    } catch (imageError) {
+      console.error("Failed to generate image, but story was created:", imageError);
+      // Continue anyway - story is still valid without image
+    }
+
     return new Response(
       JSON.stringify({ storyId: story.id, title, content: cleanContent }),
       {

@@ -175,7 +175,7 @@ const CreateStory = () => {
               {generating ? (
                 <>
                   <Sparkles className="w-6 h-6 animate-spin" />
-                  Creating Your Story...
+                  Creating magical story and illustrations...
                 </>
               ) : (
                 <>
@@ -184,6 +184,11 @@ const CreateStory = () => {
                 </>
               )}
             </Button>
+            {generating && (
+              <p className="text-center text-sm text-muted-foreground animate-pulse">
+                ✨ Writing your story... 🎨 Creating beautiful illustrations...
+              </p>
+            )}
           </CardContent>
         </Card>
       </main>

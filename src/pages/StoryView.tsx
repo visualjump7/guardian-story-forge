@@ -12,6 +12,7 @@ interface Story {
   content: string;
   hero_name: string | null;
   story_type: string | null;
+  cover_image_url: string | null;
   story_themes: {
     name: string;
     emoji: string;
@@ -25,6 +26,7 @@ const StoryView = () => {
   const [isSaved, setIsSaved] = useState(false);
   const [loading, setLoading] = useState(true);
   const [userId, setUserId] = useState<string | null>(null);
+  const [generatingImage, setGeneratingImage] = useState(false);
 
   useEffect(() => {
     loadStory();
@@ -114,6 +116,27 @@ const StoryView = () => {
     }
   };
 
+  const handleRegenerateImage = async () => {
+    if (!storyId) return;
+
+    setGeneratingImage(true);
+    try {
+      const { error } = await supabase.functions.invoke("generate-story-image", {
+        body: { storyId },
+      });
+
+      if (error) throw error;
+
+      // Reload story to get new image
+      await loadStory();
+      toast.success("New illustration generated!");
+    } catch (error: any) {
+      toast.error(error.message || "Failed to generate image");
+    } finally {
+      setGeneratingImage(false);
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background to-muted">
@@ -161,11 +184,38 @@ const StoryView = () => {
       <main className="container mx-auto px-4 py-12 max-w-4xl">
         <Card className="shadow-2xl border-2">
           <CardHeader className="space-y-4">
-            <div className="flex items-center justify-center">
-              <div className="text-7xl">
-                {story.story_themes?.emoji || "📖"}
+            {story.cover_image_url ? (
+              <div className="relative w-full">
+                <img
+                  src={story.cover_image_url}
+                  alt={story.title}
+                  className="w-full h-auto rounded-xl shadow-lg object-cover max-h-[400px]"
+                />
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  onClick={handleRegenerateImage}
+                  disabled={generatingImage}
+                  className="absolute bottom-4 right-4"
+                >
+                  {generatingImage ? "Generating..." : "🎨 New Illustration"}
+                </Button>
               </div>
-            </div>
+            ) : (
+              <div className="flex flex-col items-center justify-center gap-4">
+                <div className="text-7xl">
+                  {story.story_themes?.emoji || "📖"}
+                </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleRegenerateImage}
+                  disabled={generatingImage}
+                >
+                  {generatingImage ? "Generating..." : "🎨 Generate Illustration"}
+                </Button>
+              </div>
+            )}
             <CardTitle className="text-4xl font-bold text-center">
               {story.title}
             </CardTitle>
