@@ -6,6 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { BookOpen, Sparkles, Library, LogOut, PlusCircle } from "lucide-react";
 import { toast } from "sonner";
 import logo from "@/assets/logo.png";
+import VimeoPlayer from "@/components/VimeoPlayer";
 
 interface Story {
   id: string;
@@ -119,6 +120,16 @@ const Home = () => {
 
       {/* Main Content */}
       <main className="container mx-auto px-4 py-8 space-y-12">
+        {/* Video Section */}
+        <section className="space-y-4">
+          <VimeoPlayer 
+            videoId="76979871" 
+            title="Welcome to Guardian Kids"
+            autoplay={false}
+            muted={true}
+          />
+        </section>
+
         {/* Create Story CTA */}
         <section className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-primary via-primary-glow to-accent p-8 md:p-12 text-primary-foreground shadow-[var(--shadow-magical)]">
           <div className="relative z-10 max-w-2xl space-y-6">
