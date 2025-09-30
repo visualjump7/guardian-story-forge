@@ -77,6 +77,14 @@ serve(async (req) => {
       line-height: 1.8;
       color: #333;
     }
+    .story-text:first-of-type::first-letter {
+      float: left;
+      font-size: 4em;
+      line-height: 0.8;
+      margin: 0.1em 0.1em 0 0;
+      color: #2c3e50;
+      font-weight: bold;
+    }
     .cover {
       text-align: center;
       page-break-after: always;
@@ -96,6 +104,8 @@ serve(async (req) => {
       max-width: 100%;
       max-height: 15cm;
       border-radius: 8px;
+      aspect-ratio: 16 / 9;
+      object-fit: cover;
     }
     .story-page {
       page-break-after: always;
@@ -103,10 +113,12 @@ serve(async (req) => {
     }
     .story-page img {
       max-width: 100%;
-      max-height: 12cm;
+      max-height: 10cm;
       display: block;
       margin: 1cm auto;
       border-radius: 8px;
+      aspect-ratio: 16 / 9;
+      object-fit: cover;
     }
     .story-text {
       font-size: 14pt;

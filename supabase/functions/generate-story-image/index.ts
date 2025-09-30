@@ -134,7 +134,8 @@ serve(async (req) => {
         messages: [
           { role: "user", content: imagePrompt }
         ],
-      modalities: ["image", "text"]
+        modalities: ["image", "text"],
+        size: "1792x1024"
       }),
     });
 
