@@ -20,7 +20,8 @@ serve(async (req) => {
       storyLength = "medium",
       ageRange = "8-10",
       setting,
-      secondaryThemeId 
+      secondaryThemeId,
+      artStyle = "pixar-3d"
     } = await req.json();
 
     if (!heroName || !storyType || !themeId || !narrativeStructure) {
@@ -181,6 +182,7 @@ The story should naturally incorporate the theme of "${theme.name}" (${theme.des
         age_range: ageRange,
         setting: setting || null,
         secondary_theme_id: secondaryThemeId || null,
+        art_style: artStyle,
         is_public: false,
         created_by: user.id,
       })
@@ -194,10 +196,23 @@ The story should naturally incorporate the theme of "${theme.name}" (${theme.des
 
     console.log("Story created successfully:", story.id);
 
+    // Map art style to prompt description
+    const artStylePrompts: Record<string, string> = {
+      'pixar-3d': 'vibrant 3D animated illustration in Pixar/DreamWorks style with rich colors and cinematic lighting',
+      'ghibli-2d': 'soft watercolor 2D illustration in Studio Ghibli style with gentle brushstrokes and dreamy atmosphere',
+      'watercolor': 'gentle watercolor children\'s book illustration with soft edges and delicate color blending',
+      'classic-disney': 'traditional hand-drawn 2D animation in classic Disney style with expressive characters and detailed backgrounds',
+      'modern-cartoon': 'bold modern 2D cartoon style with clean lines, vibrant colors, and dynamic composition',
+      'anime': 'Japanese anime style illustration with detailed character designs and atmospheric lighting',
+      'comic-book': 'dynamic comic book style illustration with bold outlines and dramatic composition'
+    };
+
+    const styleDescription = artStylePrompts[artStyle] || artStylePrompts['pixar-3d'];
+
     // Generate cover image automatically
     console.log("Generating cover image...");
     try {
-      const imagePrompt = `Create a vibrant 3D animated illustration in Pixar/DreamWorks style. Feature ${heroName} as the main character in a ${storyType} setting. Scene: ${cleanContent.substring(0, 200)}. Art style: colorful, family-friendly, high-quality 3D CGI animation with soft lighting, expressive characters, and magical atmosphere. Disney/Pixar quality rendering with rich details and warm colors.`;
+      const imagePrompt = `Create a child-friendly cover illustration in ${styleDescription}. Feature ${heroName} as the main character in a ${storyType} setting. Scene: ${cleanContent.substring(0, 200)}. Art style: colorful, family-friendly, high-quality with expressive characters and magical atmosphere.`;
 
       const imageResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
         method: "POST",

@@ -24,6 +24,7 @@ const CreateStory = () => {
   const [selectedTheme, setSelectedTheme] = useState("");
   const [narrativeStructure, setNarrativeStructure] = useState("");
   const [setting, setSetting] = useState("");
+  const [artStyle, setArtStyle] = useState("pixar-3d");
   const [generating, setGenerating] = useState(false);
 
   useEffect(() => {
@@ -94,6 +95,16 @@ const CreateStory = () => {
     { value: "mountain-kingdom", label: "⛰️ Mountain Kingdom" },
   ];
 
+  const artStyles = [
+    { value: "pixar-3d", label: "🎬 Pixar/Disney 3D", description: "Vibrant 3D animation style" },
+    { value: "ghibli-2d", label: "🎨 Studio Ghibli 2D", description: "Soft watercolor animation" },
+    { value: "watercolor", label: "🖌️ Watercolor Illustration", description: "Gentle children's book art" },
+    { value: "classic-disney", label: "✨ Classic Disney 2D", description: "Traditional hand-drawn animation" },
+    { value: "modern-cartoon", label: "🎭 Modern 2D Cartoon", description: "Bold contemporary animation" },
+    { value: "anime", label: "⚡ Anime Style", description: "Japanese anime aesthetic" },
+    { value: "comic-book", label: "💥 Comic Book", description: "Dynamic illustrated panels" },
+  ];
+
   const handleCreateStory = async () => {
     if (!heroName || !storyType || !selectedTheme || !narrativeStructure) {
       toast.error("Please fill in all required fields");
@@ -113,6 +124,7 @@ const CreateStory = () => {
           ageRange: "7-10",
           setting: setting || undefined,
           secondaryThemeId: undefined,
+          artStyle,
         },
       });
 
@@ -220,6 +232,27 @@ const CreateStory = () => {
                   {settings.map((s) => (
                     <SelectItem key={s.value} value={s.value} className="text-lg">
                       {s.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="artStyle" className="text-lg">
+                Art Style
+              </Label>
+              <Select value={artStyle} onValueChange={setArtStyle}>
+                <SelectTrigger className="rounded-xl h-12 text-lg">
+                  <SelectValue placeholder="Choose an art style..." />
+                </SelectTrigger>
+                <SelectContent>
+                  {artStyles.map((style) => (
+                    <SelectItem key={style.value} value={style.value} className="text-lg">
+                      <div className="flex flex-col">
+                        <span>{style.label}</span>
+                        <span className="text-xs text-muted-foreground">{style.description}</span>
+                      </div>
                     </SelectItem>
                   ))}
                 </SelectContent>

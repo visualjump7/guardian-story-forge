@@ -38,6 +38,7 @@ export type Database = {
       stories: {
         Row: {
           age_range: string | null
+          art_style: string | null
           audio_url: string | null
           content: string
           content_type: string | null
@@ -59,6 +60,7 @@ export type Database = {
         }
         Insert: {
           age_range?: string | null
+          art_style?: string | null
           audio_url?: string | null
           content: string
           content_type?: string | null
@@ -80,6 +82,7 @@ export type Database = {
         }
         Update: {
           age_range?: string | null
+          art_style?: string | null
           audio_url?: string | null
           content?: string
           content_type?: string | null
