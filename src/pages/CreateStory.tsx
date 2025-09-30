@@ -28,6 +28,7 @@ const CreateStory = () => {
   const [setting, setSetting] = useState("");
   const [artStyle, setArtStyle] = useState("pixar-3d");
   const [generating, setGenerating] = useState(false);
+  const [storyUniverse, setStoryUniverse] = useState("");
 
   useEffect(() => {
     checkAuthAndLoadThemes();
@@ -53,6 +54,11 @@ const CreateStory = () => {
       }
     }
   };
+
+  const storyUniverses = [
+    { value: "", label: "Standalone Story", description: "A unique one-time adventure" },
+    { value: "guardian-ranch", label: "🐾 Guardian Ranch", description: "Animal heroes rescue friends from Doctor Shadow" },
+  ];
 
   const storyTypes = [
     "Adventure",
@@ -128,6 +134,7 @@ const CreateStory = () => {
           setting: setting || undefined,
           secondaryThemeId: undefined,
           artStyle,
+          storyUniverse: storyUniverse || undefined,
         },
       });
 
@@ -163,12 +170,42 @@ const CreateStory = () => {
           </CardHeader>
           <CardContent className="space-y-6">
             <div className="space-y-2">
+              <Label htmlFor="storyUniverse" className="text-lg">
+                Story Universe
+              </Label>
+              <Select 
+                value={storyUniverse} 
+                onValueChange={(value) => {
+                  setStoryUniverse(value);
+                  if (value === "guardian-ranch") {
+                    setStoryType("Animal Story");
+                    setSetting("Guardian Ranch");
+                  }
+                }}
+              >
+                <SelectTrigger className="rounded-xl h-12 text-lg">
+                  <SelectValue placeholder="Choose a universe" />
+                </SelectTrigger>
+                <SelectContent>
+                  {storyUniverses.map((universe) => (
+                    <SelectItem key={universe.value} value={universe.value} className="text-lg">
+                      <div className="flex flex-col">
+                        <span>{universe.label}</span>
+                        <span className="text-xs text-muted-foreground">{universe.description}</span>
+                      </div>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-2">
               <Label htmlFor="heroName" className="text-lg">
-                What is your hero's name?
+                {storyUniverse === "guardian-ranch" ? "What is your animal hero's name?" : "What is your hero's name?"}
               </Label>
               <Input
                 id="heroName"
-                placeholder="e.g., Luna, Max, or Zara"
+                placeholder={storyUniverse === "guardian-ranch" ? "e.g., Brave Bear, Swift Rabbit" : "e.g., Luna, Max, or Zara"}
                 value={heroName}
                 onChange={(e) => setHeroName(e.target.value)}
                 className="rounded-xl h-12 text-lg"

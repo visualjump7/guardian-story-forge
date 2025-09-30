@@ -62,6 +62,7 @@ interface Story {
   audio_url: string | null;
   art_style: string | null;
   created_by: string | null;
+  story_universe: string | null;
   story_themes: {
     name: string;
     emoji: string;
@@ -689,6 +690,11 @@ const StoryView = () => {
               </p>
             )}
             <div className="flex flex-wrap items-center justify-center gap-3">
+              {story.story_universe === 'guardian-ranch' && (
+                <span className="px-4 py-2 rounded-full bg-gradient-to-r from-green-500/20 to-blue-500/20 border-2 border-green-500/30 text-foreground font-bold">
+                  🐾 Guardian Ranch Universe
+                </span>
+              )}
               {story.hero_name && (
                 <span className="px-4 py-2 rounded-full bg-primary/10 text-primary font-medium">
                   Hero: {story.hero_name}

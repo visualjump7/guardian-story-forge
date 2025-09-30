@@ -22,7 +22,8 @@ serve(async (req) => {
       ageRange = "8-10",
       setting,
       secondaryThemeId,
-      artStyle = "pixar-3d"
+      artStyle = "pixar-3d",
+      storyUniverse
     } = await req.json();
 
     if (!heroName || !storyType || !themeId || !narrativeStructure) {
@@ -99,9 +100,23 @@ serve(async (req) => {
       "overcoming-monster": "Introduce a challenge or 'monster' (literal or metaphorical), build tension, show the character's courage in overcoming it"
     };
 
-    const systemPrompt = `You are a creative children's story writer. Create engaging, age-appropriate stories that teach important life lessons. 
-
-The story should:
+    let systemPrompt = `You are a creative children's story writer. Create engaging, age-appropriate stories that teach important life lessons.`;
+    
+    // Add Guardian Ranch universe context if selected
+    if (storyUniverse === 'guardian-ranch') {
+      systemPrompt += `\n\nGUARDIAN RANCH UNIVERSE:
+This story takes place in the Guardian Ranch universe where:
+- All heroes are animals with unique abilities and brave hearts
+- Doctor Shadow is the recurring villain who captures innocent animals and threatens the peace
+- Guardian Ranch is a sanctuary where rescued animals live safely together
+- The animal heroes work as a team to protect their friends and rescue those in danger
+- Each adventure strengthens the bonds between the animal friends
+- Stories should reference the ongoing battle between good and the forces of Doctor Shadow
+- Include elements of teamwork, courage, and the importance of helping friends in need
+- The tone should be adventurous but reassuring, showing that good always prevails when friends work together`;
+    }
+    
+    systemPrompt += `\n\nThe story should:
 - Be ${wordCounts[storyLength as keyof typeof wordCounts]} long
 - ${ageGuidelines[ageRange as keyof typeof ageGuidelines]}
 - Follow the ${narrativeStructure} narrative structure: ${narrativeDescriptions[narrativeStructure as keyof typeof narrativeDescriptions]}
@@ -117,16 +132,25 @@ Write in a warm, friendly tone that captivates young readers.`;
     const settingDescription = setting ? `\nSetting: ${setting.replace(/-/g, ' ')} - Make this setting come alive with rich sensory details.` : '';
     const secondaryThemeText = secondaryTheme ? `\n\nSecondary Theme: Also weave in the lesson of "${secondaryTheme.name}" (${secondaryTheme.description}) as a supporting element in the story.` : '';
 
-    const userPrompt = `Create a ${storyType} story with these details:
+    let userPrompt = `Create a ${storyType} story with these details:
 
-Hero's Name: ${heroName}
+Hero's Name: ${heroName}${storyUniverse === 'guardian-ranch' ? ' (an animal with special abilities)' : ''}
 Story Type: ${storyType}
 Narrative Structure: ${narrativeStructure}
 Primary Moral Theme: ${theme.name} - ${theme.description}${secondaryThemeText}${settingDescription}
 Age Range: ${ageRange}
-Length: ${wordCounts[storyLength as keyof typeof wordCounts]}
+Length: ${wordCounts[storyLength as keyof typeof wordCounts]}`;
 
-The story should naturally incorporate the theme of "${theme.name}" (${theme.description}) through the hero's adventure and choices. Use the ${narrativeStructure} structure to create a compelling narrative arc. Make it exciting, magical, and memorable!`;
+    if (storyUniverse === 'guardian-ranch') {
+      userPrompt += `\n\nGUARDIAN RANCH STORY REQUIREMENTS:
+- ${heroName} must be an animal hero with special abilities
+- Include Doctor Shadow as the villain who has captured an innocent animal friend
+- Show the animal heroes at Guardian Ranch working together to plan the rescue
+- Include exciting action scenes during the rescue mission
+- End with the rescued friend safely at Guardian Ranch and the heroes celebrating their teamwork`;
+    }
+
+    userPrompt += `\n\nThe story should naturally incorporate the theme of "${theme.name}" (${theme.description}) through the hero's adventure and choices. Use the ${narrativeStructure} structure to create a compelling narrative arc. Make it exciting, magical, and memorable!`;
 
     console.log("Generating story with AI...");
 
@@ -187,6 +211,7 @@ The story should naturally incorporate the theme of "${theme.name}" (${theme.des
         art_style: artStyle,
         is_public: false,
         created_by: user.id,
+        story_universe: storyUniverse || null,
       })
       .select()
       .single();

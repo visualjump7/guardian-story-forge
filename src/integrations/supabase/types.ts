@@ -59,6 +59,7 @@ export type Database = {
           setting: string | null
           story_length: string | null
           story_type: string | null
+          story_universe: string | null
           theme_id: string | null
           title: string
         }
@@ -82,6 +83,7 @@ export type Database = {
           setting?: string | null
           story_length?: string | null
           story_type?: string | null
+          story_universe?: string | null
           theme_id?: string | null
           title: string
         }
@@ -105,6 +107,7 @@ export type Database = {
           setting?: string | null
           story_length?: string | null
           story_type?: string | null
+          story_universe?: string | null
           theme_id?: string | null
           title?: string
         }
