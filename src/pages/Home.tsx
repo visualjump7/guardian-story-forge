@@ -156,10 +156,18 @@ const Home = () => {
                 className="hover:shadow-[var(--shadow-card)] transition-all hover:scale-105 cursor-pointer border-2 overflow-hidden"
                 onClick={() => handleReadStory(story.id)}
               >
-                <div className="h-40 bg-gradient-to-br from-primary/20 via-accent/20 to-secondary/20 flex items-center justify-center">
-                  <span className="text-6xl">
-                    {story.story_themes?.emoji || "📖"}
-                  </span>
+                <div className="h-40 bg-gradient-to-br from-primary/20 via-accent/20 to-secondary/20 flex items-center justify-center overflow-hidden">
+                  {story.cover_image_url ? (
+                    <img
+                      src={story.cover_image_url}
+                      alt={story.title}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <span className="text-6xl">
+                      {story.story_themes?.emoji || "📖"}
+                    </span>
+                  )}
                 </div>
                 <CardHeader>
                   <CardTitle className="text-xl line-clamp-2">{story.title}</CardTitle>

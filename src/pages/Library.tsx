@@ -16,6 +16,7 @@ interface SavedStory {
     content: string;
     hero_name: string | null;
     story_type: string | null;
+    cover_image_url: string | null;
     story_themes: {
       name: string;
       emoji: string;
@@ -50,6 +51,7 @@ const Library = () => {
           content,
           hero_name,
           story_type,
+          cover_image_url,
           story_themes(name, emoji)
         )
       `)
@@ -126,12 +128,20 @@ const Library = () => {
                   className="hover:shadow-[var(--shadow-card)] transition-all hover:scale-105 border-2 overflow-hidden"
                 >
                   <div
-                    className="h-40 bg-gradient-to-br from-primary/20 via-accent/20 to-secondary/20 flex items-center justify-center cursor-pointer"
+                    className="h-40 bg-gradient-to-br from-primary/20 via-accent/20 to-secondary/20 flex items-center justify-center cursor-pointer overflow-hidden"
                     onClick={() => navigate(`/story/${saved.stories.id}`)}
                   >
-                    <span className="text-6xl">
-                      {saved.stories.story_themes?.emoji || "📖"}
-                    </span>
+                    {saved.stories.cover_image_url ? (
+                      <img
+                        src={saved.stories.cover_image_url}
+                        alt={saved.stories.title}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <span className="text-6xl">
+                        {saved.stories.story_themes?.emoji || "📖"}
+                      </span>
+                    )}
                   </div>
                   <CardHeader>
                     <CardTitle
