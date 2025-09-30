@@ -679,7 +679,7 @@ const StoryView = () => {
             </CardTitle>
             {creatorProfile && (
               <p className="text-center text-muted-foreground text-sm">
-                Created by {creatorProfile.author_name || creatorProfile.display_name}
+                Story Created by {creatorProfile.author_name || creatorProfile.display_name}
               </p>
             )}
             <div className="flex flex-wrap items-center justify-center gap-3">
