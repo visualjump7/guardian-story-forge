@@ -36,6 +36,13 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { ShareDialog } from "@/components/ShareDialog";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
 
 interface StoryImage {
   id: string;
@@ -320,6 +327,45 @@ const StoryView = () => {
     setIsPlaying(!isPlaying);
   };
 
+  const renderStoryWithImages = () => {
+    const paragraphs = story.content.split("\n\n");
+    const totalParagraphs = paragraphs.length;
+    
+    // Calculate positions for images (excluding the first cover image)
+    const middlePosition = Math.floor(totalParagraphs * 0.5);
+    const endPosition = Math.floor(totalParagraphs * 0.85);
+    
+    return paragraphs.map((paragraph, index) => (
+      <div key={index}>
+        <p className="text-lg leading-relaxed mb-4">
+          {paragraph}
+        </p>
+        
+        {/* Insert second image (scene) in the middle */}
+        {storyImages.length >= 2 && index === middlePosition && (
+          <div className="my-8 rounded-lg overflow-hidden shadow-lg">
+            <img
+              src={storyImages[1].image_url}
+              alt={`${story.title} - Scene`}
+              className="w-full aspect-video object-cover"
+            />
+          </div>
+        )}
+        
+        {/* Insert third image (ending) near the end */}
+        {storyImages.length >= 3 && index === endPosition && (
+          <div className="my-8 rounded-lg overflow-hidden shadow-lg">
+            <img
+              src={storyImages[2].image_url}
+              alt={`${story.title} - Ending`}
+              className="w-full aspect-video object-cover"
+            />
+          </div>
+        )}
+      </div>
+    ));
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background to-muted">
@@ -396,38 +442,46 @@ const StoryView = () => {
           <CardHeader className="space-y-4">
             {storyImages.length > 0 ? (
               <div className="space-y-4">
-                {/* Image Display */}
-                <div className="relative aspect-video w-full overflow-hidden rounded-lg bg-muted">
-                  <img
-                    src={storyImages[currentImageIndex].image_url}
-                    alt={story.title}
-                    className="h-full w-full object-cover"
-                  />
-                  
-                  {/* Navigation arrows */}
+                {/* Image Carousel */}
+                <Carousel className="w-full" opts={{ loop: true }}>
+                  <CarouselContent>
+                    {storyImages.map((image, index) => (
+                      <CarouselItem key={image.id}>
+                        <div className="relative aspect-video w-full overflow-hidden rounded-lg bg-muted">
+                          <img
+                            src={image.image_url}
+                            alt={`${story.title} - Image ${index + 1}`}
+                            className="h-full w-full object-cover"
+                          />
+                        </div>
+                      </CarouselItem>
+                    ))}
+                  </CarouselContent>
                   {storyImages.length > 1 && (
                     <>
-                      <Button
-                        variant="secondary"
-                        size="icon"
-                        onClick={() => navigateImage('prev')}
-                        disabled={currentImageIndex === 0}
-                        className="absolute left-2 top-1/2 -translate-y-1/2 bg-background/80 backdrop-blur-sm hover:bg-background/90 rounded-full"
-                      >
-                        <ChevronLeft className="h-6 w-6" />
-                      </Button>
-                      <Button
-                        variant="secondary"
-                        size="icon"
-                        onClick={() => navigateImage('next')}
-                        disabled={currentImageIndex === storyImages.length - 1}
-                        className="absolute right-2 top-1/2 -translate-y-1/2 bg-background/80 backdrop-blur-sm hover:bg-background/90 rounded-full"
-                      >
-                        <ChevronRight className="h-6 w-6" />
-                      </Button>
+                      <CarouselPrevious className="left-2" />
+                      <CarouselNext className="right-2" />
                     </>
                   )}
-                </div>
+                </Carousel>
+
+                {/* Dot indicators */}
+                {storyImages.length > 1 && (
+                  <div className="flex justify-center gap-2 py-2">
+                    {storyImages.map((image, index) => (
+                      <button
+                        key={image.id}
+                        onClick={() => setCurrentImageIndex(index)}
+                        className={`h-2 rounded-full transition-all ${
+                          index === currentImageIndex 
+                            ? 'w-8 bg-primary' 
+                            : 'w-2 bg-muted-foreground/30'
+                        }`}
+                        aria-label={`Go to image ${index + 1}`}
+                      />
+                    ))}
+                  </div>
+                )}
 
                 {/* Controls underneath image - single bar */}
                 <div className="flex items-center justify-between gap-4 p-3 bg-muted/50 rounded-lg">
@@ -439,19 +493,20 @@ const StoryView = () => {
                     disabled={generatingImage}
                   >
                     <RefreshCw className="h-4 w-4 mr-2" />
-                    Re-create Image
+                    Re-create
                   </Button>
 
                   {/* Center: Image counter and star for cover */}
                   <div className="flex items-center gap-3">
                     <span className="text-sm font-medium">
-                      {currentImageIndex + 1}/{storyImages.length} Selected
+                      {currentImageIndex + 1}/{storyImages.length}
                     </span>
                     <Button
                       variant={storyImages[currentImageIndex].is_selected ? "default" : "ghost"}
                       size="sm"
                       onClick={() => handleSelectImage(storyImages[currentImageIndex].id)}
                       disabled={storyImages[currentImageIndex].is_selected}
+                      title="Set as cover image"
                     >
                       <Star className={`h-4 w-4 ${storyImages[currentImageIndex].is_selected ? 'fill-current' : ''}`} />
                     </Button>
@@ -472,7 +527,7 @@ const StoryView = () => {
                     ) : (
                       <>
                         <Plus className="h-4 w-4 mr-2" />
-                        Add Image ({storyImages.length} of 3)
+                        Add ({storyImages.length}/3)
                       </>
                     )}
                   </Button>
@@ -625,13 +680,9 @@ const StoryView = () => {
             </div>
           </CardHeader>
           <CardContent>
-            {/* Story Content */}
+            {/* Story Content with Embedded Images */}
             <div className="prose prose-lg max-w-none">
-              {story.content.split("\n\n").map((paragraph, index) => (
-                <p key={index} className="text-lg leading-relaxed mb-4">
-                  {paragraph}
-                </p>
-              ))}
+              {renderStoryWithImages()}
             </div>
           </CardContent>
         </Card>
