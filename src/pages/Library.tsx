@@ -135,7 +135,7 @@ const Library = () => {
                       <img
                         src={saved.stories.cover_image_url}
                         alt={saved.stories.title}
-                        className="w-full h-full object-cover"
+                        className="w-full h-full object-contain"
                       />
                     ) : (
                       <span className="text-6xl">

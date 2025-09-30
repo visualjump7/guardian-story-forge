@@ -233,7 +233,7 @@ const StoryView = () => {
                 <img
                   src={story.cover_image_url}
                   alt={story.title}
-                  className="w-full h-auto rounded-xl shadow-lg object-cover max-h-[400px]"
+                  className="w-full h-auto rounded-xl shadow-lg object-contain max-h-[400px]"
                 />
                 <Button
                   variant="secondary"

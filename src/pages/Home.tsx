@@ -161,7 +161,7 @@ const Home = () => {
                     <img
                       src={story.cover_image_url}
                       alt={story.title}
-                      className="w-full h-full object-cover"
+                      className="w-full h-full object-contain"
                     />
                   ) : (
                     <span className="text-6xl">
