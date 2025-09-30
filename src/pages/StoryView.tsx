@@ -3,7 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft, BookmarkPlus, BookmarkCheck, Share2, Volume2, Loader2, ChevronLeft, ChevronRight, Trash2, Plus } from "lucide-react";
+import { ArrowLeft, BookmarkPlus, BookmarkCheck, ChevronLeft, ChevronRight, Share2, Volume2, Loader2, Plus, Trash2, RefreshCw, Star } from "lucide-react";
 import { toast } from "sonner";
 import {
   Select,
@@ -13,7 +13,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { ShareDialog } from "@/components/ShareDialog";
-import { ImageGenerationDialog } from "@/components/ImageGenerationDialog";
 
 interface StoryImage {
   id: string;
@@ -47,12 +46,11 @@ const StoryView = () => {
   const [loading, setLoading] = useState(true);
   const [userId, setUserId] = useState<string | null>(null);
   const [generatingImage, setGeneratingImage] = useState(false);
-  const [generatingAudio, setGeneratingAudio] = useState(false);
+  const [isGeneratingAudio, setIsGeneratingAudio] = useState(false);
   const [selectedVoice, setSelectedVoice] = useState("alloy");
   const [isPlaying, setIsPlaying] = useState(false);
   const audioRef = useRef<HTMLAudioElement>(null);
   const [isShareDialogOpen, setIsShareDialogOpen] = useState(false);
-  const [isImageDialogOpen, setIsImageDialogOpen] = useState(false);
 
   useEffect(() => {
     loadStory();
@@ -148,36 +146,59 @@ const StoryView = () => {
     setIsShareDialogOpen(true);
   };
 
-  const handleGenerateImage = async (customPrompt?: string) => {
+  const handleGenerateImage = async () => {
     if (!storyId || storyImages.length >= 3) {
       toast.error("Maximum 3 images per story");
       return;
     }
 
     setGeneratingImage(true);
+    toast.loading("Creating your illustration...", { id: "generate-image" });
+    
     try {
       const { error } = await supabase.functions.invoke("generate-story-image", {
-        body: { storyId, customPrompt },
+        body: { storyId },
       });
 
       if (error) throw error;
 
-      // Reload story to get new image
       await loadStory();
-      toast.success("New illustration generated!");
+      toast.success("New illustration generated!", { id: "generate-image" });
     } catch (error: any) {
-      toast.error(error.message || "Failed to generate image");
+      toast.error(error.message || "Failed to generate image", { id: "generate-image" });
     } finally {
       setGeneratingImage(false);
     }
   };
 
-  const handleOpenImageDialog = () => {
-    if (storyImages.length >= 3) {
-      toast.error("Maximum 3 images per story");
-      return;
+  const handleRecreateImage = async () => {
+    if (!storyId || storyImages.length === 0) return;
+
+    setGeneratingImage(true);
+    toast.loading("Re-creating illustration...", { id: "recreate-image" });
+
+    try {
+      // Delete the current image first
+      const currentImage = storyImages[currentImageIndex];
+      await supabase
+        .from("story_images")
+        .delete()
+        .eq("id", currentImage.id);
+
+      // Generate a new image
+      const { error } = await supabase.functions.invoke("generate-story-image", {
+        body: { storyId },
+      });
+
+      if (error) throw error;
+
+      await loadStory();
+      toast.success("Illustration re-created!", { id: "recreate-image" });
+    } catch (error: any) {
+      toast.error(error.message || "Failed to re-create image", { id: "recreate-image" });
+    } finally {
+      setGeneratingImage(false);
     }
-    setIsImageDialogOpen(true);
   };
 
   const handleDeleteImage = async (imageId: string) => {
@@ -235,7 +256,7 @@ const StoryView = () => {
   const handleGenerateAudio = async () => {
     if (!storyId) return;
 
-    setGeneratingAudio(true);
+    setIsGeneratingAudio(true);
     try {
       const { data, error } = await supabase.functions.invoke("generate-story-audio", {
         body: { storyId, voice: selectedVoice },
@@ -249,7 +270,7 @@ const StoryView = () => {
     } catch (error: any) {
       toast.error(error.message || "Failed to generate audio");
     } finally {
-      setGeneratingAudio(false);
+      setIsGeneratingAudio(false);
     }
   };
 
@@ -317,104 +338,106 @@ const StoryView = () => {
         coverImageUrl={storyImages[0]?.image_url}
       />
 
-      {/* Image Generation Dialog */}
-      <ImageGenerationDialog
-        open={isImageDialogOpen}
-        onOpenChange={setIsImageDialogOpen}
-        onGenerate={handleGenerateImage}
-        storyContent={story.content}
-        heroName={story.hero_name || ""}
-        imageCount={storyImages.length}
-        artStyle={story.art_style || "pixar-3d"}
-      />
-
       <main className="container mx-auto px-4 py-12 max-w-4xl">
         <Card className="shadow-2xl border-2">
           <CardHeader className="space-y-4">
             {storyImages.length > 0 ? (
-              <div className="relative w-full">
-                <div className="w-full aspect-video rounded-xl shadow-lg overflow-hidden bg-muted">
+              <div className="space-y-4">
+                {/* Image Display */}
+                <div className="relative aspect-video w-full overflow-hidden rounded-lg bg-muted">
                   <img
                     src={storyImages[currentImageIndex].image_url}
                     alt={story.title}
-                    className="w-full h-full object-cover"
+                    className="h-full w-full object-cover"
                   />
-                </div>
-                
-                {/* Image Navigation */}
-                <div className="absolute inset-0 flex items-center justify-between px-4 pointer-events-none">
-                  <Button
-                    variant="secondary"
-                    size="icon"
-                    onClick={() => navigateImage('prev')}
-                    disabled={currentImageIndex === 0}
-                    className="pointer-events-auto rounded-full opacity-80 hover:opacity-100"
-                  >
-                    <ChevronLeft className="w-6 h-6" />
-                  </Button>
-                  <Button
-                    variant="secondary"
-                    size="icon"
-                    onClick={() => navigateImage('next')}
-                    disabled={currentImageIndex === storyImages.length - 1}
-                    className="pointer-events-auto rounded-full opacity-80 hover:opacity-100"
-                  >
-                    <ChevronRight className="w-6 h-6" />
-                  </Button>
+                  
+                  {/* Navigation arrows */}
+                  {storyImages.length > 1 && (
+                    <>
+                      <Button
+                        variant="secondary"
+                        size="icon"
+                        onClick={() => navigateImage('prev')}
+                        disabled={currentImageIndex === 0}
+                        className="absolute left-2 top-1/2 -translate-y-1/2 bg-background/80 backdrop-blur-sm hover:bg-background/90 rounded-full"
+                      >
+                        <ChevronLeft className="h-6 w-6" />
+                      </Button>
+                      <Button
+                        variant="secondary"
+                        size="icon"
+                        onClick={() => navigateImage('next')}
+                        disabled={currentImageIndex === storyImages.length - 1}
+                        className="absolute right-2 top-1/2 -translate-y-1/2 bg-background/80 backdrop-blur-sm hover:bg-background/90 rounded-full"
+                      >
+                        <ChevronRight className="h-6 w-6" />
+                      </Button>
+                    </>
+                  )}
                 </div>
 
-                {/* Image Controls */}
-                <div className="absolute bottom-4 left-0 right-0 flex items-center justify-center gap-2">
-                  <div className="bg-background/90 backdrop-blur-sm rounded-full px-4 py-2 flex items-center gap-2 shadow-lg">
+                {/* Controls underneath image */}
+                <div className="flex items-center justify-between gap-2 flex-wrap">
+                  {/* Left: Re-create button */}
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handleRecreateImage}
+                    disabled={generatingImage}
+                  >
+                    <RefreshCw className="h-4 w-4 mr-2" />
+                    Re-create Image
+                  </Button>
+
+                  {/* Center: Image counter, selected status, delete */}
+                  <div className="flex items-center gap-2">
                     <span className="text-sm font-medium">
-                      {currentImageIndex + 1} / {storyImages.length}
+                      {currentImageIndex + 1}/{storyImages.length} Selected
                     </span>
-                    {!storyImages[currentImageIndex].is_selected && (
+                    {storyImages[currentImageIndex].is_selected ? (
+                      <span className="text-xs text-primary font-medium flex items-center gap-1">
+                        <Star className="h-4 w-4 fill-primary" />
+                        Cover
+                      </span>
+                    ) : (
                       <Button
-                        variant="outline"
+                        variant="ghost"
                         size="sm"
                         onClick={() => handleSelectImage(storyImages[currentImageIndex].id)}
-                        className="h-8"
                       >
-                        Set as Cover
+                        <Star className="h-4 w-4" />
                       </Button>
                     )}
-                    {storyImages[currentImageIndex].is_selected && (
-                      <span className="text-xs text-primary font-medium">✓ Selected</span>
-                    )}
                     <Button
-                      variant="destructive"
-                      size="icon"
+                      variant="ghost"
+                      size="sm"
                       onClick={() => handleDeleteImage(storyImages[currentImageIndex].id)}
-                      className="h-8 w-8"
+                      className="text-destructive hover:text-destructive hover:bg-destructive/10"
                     >
-                      <Trash2 className="w-4 h-4" />
+                      <Trash2 className="h-4 w-4" />
                     </Button>
                   </div>
-                </div>
 
-                {/* Generate New Button */}
-                {storyImages.length < 3 && (
+                  {/* Right: New image button */}
                   <Button
-                    variant="secondary"
+                    variant="outline"
                     size="sm"
-                    onClick={handleOpenImageDialog}
-                    disabled={generatingImage}
-                    className="absolute top-4 right-4"
+                    onClick={handleGenerateImage}
+                    disabled={generatingImage || storyImages.length >= 3}
                   >
                     {generatingImage ? (
                       <>
-                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
                         Generating...
                       </>
                     ) : (
                       <>
-                        <Plus className="w-4 h-4 mr-2" />
-                        Add New Image ({storyImages.length}/3)
+                        <Plus className="h-4 w-4 mr-2" />
+                        New Image ({storyImages.length} of 3)
                       </>
                     )}
                   </Button>
-                )}
+                </div>
               </div>
             ) : (
               <div className="flex flex-col items-center justify-center gap-4 py-8">
@@ -424,7 +447,7 @@ const StoryView = () => {
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={handleOpenImageDialog}
+                  onClick={handleGenerateImage}
                   disabled={generatingImage}
                 >
                   {generatingImage ? (
@@ -508,9 +531,9 @@ const StoryView = () => {
                       variant="outline"
                       size="sm"
                       onClick={handleGenerateAudio}
-                      disabled={generatingAudio}
+                      disabled={isGeneratingAudio}
                     >
-                      {generatingAudio ? (
+                      {isGeneratingAudio ? (
                         <>
                           <Loader2 className="w-4 h-4 mr-2 animate-spin" />
                           Generating...
@@ -543,9 +566,9 @@ const StoryView = () => {
                     </Select>
                     <Button
                       onClick={handleGenerateAudio}
-                      disabled={generatingAudio}
+                      disabled={isGeneratingAudio}
                     >
-                      {generatingAudio ? (
+                      {isGeneratingAudio ? (
                         <>
                           <Loader2 className="w-4 h-4 mr-2 animate-spin" />
                           Generating Audio...
