@@ -23,10 +23,7 @@ const CreateStory = () => {
   const [storyType, setStoryType] = useState("");
   const [selectedTheme, setSelectedTheme] = useState("");
   const [narrativeStructure, setNarrativeStructure] = useState("");
-  const [storyLength, setStoryLength] = useState("medium");
-  const [ageRange, setAgeRange] = useState("8-10");
   const [setting, setSetting] = useState("");
-  const [secondaryTheme, setSecondaryTheme] = useState("");
   const [generating, setGenerating] = useState(false);
 
   useEffect(() => {
@@ -47,6 +44,10 @@ const CreateStory = () => {
 
     if (themesData) {
       setThemes(themesData);
+      // Auto-select first theme as default
+      if (themesData.length > 0) {
+        setSelectedTheme(themesData[0].id);
+      }
     }
   };
 
@@ -108,10 +109,10 @@ const CreateStory = () => {
           storyType,
           themeId: selectedTheme,
           narrativeStructure,
-          storyLength,
-          ageRange,
+          storyLength: "medium",
+          ageRange: "7-10",
           setting: setting || undefined,
-          secondaryThemeId: secondaryTheme || undefined,
+          secondaryThemeId: undefined,
         },
       });
 
@@ -185,29 +186,6 @@ const CreateStory = () => {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="theme" className="text-lg">
-                What lesson should the story teach? *
-              </Label>
-              <Select value={selectedTheme} onValueChange={setSelectedTheme}>
-                <SelectTrigger className="rounded-xl h-12 text-lg">
-                  <SelectValue placeholder="Pick a moral theme" />
-                </SelectTrigger>
-                <SelectContent>
-                  {themes.map((theme) => (
-                    <SelectItem key={theme.id} value={theme.id} className="text-lg">
-                      {theme.emoji} {theme.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              {selectedTheme && (
-                <p className="text-sm text-muted-foreground mt-2">
-                  {themes.find((t) => t.id === selectedTheme)?.description}
-                </p>
-              )}
-            </div>
-
-            <div className="space-y-2">
               <Label htmlFor="narrativeStructure" className="text-lg">
                 Choose a narrative structure *
               </Label>
@@ -230,50 +208,6 @@ const CreateStory = () => {
               )}
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="storyLength" className="text-lg">
-                  Story Length
-                </Label>
-                <Select value={storyLength} onValueChange={setStoryLength}>
-                  <SelectTrigger className="rounded-xl h-12">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {storyLengths.map((length) => (
-                      <SelectItem key={length.value} value={length.value}>
-                        {length.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <p className="text-xs text-muted-foreground">
-                  {storyLengths.find((l) => l.value === storyLength)?.description}
-                </p>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="ageRange" className="text-lg">
-                  Age Range
-                </Label>
-                <Select value={ageRange} onValueChange={setAgeRange}>
-                  <SelectTrigger className="rounded-xl h-12">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {ageRanges.map((age) => (
-                      <SelectItem key={age.value} value={age.value}>
-                        {age.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <p className="text-xs text-muted-foreground">
-                  {ageRanges.find((a) => a.value === ageRange)?.description}
-                </p>
-              </div>
-            </div>
-
             <div className="space-y-2">
               <Label htmlFor="setting" className="text-lg">
                 Setting (Optional)
@@ -290,31 +224,6 @@ const CreateStory = () => {
                   ))}
                 </SelectContent>
               </Select>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="secondaryTheme" className="text-lg">
-                Secondary Theme (Optional)
-              </Label>
-              <Select value={secondaryTheme} onValueChange={setSecondaryTheme}>
-                <SelectTrigger className="rounded-xl h-12 text-lg">
-                  <SelectValue placeholder="Add another lesson to weave in" />
-                </SelectTrigger>
-                <SelectContent>
-                  {themes
-                    .filter((theme) => theme.id !== selectedTheme)
-                    .map((theme) => (
-                      <SelectItem key={theme.id} value={theme.id} className="text-lg">
-                        {theme.emoji} {theme.name}
-                      </SelectItem>
-                    ))}
-                </SelectContent>
-              </Select>
-              {secondaryTheme && (
-                <p className="text-sm text-muted-foreground mt-2">
-                  {themes.find((t) => t.id === secondaryTheme)?.description}
-                </p>
-              )}
             </div>
 
             <Button
