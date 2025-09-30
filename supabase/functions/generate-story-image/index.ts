@@ -48,17 +48,40 @@ serve(async (req) => {
       throw new Error("Story not found");
     }
 
+    // Check if there are already 3 images
+    const { count } = await supabase
+      .from("story_images")
+      .select("*", { count: "exact", head: true })
+      .eq("story_id", storyId);
+
+    if (count && count >= 3) {
+      throw new Error("Maximum 3 images per story reached");
+    }
+
     // Generate image using Lovable AI
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) {
       throw new Error("LOVABLE_API_KEY not configured");
     }
 
+    // Map art style to prompt description
+    const artStylePrompts: Record<string, string> = {
+      'pixar-3d': 'vibrant 3D animated illustration in Pixar/DreamWorks style with rich colors and cinematic lighting',
+      'ghibli-2d': 'soft watercolor 2D illustration in Studio Ghibli style with gentle brushstrokes and dreamy atmosphere',
+      'watercolor': 'gentle watercolor children\'s book illustration with soft edges and delicate color blending',
+      'classic-disney': 'traditional hand-drawn 2D animation in classic Disney style with expressive characters and detailed backgrounds',
+      'modern-cartoon': 'bold modern 2D cartoon style with clean lines, vibrant colors, and dynamic composition',
+      'anime': 'Japanese anime style illustration with detailed character designs and atmospheric lighting',
+      'comic-book': 'dynamic comic book style illustration with bold outlines and dramatic composition'
+    };
+
+    const styleDescription = artStylePrompts[story.art_style || 'pixar-3d'] || artStylePrompts['pixar-3d'];
+
     // Extract first paragraph as scene description
     const firstParagraph = story.content.split("\n\n")[0];
     const sceneDescription = firstParagraph.substring(0, 200);
 
-    const imagePrompt = `Create a vibrant 3D animated illustration in Pixar/DreamWorks style. Feature ${story.hero_name} as the main character in a ${story.story_type} setting. Scene: ${sceneDescription}. Art style: colorful, family-friendly, high-quality 3D CGI animation with soft lighting, expressive characters, and magical atmosphere. Disney/Pixar quality rendering with rich details and warm colors.`;
+    const imagePrompt = `Create a child-friendly cover illustration in ${styleDescription}. Feature ${story.hero_name} as the main character in a ${story.story_type} setting. Scene: ${sceneDescription}. Art style: colorful, family-friendly, high-quality with expressive characters and magical atmosphere.`;
 
     console.log("Generating image with AI...");
 
@@ -90,17 +113,23 @@ serve(async (req) => {
       throw new Error("No image generated");
     }
 
-    console.log("Updating story with image...");
+    console.log("Saving image to story_images table...");
 
-    // Update story with image
-    const { error: updateError } = await supabase
-      .from("stories")
-      .update({ cover_image_url: imageUrl })
-      .eq("id", storyId);
+    // Check if this is the first image - if so, mark it as selected
+    const isFirstImage = (count || 0) === 0;
 
-    if (updateError) {
-      console.error("Database error:", updateError);
-      throw new Error("Failed to update story with image");
+    // Save image to story_images table
+    const { error: insertError } = await supabase
+      .from("story_images")
+      .insert({
+        story_id: storyId,
+        image_url: imageUrl,
+        is_selected: isFirstImage
+      });
+
+    if (insertError) {
+      console.error("Database error:", insertError);
+      throw new Error("Failed to save image");
     }
 
     console.log("Image generated and saved successfully");

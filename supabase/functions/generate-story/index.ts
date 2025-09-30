@@ -234,6 +234,16 @@ The story should naturally incorporate the theme of "${theme.name}" (${theme.des
         const imageUrl = imageData.choices?.[0]?.message?.images?.[0]?.image_url?.url;
 
         if (imageUrl) {
+          // Save image to story_images table
+          await supabase
+            .from("story_images")
+            .insert({
+              story_id: story.id,
+              image_url: imageUrl,
+              is_selected: true
+            });
+          
+          // Also update the story's cover_image_url for backward compatibility
           await supabase
             .from("stories")
             .update({ cover_image_url: imageUrl })

@@ -119,6 +119,38 @@ export type Database = {
           },
         ]
       }
+      story_images: {
+        Row: {
+          created_at: string | null
+          id: string
+          image_url: string
+          is_selected: boolean | null
+          story_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          image_url: string
+          is_selected?: boolean | null
+          story_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          image_url?: string
+          is_selected?: boolean | null
+          story_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "story_images_story_id_fkey"
+            columns: ["story_id"]
+            isOneToOne: false
+            referencedRelation: "stories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       story_themes: {
         Row: {
           created_at: string | null

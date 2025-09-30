@@ -3,7 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft, BookmarkPlus, BookmarkCheck, Share2, Volume2, Loader2 } from "lucide-react";
+import { ArrowLeft, BookmarkPlus, BookmarkCheck, Share2, Volume2, Loader2, ChevronLeft, ChevronRight, Trash2, Plus } from "lucide-react";
 import { toast } from "sonner";
 import {
   Select,
@@ -13,6 +13,13 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
+interface StoryImage {
+  id: string;
+  image_url: string;
+  is_selected: boolean;
+  created_at: string;
+}
+
 interface Story {
   id: string;
   title: string;
@@ -21,6 +28,7 @@ interface Story {
   story_type: string | null;
   cover_image_url: string | null;
   audio_url: string | null;
+  art_style: string | null;
   story_themes: {
     name: string;
     emoji: string;
@@ -31,6 +39,8 @@ const StoryView = () => {
   const { storyId } = useParams();
   const navigate = useNavigate();
   const [story, setStory] = useState<Story | null>(null);
+  const [storyImages, setStoryImages] = useState<StoryImage[]>([]);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isSaved, setIsSaved] = useState(false);
   const [loading, setLoading] = useState(true);
   const [userId, setUserId] = useState<string | null>(null);
@@ -70,6 +80,22 @@ const StoryView = () => {
     }
 
     setStory(storyData);
+
+    // Load story images
+    const { data: imagesData, error: imagesError } = await supabase
+      .from("story_images")
+      .select("*")
+      .eq("story_id", storyId)
+      .order("created_at", { ascending: true });
+
+    if (!imagesError && imagesData) {
+      setStoryImages(imagesData);
+      // Find the selected image index
+      const selectedIndex = imagesData.findIndex(img => img.is_selected);
+      if (selectedIndex !== -1) {
+        setCurrentImageIndex(selectedIndex);
+      }
+    }
 
     // Check if saved
     const { data: savedData } = await supabase
@@ -128,8 +154,11 @@ const StoryView = () => {
     }
   };
 
-  const handleRegenerateImage = async () => {
-    if (!storyId) return;
+  const handleGenerateImage = async () => {
+    if (!storyId || storyImages.length >= 3) {
+      toast.error("Maximum 3 images per story");
+      return;
+    }
 
     setGeneratingImage(true);
     try {
@@ -146,6 +175,58 @@ const StoryView = () => {
       toast.error(error.message || "Failed to generate image");
     } finally {
       setGeneratingImage(false);
+    }
+  };
+
+  const handleDeleteImage = async (imageId: string) => {
+    try {
+      const { error } = await supabase
+        .from("story_images")
+        .delete()
+        .eq("id", imageId);
+
+      if (error) throw error;
+
+      // Adjust current index if needed
+      if (currentImageIndex >= storyImages.length - 1 && currentImageIndex > 0) {
+        setCurrentImageIndex(currentImageIndex - 1);
+      }
+
+      await loadStory();
+      toast.success("Image deleted");
+    } catch (error: any) {
+      toast.error(error.message || "Failed to delete image");
+    }
+  };
+
+  const handleSelectImage = async (imageId: string) => {
+    try {
+      // Unselect all images first
+      await supabase
+        .from("story_images")
+        .update({ is_selected: false })
+        .eq("story_id", storyId);
+
+      // Select the chosen image
+      const { error } = await supabase
+        .from("story_images")
+        .update({ is_selected: true })
+        .eq("id", imageId);
+
+      if (error) throw error;
+
+      await loadStory();
+      toast.success("Image selected as cover");
+    } catch (error: any) {
+      toast.error(error.message || "Failed to select image");
+    }
+  };
+
+  const navigateImage = (direction: 'prev' | 'next') => {
+    if (direction === 'prev' && currentImageIndex > 0) {
+      setCurrentImageIndex(currentImageIndex - 1);
+    } else if (direction === 'next' && currentImageIndex < storyImages.length - 1) {
+      setCurrentImageIndex(currentImageIndex + 1);
     }
   };
 
@@ -228,35 +309,111 @@ const StoryView = () => {
       <main className="container mx-auto px-4 py-12 max-w-4xl">
         <Card className="shadow-2xl border-2">
           <CardHeader className="space-y-4">
-            {story.cover_image_url ? (
+            {storyImages.length > 0 ? (
               <div className="relative w-full">
                 <img
-                  src={story.cover_image_url}
+                  src={storyImages[currentImageIndex].image_url}
                   alt={story.title}
                   className="w-full h-auto rounded-xl shadow-lg object-contain max-h-[400px]"
                 />
-                <Button
-                  variant="secondary"
-                  size="sm"
-                  onClick={handleRegenerateImage}
-                  disabled={generatingImage}
-                  className="absolute bottom-4 right-4"
-                >
-                  {generatingImage ? "Generating..." : "🎨 New Illustration"}
-                </Button>
+                
+                {/* Image Navigation */}
+                <div className="absolute inset-0 flex items-center justify-between px-4 pointer-events-none">
+                  <Button
+                    variant="secondary"
+                    size="icon"
+                    onClick={() => navigateImage('prev')}
+                    disabled={currentImageIndex === 0}
+                    className="pointer-events-auto rounded-full opacity-80 hover:opacity-100"
+                  >
+                    <ChevronLeft className="w-6 h-6" />
+                  </Button>
+                  <Button
+                    variant="secondary"
+                    size="icon"
+                    onClick={() => navigateImage('next')}
+                    disabled={currentImageIndex === storyImages.length - 1}
+                    className="pointer-events-auto rounded-full opacity-80 hover:opacity-100"
+                  >
+                    <ChevronRight className="w-6 h-6" />
+                  </Button>
+                </div>
+
+                {/* Image Controls */}
+                <div className="absolute bottom-4 left-0 right-0 flex items-center justify-center gap-2">
+                  <div className="bg-background/90 backdrop-blur-sm rounded-full px-4 py-2 flex items-center gap-2 shadow-lg">
+                    <span className="text-sm font-medium">
+                      {currentImageIndex + 1} / {storyImages.length}
+                    </span>
+                    {!storyImages[currentImageIndex].is_selected && (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleSelectImage(storyImages[currentImageIndex].id)}
+                        className="h-8"
+                      >
+                        Set as Cover
+                      </Button>
+                    )}
+                    {storyImages[currentImageIndex].is_selected && (
+                      <span className="text-xs text-primary font-medium">✓ Selected</span>
+                    )}
+                    <Button
+                      variant="destructive"
+                      size="icon"
+                      onClick={() => handleDeleteImage(storyImages[currentImageIndex].id)}
+                      className="h-8 w-8"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </Button>
+                  </div>
+                </div>
+
+                {/* Generate New Button */}
+                {storyImages.length < 3 && (
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    onClick={handleGenerateImage}
+                    disabled={generatingImage}
+                    className="absolute top-4 right-4"
+                  >
+                    {generatingImage ? (
+                      <>
+                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                        Generating...
+                      </>
+                    ) : (
+                      <>
+                        <Plus className="w-4 h-4 mr-2" />
+                        New ({storyImages.length}/3)
+                      </>
+                    )}
+                  </Button>
+                )}
               </div>
             ) : (
-              <div className="flex flex-col items-center justify-center gap-4">
+              <div className="flex flex-col items-center justify-center gap-4 py-8">
                 <div className="text-7xl">
                   {story.story_themes?.emoji || "📖"}
                 </div>
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={handleRegenerateImage}
+                  onClick={handleGenerateImage}
                   disabled={generatingImage}
                 >
-                  {generatingImage ? "Generating..." : "🎨 Generate Illustration"}
+                  {generatingImage ? (
+                    <>
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      Generating...
+                    </>
+                  ) : (
+                    <>
+                      <Plus className="w-4 h-4 mr-2" />
+                      Generate Illustration
+                    </>
+                  )}
                 </Button>
               </div>
             )}
