@@ -6,6 +6,17 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { ArrowLeft, BookOpen, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import logo from "@/assets/logo.png";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 interface SavedStory {
   id: string;
@@ -28,6 +39,8 @@ const Library = () => {
   const navigate = useNavigate();
   const [savedStories, setSavedStories] = useState<SavedStory[]>([]);
   const [loading, setLoading] = useState(true);
+  const [storyToRemove, setStoryToRemove] = useState<SavedStory | null>(null);
+  const [dialogOpen, setDialogOpen] = useState(false);
 
   useEffect(() => {
     loadLibrary();
@@ -67,18 +80,23 @@ const Library = () => {
     setLoading(false);
   };
 
-  const handleRemove = async (libraryId: string) => {
+  const handleRemove = async () => {
+    if (!storyToRemove) return;
+
     const { error } = await supabase
       .from("user_libraries")
       .delete()
-      .eq("id", libraryId);
+      .eq("id", storyToRemove.id);
 
     if (error) {
       toast.error("Failed to remove story");
     } else {
       toast.success("Removed from library");
-      setSavedStories(savedStories.filter((s) => s.id !== libraryId));
+      setSavedStories(savedStories.filter((s) => s.id !== storyToRemove.id));
     }
+
+    setDialogOpen(false);
+    setStoryToRemove(null);
   };
 
   if (loading) {
@@ -163,15 +181,35 @@ const Library = () => {
                     <p className="text-muted-foreground line-clamp-2 mb-4">
                       {saved.stories.content.substring(0, 100)}...
                     </p>
-                    <Button
-                      variant="destructive"
-                      size="sm"
-                      onClick={() => handleRemove(saved.id)}
-                      className="w-full"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                      Remove
-                    </Button>
+                    <AlertDialog open={dialogOpen} onOpenChange={setDialogOpen}>
+                      <AlertDialogTrigger asChild>
+                        <Button
+                          variant="destructive"
+                          size="sm"
+                          onClick={() => setStoryToRemove(saved)}
+                          className="w-full"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                          Remove
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Remove Story from Library?</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            Are you sure you want to remove "{saved.stories.title}" from your library? This action cannot be undone.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel onClick={() => setStoryToRemove(null)}>
+                            Cancel
+                          </AlertDialogCancel>
+                          <AlertDialogAction onClick={handleRemove} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                            Remove
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
                   </CardContent>
                 </Card>
               ))}
