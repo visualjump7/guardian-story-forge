@@ -42,6 +42,26 @@ serve(async (req) => {
 
     console.log(`Generating audio for story: ${story.title}`);
 
+    // OpenAI TTS has a 4096 character limit, so truncate if needed
+    const MAX_TTS_LENGTH = 4000; // Leave some buffer
+    let audioContent = story.content;
+    
+    if (audioContent.length > MAX_TTS_LENGTH) {
+      // Truncate at the last complete sentence before the limit
+      const truncated = audioContent.substring(0, MAX_TTS_LENGTH);
+      const lastPeriod = truncated.lastIndexOf('.');
+      const lastExclamation = truncated.lastIndexOf('!');
+      const lastQuestion = truncated.lastIndexOf('?');
+      const lastSentenceEnd = Math.max(lastPeriod, lastExclamation, lastQuestion);
+      
+      if (lastSentenceEnd > 0) {
+        audioContent = truncated.substring(0, lastSentenceEnd + 1);
+      } else {
+        audioContent = truncated;
+      }
+      console.log(`Story truncated from ${story.content.length} to ${audioContent.length} characters for audio generation`);
+    }
+
     // Generate audio using OpenAI TTS
     const ttsResponse = await fetch('https://api.openai.com/v1/audio/speech', {
       method: 'POST',
@@ -51,7 +71,7 @@ serve(async (req) => {
       },
       body: JSON.stringify({
         model: 'tts-1',
-        input: story.content,
+        input: audioContent,
         voice: voice,
         response_format: 'mp3',
       }),
