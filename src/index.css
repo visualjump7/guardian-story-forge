@@ -8,50 +8,52 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    /* Kid-friendly magical color palette */
-    --background: 250 100% 98%;
-    --foreground: 265 80% 20%;
+    /* Dark magical color palette inspired by cinematic storytelling */
+    --background: 200 40% 8%;
+    --foreground: 40 90% 95%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 265 80% 20%;
+    --card: 200 35% 12%;
+    --card-foreground: 40 90% 95%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 265 80% 20%;
+    --popover: 200 35% 12%;
+    --popover-foreground: 40 90% 95%;
 
-    /* Magical purple-blue primary */
-    --primary: 265 85% 60%;
-    --primary-foreground: 0 0% 100%;
-    --primary-glow: 265 90% 70%;
+    /* Vibrant warm primary (golden/amber) */
+    --primary: 35 100% 55%;
+    --primary-foreground: 200 40% 10%;
+    --primary-glow: 40 100% 65%;
 
-    /* Warm orange secondary */
-    --secondary: 25 95% 65%;
-    --secondary-foreground: 0 0% 100%;
+    /* Cool cyan secondary */
+    --secondary: 185 80% 55%;
+    --secondary-foreground: 200 40% 10%;
 
-    /* Soft educational green */
-    --accent: 150 70% 55%;
-    --accent-foreground: 0 0% 100%;
+    /* Warm orange accent */
+    --accent: 25 95% 60%;
+    --accent-foreground: 200 40% 10%;
 
-    --muted: 250 30% 95%;
-    --muted-foreground: 265 20% 50%;
+    --muted: 200 30% 18%;
+    --muted-foreground: 200 15% 60%;
 
-    --destructive: 0 84.2% 60.2%;
+    --destructive: 0 70% 50%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 250 40% 90%;
-    --input: 250 40% 95%;
-    --ring: 265 85% 60%;
+    --border: 200 30% 20%;
+    --input: 200 30% 15%;
+    --ring: 35 100% 55%;
 
     --radius: 1rem;
 
-    /* Gradients */
-    --gradient-magical: linear-gradient(135deg, hsl(265 85% 60%) 0%, hsl(280 90% 70%) 100%);
-    --gradient-warm: linear-gradient(135deg, hsl(25 95% 65%) 0%, hsl(35 90% 60%) 100%);
-    --gradient-hero: linear-gradient(135deg, hsl(265 85% 60%) 0%, hsl(280 90% 70%) 50%, hsl(25 95% 65%) 100%);
+    /* Cinematic gradients with energy */
+    --gradient-magical: linear-gradient(135deg, hsl(200 50% 10%) 0%, hsl(185 70% 15%) 50%, hsl(200 40% 8%) 100%);
+    --gradient-warm: linear-gradient(135deg, hsl(35 100% 50%) 0%, hsl(25 95% 55%) 100%);
+    --gradient-hero: radial-gradient(ellipse at center, hsl(35 100% 50% / 0.15) 0%, hsl(200 40% 8%) 70%);
+    --gradient-card: linear-gradient(135deg, hsl(200 35% 12%) 0%, hsl(200 40% 10%) 100%);
 
-    /* Shadows */
-    --shadow-magical: 0 10px 40px -10px hsl(265 85% 60% / 0.4);
-    --shadow-warm: 0 10px 40px -10px hsl(25 95% 65% / 0.4);
-    --shadow-card: 0 4px 20px hsl(265 85% 60% / 0.1);
+    /* Glowing shadows with particles effect */
+    --shadow-magical: 0 0 60px hsl(35 100% 50% / 0.3), 0 0 120px hsl(35 100% 50% / 0.1);
+    --shadow-warm: 0 20px 60px -20px hsl(35 100% 50% / 0.5);
+    --shadow-card: 0 8px 32px hsl(35 100% 50% / 0.15);
+    --shadow-glow: 0 0 40px hsl(185 80% 55% / 0.4);
 
     /* Animations */
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -59,34 +61,35 @@ All colors MUST be HSL.
   }
 
   .dark {
-    --background: 265 50% 10%;
-    --foreground: 250 100% 98%;
+    /* Even darker mode for extreme contrast */
+    --background: 200 50% 5%;
+    --foreground: 40 90% 98%;
 
-    --card: 265 45% 15%;
-    --card-foreground: 250 100% 98%;
+    --card: 200 40% 10%;
+    --card-foreground: 40 90% 98%;
 
-    --popover: 265 45% 15%;
-    --popover-foreground: 250 100% 98%;
+    --popover: 200 40% 10%;
+    --popover-foreground: 40 90% 98%;
 
-    --primary: 265 85% 65%;
-    --primary-foreground: 0 0% 100%;
-    --primary-glow: 265 90% 75%;
+    --primary: 40 100% 60%;
+    --primary-foreground: 200 50% 5%;
+    --primary-glow: 40 100% 70%;
 
-    --secondary: 25 95% 70%;
-    --secondary-foreground: 0 0% 100%;
+    --secondary: 185 85% 60%;
+    --secondary-foreground: 200 50% 5%;
 
-    --accent: 150 70% 60%;
-    --accent-foreground: 0 0% 100%;
+    --accent: 25 95% 65%;
+    --accent-foreground: 200 50% 5%;
 
-    --muted: 265 40% 20%;
-    --muted-foreground: 250 30% 70%;
+    --muted: 200 35% 15%;
+    --muted-foreground: 200 20% 65%;
 
-    --destructive: 0 84.2% 60.2%;
+    --destructive: 0 70% 50%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 265 40% 25%;
-    --input: 265 40% 20%;
-    --ring: 265 85% 65%;
+    --border: 200 35% 18%;
+    --input: 200 35% 12%;
+    --ring: 40 100% 60%;
   }
 }
 
@@ -97,5 +100,43 @@ All colors MUST be HSL.
 
   body {
     @apply bg-background text-foreground;
+    position: relative;
+  }
+
+  /* Magical energy particles background */
+  body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 0;
+    background-image: 
+      radial-gradient(2px 2px at 20% 30%, hsl(35 100% 60% / 0.3), transparent),
+      radial-gradient(2px 2px at 60% 70%, hsl(185 80% 60% / 0.2), transparent),
+      radial-gradient(1px 1px at 50% 50%, hsl(40 100% 70% / 0.3), transparent),
+      radial-gradient(1px 1px at 80% 10%, hsl(35 100% 60% / 0.4), transparent),
+      radial-gradient(2px 2px at 90% 60%, hsl(185 80% 60% / 0.2), transparent),
+      radial-gradient(1px 1px at 33% 80%, hsl(40 100% 70% / 0.3), transparent),
+      radial-gradient(1px 1px at 15% 90%, hsl(35 100% 60% / 0.3), transparent);
+    background-size: 200% 200%;
+    animation: particles 20s ease-in-out infinite;
+  }
+
+  @keyframes particles {
+    0%, 100% {
+      background-position: 0% 0%, 100% 100%, 50% 50%, 80% 20%, 20% 80%, 70% 30%, 30% 70%;
+    }
+    50% {
+      background-position: 100% 100%, 0% 0%, 25% 75%, 60% 40%, 40% 60%, 90% 10%, 10% 90%;
+    }
+  }
+
+  /* Ensure content is above particles */
+  #root {
+    position: relative;
+    z-index: 1;
   }
 }
