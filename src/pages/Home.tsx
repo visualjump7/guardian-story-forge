@@ -55,7 +55,7 @@ const Home = () => {
       .from("stories")
       .select(`
         *,
-        story_themes(name, emoji)
+        story_themes!theme_id(name, emoji)
       `)
       .eq("is_featured", true)
       .order("created_at", { ascending: false });

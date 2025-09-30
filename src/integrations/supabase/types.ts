@@ -37,6 +37,7 @@ export type Database = {
       }
       stories: {
         Row: {
+          age_range: string | null
           audio_url: string | null
           content: string
           content_type: string | null
@@ -48,11 +49,16 @@ export type Database = {
           is_featured: boolean | null
           is_public: boolean | null
           media_url: string | null
+          narrative_structure: string | null
+          secondary_theme_id: string | null
+          setting: string | null
+          story_length: string | null
           story_type: string | null
           theme_id: string | null
           title: string
         }
         Insert: {
+          age_range?: string | null
           audio_url?: string | null
           content: string
           content_type?: string | null
@@ -64,11 +70,16 @@ export type Database = {
           is_featured?: boolean | null
           is_public?: boolean | null
           media_url?: string | null
+          narrative_structure?: string | null
+          secondary_theme_id?: string | null
+          setting?: string | null
+          story_length?: string | null
           story_type?: string | null
           theme_id?: string | null
           title: string
         }
         Update: {
+          age_range?: string | null
           audio_url?: string | null
           content?: string
           content_type?: string | null
@@ -80,11 +91,22 @@ export type Database = {
           is_featured?: boolean | null
           is_public?: boolean | null
           media_url?: string | null
+          narrative_structure?: string | null
+          secondary_theme_id?: string | null
+          setting?: string | null
+          story_length?: string | null
           story_type?: string | null
           theme_id?: string | null
           title?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "stories_secondary_theme_id_fkey"
+            columns: ["secondary_theme_id"]
+            isOneToOne: false
+            referencedRelation: "story_themes"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "stories_theme_id_fkey"
             columns: ["theme_id"]

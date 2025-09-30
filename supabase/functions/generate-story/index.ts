@@ -12,9 +12,18 @@ serve(async (req) => {
   }
 
   try {
-    const { heroName, storyType, themeId } = await req.json();
+    const { 
+      heroName, 
+      storyType, 
+      themeId, 
+      narrativeStructure,
+      storyLength = "medium",
+      ageRange = "8-10",
+      setting,
+      secondaryThemeId 
+    } = await req.json();
 
-    if (!heroName || !storyType || !themeId) {
+    if (!heroName || !storyType || !themeId || !narrativeStructure) {
       throw new Error("Missing required fields");
     }
 
@@ -32,6 +41,17 @@ serve(async (req) => {
 
     if (themeError || !theme) {
       throw new Error("Theme not found");
+    }
+
+    // Get secondary theme if provided
+    let secondaryTheme = null;
+    if (secondaryThemeId) {
+      const { data } = await supabase
+        .from("story_themes")
+        .select("*")
+        .eq("id", secondaryThemeId)
+        .single();
+      secondaryTheme = data;
     }
 
     // Get user from auth header
@@ -53,26 +73,58 @@ serve(async (req) => {
       throw new Error("LOVABLE_API_KEY not configured");
     }
 
-    const systemPrompt = `You are a creative children's story writer. Create engaging, age-appropriate stories (ages 5-12) that teach important life lessons. 
+    // Word count based on length
+    const wordCounts = {
+      short: "300-400 words",
+      medium: "500-700 words", 
+      long: "800-1000 words"
+    };
+
+    // Vocabulary and complexity based on age
+    const ageGuidelines = {
+      "5-7": "Use simple vocabulary, short sentences (5-10 words), and clear language. Focus on concrete concepts and familiar situations.",
+      "8-10": "Use moderate vocabulary with some challenging words, varied sentence structures, and introduce abstract concepts gradually.",
+      "11-12": "Use sophisticated vocabulary, complex sentences, and explore nuanced themes with deeper emotional complexity."
+    };
+
+    // Narrative structure descriptions
+    const narrativeDescriptions = {
+      "heros-journey": "Follow the classic Hero's Journey: ordinary world, call to adventure, crossing threshold, tests and challenges, transformation, return with wisdom",
+      "problem-solution": "Present a clear problem early, show the character's attempts to solve it, and conclude with a creative solution",
+      "rags-to-riches": "Begin with the character in a humble or difficult situation, show their growth through challenges, end with success and transformation",
+      "voyage-return": "Send the character on a journey to an unfamiliar place, show their discoveries and challenges, bring them home changed",
+      "quest": "Give the character a specific goal or item to find, create obstacles along the way, conclude when the quest is fulfilled",
+      "overcoming-monster": "Introduce a challenge or 'monster' (literal or metaphorical), build tension, show the character's courage in overcoming it"
+    };
+
+    const systemPrompt = `You are a creative children's story writer. Create engaging, age-appropriate stories that teach important life lessons. 
 
 The story should:
-- Be 400-600 words long
+- Be ${wordCounts[storyLength as keyof typeof wordCounts]} long
+- ${ageGuidelines[ageRange as keyof typeof ageGuidelines]}
+- Follow the ${narrativeStructure} narrative structure: ${narrativeDescriptions[narrativeStructure as keyof typeof narrativeDescriptions]}
 - Include vivid descriptions and engaging dialogue
 - Have a clear beginning, middle, and end
 - Teach the moral lesson naturally through the story events
-- Be appropriate for children
+- Be appropriate for children ages ${ageRange}
 - Include moments of excitement and wonder
 - End with a positive resolution that reinforces the lesson
 
 Write in a warm, friendly tone that captivates young readers.`;
 
+    const settingDescription = setting ? `\nSetting: ${setting.replace(/-/g, ' ')} - Make this setting come alive with rich sensory details.` : '';
+    const secondaryThemeText = secondaryTheme ? `\n\nSecondary Theme: Also weave in the lesson of "${secondaryTheme.name}" (${secondaryTheme.description}) as a supporting element in the story.` : '';
+
     const userPrompt = `Create a ${storyType} story with these details:
 
 Hero's Name: ${heroName}
 Story Type: ${storyType}
-Moral Theme: ${theme.name} - ${theme.description}
+Narrative Structure: ${narrativeStructure}
+Primary Moral Theme: ${theme.name} - ${theme.description}${secondaryThemeText}${settingDescription}
+Age Range: ${ageRange}
+Length: ${wordCounts[storyLength as keyof typeof wordCounts]}
 
-The story should naturally incorporate the theme of "${theme.name}" (${theme.description}) through the hero's adventure and choices. Make it exciting, magical, and memorable!`;
+The story should naturally incorporate the theme of "${theme.name}" (${theme.description}) through the hero's adventure and choices. Use the ${narrativeStructure} structure to create a compelling narrative arc. Make it exciting, magical, and memorable!`;
 
     console.log("Generating story with AI...");
 
@@ -124,6 +176,11 @@ The story should naturally incorporate the theme of "${theme.name}" (${theme.des
         hero_name: heroName,
         story_type: storyType,
         theme_id: themeId,
+        narrative_structure: narrativeStructure,
+        story_length: storyLength,
+        age_range: ageRange,
+        setting: setting || null,
+        secondary_theme_id: secondaryThemeId || null,
         is_public: false,
         created_by: user.id,
       })

@@ -52,7 +52,7 @@ const Library = () => {
           hero_name,
           story_type,
           cover_image_url,
-          story_themes(name, emoji)
+          story_themes!theme_id(name, emoji)
         )
       `)
       .eq("user_id", session.user.id)

@@ -58,7 +58,7 @@ const StoryView = () => {
       .from("stories")
       .select(`
         *,
-        story_themes(name, emoji)
+        story_themes!theme_id(name, emoji)
       `)
       .eq("id", storyId)
       .single();
