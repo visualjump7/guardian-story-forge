@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { BookOpen, Sparkles, Library, LogOut, PlusCircle } from "lucide-react";
+import { BookOpen, Sparkles, Library, User, PlusCircle, Wand2 } from "lucide-react";
 import { toast } from "sonner";
 import logo from "@/assets/logo.png";
 import VimeoPlayer from "@/components/VimeoPlayer";
@@ -70,12 +70,6 @@ const Home = () => {
     setLoading(false);
   };
 
-  const handleSignOut = async () => {
-    await supabase.auth.signOut();
-    toast.success("Goodbye! See you next time!");
-    navigate("/");
-  };
-
   const handleReadStory = (storyId: string) => {
     navigate(`/story/${storyId}`);
   };
@@ -105,16 +99,19 @@ const Home = () => {
               </p>
             </div>
           </div>
-          <div className="flex items-center gap-2">
+          <nav className="flex items-center gap-2">
+            <Button variant="default" size="sm" onClick={() => navigate("/create")}>
+              <Wand2 className="w-4 h-4" />
+              Create A Story
+            </Button>
             <Button variant="outline" size="sm" onClick={() => navigate("/library")}>
               <Library className="w-4 h-4" />
               My Library
             </Button>
-            <Button variant="ghost" size="sm" onClick={handleSignOut}>
-              <LogOut className="w-4 h-4" />
-              Sign Out
+            <Button variant="ghost" size="icon" onClick={() => navigate("/profile")}>
+              <User className="w-5 h-5" />
             </Button>
-          </div>
+          </nav>
         </div>
       </header>
 

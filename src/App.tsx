@@ -9,6 +9,7 @@ import Home from "./pages/Home";
 import CreateStory from "./pages/CreateStory";
 import StoryView from "./pages/StoryView";
 import Library from "./pages/Library";
+import Profile from "./pages/Profile";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -26,6 +27,7 @@ const App = () => (
           <Route path="/create" element={<CreateStory />} />
           <Route path="/story/:storyId" element={<StoryView />} />
           <Route path="/library" element={<Library />} />
+          <Route path="/profile" element={<Profile />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

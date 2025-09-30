@@ -60,10 +60,16 @@ interface Story {
   cover_image_url: string | null;
   audio_url: string | null;
   art_style: string | null;
+  created_by: string | null;
   story_themes: {
     name: string;
     emoji: string;
   } | null;
+}
+
+interface CreatorProfile {
+  display_name: string;
+  author_name: string | null;
 }
 
 const StoryView = () => {
@@ -83,6 +89,7 @@ const StoryView = () => {
   const [isShareDialogOpen, setIsShareDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [imageToDelete, setImageToDelete] = useState<string | null>(null);
+  const [creatorProfile, setCreatorProfile] = useState<CreatorProfile | null>(null);
 
   useEffect(() => {
     loadStory();
@@ -114,6 +121,19 @@ const StoryView = () => {
     }
 
     setStory(storyData);
+
+    // Load creator profile if story has created_by
+    if (storyData.created_by) {
+      const { data: profileData } = await supabase
+        .from("profiles")
+        .select("display_name, author_name")
+        .eq("id", storyData.created_by)
+        .single();
+      
+      if (profileData) {
+        setCreatorProfile(profileData);
+      }
+    }
 
     // Load story images
     const { data: imagesData, error: imagesError } = await supabase
@@ -661,6 +681,11 @@ const StoryView = () => {
             <CardTitle className="text-4xl font-bold text-center">
               {story.title}
             </CardTitle>
+            {creatorProfile && (
+              <p className="text-center text-muted-foreground text-sm">
+                Created by {creatorProfile.author_name || creatorProfile.display_name}
+              </p>
+            )}
             <div className="flex flex-wrap items-center justify-center gap-3">
               {story.hero_name && (
                 <span className="px-4 py-2 rounded-full bg-primary/10 text-primary font-medium">
