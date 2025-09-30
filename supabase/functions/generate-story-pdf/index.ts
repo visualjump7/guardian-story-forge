@@ -77,7 +77,7 @@ serve(async (req) => {
       line-height: 1.8;
       color: #333;
     }
-    .story-text:first-of-type::first-letter {
+    .story-text.first-paragraph::first-letter {
       float: left;
       font-size: 4em;
       line-height: 0.8;
@@ -147,10 +147,12 @@ serve(async (req) => {
   ${paragraphs.map((paragraph: string, index: number) => {
     const imageIndex = Math.min(index + 1, images?.length || 0);
     const image = images && images[imageIndex] ? images[imageIndex] : null;
+    // Only add first-paragraph class to the very first paragraph
+    const paragraphClass = index === 0 ? 'story-text first-paragraph' : 'story-text';
     
     return `
       <div class="story-page">
-        <div class="story-text">${paragraph}</div>
+        <div class="${paragraphClass}">${paragraph}</div>
         ${image ? `<img src="${image.image_url}" alt="Story illustration ${index + 1}">` : ''}
       </div>
     `;

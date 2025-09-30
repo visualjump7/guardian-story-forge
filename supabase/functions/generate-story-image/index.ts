@@ -13,8 +13,8 @@ serve(async (req) => {
 
   try {
     console.log("Image generation started");
-    const { storyId } = await req.json();
-    console.log("Story ID received:", storyId);
+    const { storyId, customPrompt } = await req.json();
+    console.log("Story ID received:", storyId, "Custom prompt provided:", !!customPrompt);
 
     if (!storyId) {
       throw new Error("Missing storyId");
@@ -108,17 +108,24 @@ serve(async (req) => {
 
     const styleDescription = artStylePrompts[story.art_style || 'pixar-3d'] || artStylePrompts['pixar-3d'];
 
-    // Build prompt based on image type
+    // Build prompt based on custom or default logic
     let imagePrompt = '';
     
-    if (imageType === 'cover') {
-      const firstParagraph = story.content.split("\n\n")[0];
-      const sceneDescription = firstParagraph.substring(0, 200);
-      imagePrompt = `Create a child-friendly cover illustration in ${styleDescription}. Feature ${story.hero_name} as the main character in a ${story.story_type} setting. Scene: ${sceneDescription}. Art style: colorful, family-friendly, high-quality with expressive characters and magical atmosphere.`;
-    } else if (imageType === 'scene') {
-      imagePrompt = `Create a middle scene illustration in ${styleDescription} for the children's story. Feature ${story.hero_name} in this key moment: ${contentForImage}. Show the action and emotion of this scene. Child-friendly, colorful, high-quality illustration suitable for ages 8-10.`;
+    if (customPrompt && customPrompt.trim()) {
+      // Use custom prompt with style context added
+      console.log("Using custom prompt for image generation");
+      imagePrompt = `${customPrompt}. Create this in ${styleDescription}. Make it colorful, family-friendly, and appropriate for children ages 8-10.`;
     } else {
-      imagePrompt = `Create a climactic ending illustration in ${styleDescription} for the children's story. Feature ${story.hero_name} in the resolution: ${contentForImage}. Capture the emotional conclusion and sense of completion. Child-friendly, colorful, high-quality illustration suitable for ages 8-10.`;
+      // Use default prompt based on image type
+      if (imageType === 'cover') {
+        const firstParagraph = story.content.split("\n\n")[0];
+        const sceneDescription = firstParagraph.substring(0, 200);
+        imagePrompt = `Create a child-friendly cover illustration in ${styleDescription}. Feature ${story.hero_name} as the main character in a ${story.story_type} setting. Scene: ${sceneDescription}. Art style: colorful, family-friendly, high-quality with expressive characters and magical atmosphere.`;
+      } else if (imageType === 'scene') {
+        imagePrompt = `Create a middle scene illustration in ${styleDescription} for the children's story. Feature ${story.hero_name} in this key moment: ${contentForImage}. Show the action and emotion of this scene. Child-friendly, colorful, high-quality illustration suitable for ages 8-10.`;
+      } else {
+        imagePrompt = `Create a climactic ending illustration in ${styleDescription} for the children's story. Feature ${story.hero_name} in the resolution: ${contentForImage}. Capture the emotional conclusion and sense of completion. Child-friendly, colorful, high-quality illustration suitable for ages 8-10.`;
+      }
     }
 
     console.log("Generating image with AI...");

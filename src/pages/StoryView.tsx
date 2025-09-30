@@ -13,6 +13,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { ShareDialog } from "@/components/ShareDialog";
+import { ImageGenerationDialog } from "@/components/ImageGenerationDialog";
 
 interface StoryImage {
   id: string;
@@ -51,6 +52,7 @@ const StoryView = () => {
   const [isPlaying, setIsPlaying] = useState(false);
   const audioRef = useRef<HTMLAudioElement>(null);
   const [isShareDialogOpen, setIsShareDialogOpen] = useState(false);
+  const [isImageDialogOpen, setIsImageDialogOpen] = useState(false);
 
   useEffect(() => {
     loadStory();
@@ -146,7 +148,7 @@ const StoryView = () => {
     setIsShareDialogOpen(true);
   };
 
-  const handleGenerateImage = async () => {
+  const handleGenerateImage = async (customPrompt?: string) => {
     if (!storyId || storyImages.length >= 3) {
       toast.error("Maximum 3 images per story");
       return;
@@ -155,7 +157,7 @@ const StoryView = () => {
     setGeneratingImage(true);
     try {
       const { error } = await supabase.functions.invoke("generate-story-image", {
-        body: { storyId },
+        body: { storyId, customPrompt },
       });
 
       if (error) throw error;
@@ -168,6 +170,14 @@ const StoryView = () => {
     } finally {
       setGeneratingImage(false);
     }
+  };
+
+  const handleOpenImageDialog = () => {
+    if (storyImages.length >= 3) {
+      toast.error("Maximum 3 images per story");
+      return;
+    }
+    setIsImageDialogOpen(true);
   };
 
   const handleDeleteImage = async (imageId: string) => {
@@ -307,16 +317,29 @@ const StoryView = () => {
         coverImageUrl={storyImages[0]?.image_url}
       />
 
+      {/* Image Generation Dialog */}
+      <ImageGenerationDialog
+        open={isImageDialogOpen}
+        onOpenChange={setIsImageDialogOpen}
+        onGenerate={handleGenerateImage}
+        storyContent={story.content}
+        heroName={story.hero_name || ""}
+        imageCount={storyImages.length}
+        artStyle={story.art_style || "pixar-3d"}
+      />
+
       <main className="container mx-auto px-4 py-12 max-w-4xl">
         <Card className="shadow-2xl border-2">
           <CardHeader className="space-y-4">
             {storyImages.length > 0 ? (
               <div className="relative w-full">
-                <img
-                  src={storyImages[currentImageIndex].image_url}
-                  alt={story.title}
-                  className="w-full h-auto rounded-xl shadow-lg object-contain max-h-[400px]"
-                />
+                <div className="w-full aspect-video rounded-xl shadow-lg overflow-hidden bg-muted">
+                  <img
+                    src={storyImages[currentImageIndex].image_url}
+                    alt={story.title}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
                 
                 {/* Image Navigation */}
                 <div className="absolute inset-0 flex items-center justify-between px-4 pointer-events-none">
@@ -375,7 +398,7 @@ const StoryView = () => {
                   <Button
                     variant="secondary"
                     size="sm"
-                    onClick={handleGenerateImage}
+                    onClick={handleOpenImageDialog}
                     disabled={generatingImage}
                     className="absolute top-4 right-4"
                   >
@@ -387,7 +410,7 @@ const StoryView = () => {
                     ) : (
                       <>
                         <Plus className="w-4 h-4 mr-2" />
-                        New ({storyImages.length}/3)
+                        Add New Image ({storyImages.length}/3)
                       </>
                     )}
                   </Button>
@@ -401,7 +424,7 @@ const StoryView = () => {
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={handleGenerateImage}
+                  onClick={handleOpenImageDialog}
                   disabled={generatingImage}
                 >
                   {generatingImage ? (
