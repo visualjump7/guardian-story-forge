@@ -6,8 +6,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Sparkles, ArrowLeft, Wand2 } from "lucide-react";
+import { Sparkles, Wand2 } from "lucide-react";
 import { toast } from "sonner";
+import { AppHeader } from "@/components/AppHeader";
 
 interface Theme {
   id: string;
@@ -141,14 +142,7 @@ const CreateStory = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-muted to-background">
-      <header className="border-b bg-card/50 backdrop-blur-sm sticky top-0 z-50 shadow-md">
-        <div className="container mx-auto px-4 py-4">
-          <Button variant="ghost" onClick={() => navigate("/home")}>
-            <ArrowLeft className="w-5 h-5" />
-            Back to Home
-          </Button>
-        </div>
-      </header>
+      <AppHeader />
 
       <main className="container mx-auto px-4 py-12 max-w-3xl">
         <Card className="shadow-2xl border-2">

@@ -3,10 +3,10 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft, BookOpen, Trash2, Share2, PlusCircle } from "lucide-react";
+import { BookOpen, Trash2, Share2, PlusCircle } from "lucide-react";
 import { toast } from "sonner";
-import logo from "@/assets/logo.png";
 import { ShareDialog } from "@/components/ShareDialog";
+import { AppHeader } from "@/components/AppHeader";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -117,29 +117,20 @@ const Library = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-muted to-background">
-      <header className="border-b bg-card/50 backdrop-blur-sm sticky top-0 z-50 shadow-md">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <Button variant="ghost" onClick={() => navigate("/home")}>
-            <ArrowLeft className="w-5 h-5" />
-            Back to Home
+      <AppHeader 
+        title="My Library"
+        rightContent={
+          <Button
+            onClick={() => navigate("/create")}
+            variant="magical"
+            size="sm"
+            className="gap-2"
+          >
+            <PlusCircle className="w-4 h-4" />
+            Create New Story
           </Button>
-          <div className="flex items-center gap-4">
-            <div className="flex items-center gap-2">
-              <img src={logo} alt="Guardian Kids" className="w-8 h-8" />
-              <h1 className="text-xl font-bold text-primary">My Library</h1>
-            </div>
-            <Button
-              onClick={() => navigate("/create")}
-              variant="magical"
-              size="sm"
-              className="gap-2"
-            >
-              <PlusCircle className="w-4 h-4" />
-              Create New Story
-            </Button>
-          </div>
-        </div>
-      </header>
+        }
+      />
 
       <main className="container mx-auto px-4 py-12">
         {savedStories.length === 0 ? (

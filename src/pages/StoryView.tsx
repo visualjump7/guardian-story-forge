@@ -14,7 +14,6 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { 
-  ArrowLeft, 
   BookmarkPlus, 
   BookmarkCheck, 
   ChevronLeft, 
@@ -36,6 +35,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { ShareDialog } from "@/components/ShareDialog";
+import { AppHeader } from "@/components/AppHeader";
 import {
   Carousel,
   CarouselContent,
@@ -398,13 +398,9 @@ const StoryView = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-muted to-background">
-      <header className="border-b bg-card/50 backdrop-blur-sm sticky top-0 z-50 shadow-md">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <Button variant="ghost" onClick={() => navigate("/home")}>
-            <ArrowLeft className="w-5 h-5" />
-            Back
-          </Button>
-          <div className="flex items-center gap-2">
+      <AppHeader 
+        rightContent={
+          <>
             <Button variant="outline" size="sm" onClick={handleShare}>
               <Share2 className="w-4 h-4" />
               Share
@@ -426,9 +422,9 @@ const StoryView = () => {
                 </>
               )}
             </Button>
-          </div>
-        </div>
-      </header>
+          </>
+        }
+      />
 
       {/* Share Dialog */}
       <ShareDialog 
