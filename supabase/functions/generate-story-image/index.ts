@@ -12,7 +12,9 @@ serve(async (req) => {
   }
 
   try {
+    console.log("Image generation started");
     const { storyId } = await req.json();
+    console.log("Story ID received:", storyId);
 
     if (!storyId) {
       throw new Error("Missing storyId");
@@ -21,22 +23,26 @@ serve(async (req) => {
     // Initialize Supabase client
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+    console.log("Supabase client initialized");
     const supabase = createClient(supabaseUrl, supabaseKey);
 
     // Get user from auth header
     const authHeader = req.headers.get("Authorization");
+    console.log("Auth header present:", !!authHeader);
     if (!authHeader) {
       throw new Error("No authorization header");
     }
 
     const token = authHeader.replace("Bearer ", "");
     const { data: { user }, error: userError } = await supabase.auth.getUser(token);
+    console.log("User authenticated:", !!user, "Error:", userError?.message);
 
     if (userError || !user) {
       throw new Error("Unauthorized");
     }
 
     // Get story details
+    console.log("Fetching story details for ID:", storyId, "User:", user.id);
     const { data: story, error: storyError } = await supabase
       .from("stories")
       .select("*, story_themes(name, emoji)")
@@ -44,22 +50,26 @@ serve(async (req) => {
       .eq("created_by", user.id)
       .single();
 
+    console.log("Story fetched:", !!story, "Error:", storyError?.message);
     if (storyError || !story) {
-      throw new Error("Story not found");
+      throw new Error("Story not found or you don't own this story");
     }
 
     // Check if there are already 3 images
-    const { count } = await supabase
+    console.log("Checking existing images count...");
+    const { count, error: countError } = await supabase
       .from("story_images")
       .select("*", { count: "exact", head: true })
       .eq("story_id", storyId);
 
+    console.log("Current image count:", count, "Count error:", countError?.message);
     if (count && count >= 3) {
       throw new Error("Maximum 3 images per story reached");
     }
 
     // Generate image using Lovable AI
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
+    console.log("Lovable API key present:", !!LOVABLE_API_KEY);
     if (!LOVABLE_API_KEY) {
       throw new Error("LOVABLE_API_KEY not configured");
     }
@@ -96,21 +106,23 @@ serve(async (req) => {
         messages: [
           { role: "user", content: imagePrompt }
         ],
-        modalities: ["image", "text"]
+      modalities: ["image", "text"]
       }),
     });
 
+    console.log("AI Response status:", aiResponse.status);
     if (!aiResponse.ok) {
       const errorText = await aiResponse.text();
-      console.error("AI API error:", errorText);
-      throw new Error("Failed to generate image with AI");
+      console.error("AI API error response:", errorText);
+      throw new Error(`Failed to generate image with AI: ${errorText}`);
     }
 
     const aiData = await aiResponse.json();
     const imageUrl = aiData.choices?.[0]?.message?.images?.[0]?.image_url?.url;
+    console.log("Image URL generated:", !!imageUrl);
 
     if (!imageUrl) {
-      throw new Error("No image generated");
+      throw new Error("No image generated from AI response");
     }
 
     console.log("Saving image to story_images table...");
@@ -142,6 +154,7 @@ serve(async (req) => {
     );
   } catch (error: any) {
     console.error("Error in generate-story-image function:", error);
+    console.error("Error stack:", error.stack);
     return new Response(
       JSON.stringify({ error: error.message || "Internal server error" }),
       {
