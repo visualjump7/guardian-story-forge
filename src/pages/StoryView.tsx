@@ -1,10 +1,17 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft, BookmarkPlus, BookmarkCheck, Share2 } from "lucide-react";
+import { ArrowLeft, BookmarkPlus, BookmarkCheck, Share2, Volume2, Loader2 } from "lucide-react";
 import { toast } from "sonner";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface Story {
   id: string;
@@ -13,6 +20,7 @@ interface Story {
   hero_name: string | null;
   story_type: string | null;
   cover_image_url: string | null;
+  audio_url: string | null;
   story_themes: {
     name: string;
     emoji: string;
@@ -27,6 +35,10 @@ const StoryView = () => {
   const [loading, setLoading] = useState(true);
   const [userId, setUserId] = useState<string | null>(null);
   const [generatingImage, setGeneratingImage] = useState(false);
+  const [generatingAudio, setGeneratingAudio] = useState(false);
+  const [selectedVoice, setSelectedVoice] = useState("alloy");
+  const [isPlaying, setIsPlaying] = useState(false);
+  const audioRef = useRef<HTMLAudioElement>(null);
 
   useEffect(() => {
     loadStory();
@@ -137,6 +149,38 @@ const StoryView = () => {
     }
   };
 
+  const handleGenerateAudio = async () => {
+    if (!storyId) return;
+
+    setGeneratingAudio(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("generate-story-audio", {
+        body: { storyId, voice: selectedVoice },
+      });
+
+      if (error) throw error;
+
+      // Reload story to get new audio
+      await loadStory();
+      toast.success("Audio narration generated!");
+    } catch (error: any) {
+      toast.error(error.message || "Failed to generate audio");
+    } finally {
+      setGeneratingAudio(false);
+    }
+  };
+
+  const togglePlayPause = () => {
+    if (!audioRef.current) return;
+
+    if (isPlaying) {
+      audioRef.current.pause();
+    } else {
+      audioRef.current.play();
+    }
+    setIsPlaying(!isPlaying);
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background to-muted">
@@ -238,6 +282,106 @@ const StoryView = () => {
             </div>
           </CardHeader>
           <CardContent>
+            {/* Audio Player Section */}
+            {story.audio_url ? (
+              <div className="mb-8 p-6 rounded-xl bg-gradient-to-br from-primary/5 to-secondary/5 border-2 border-primary/10">
+                <div className="flex items-center gap-4">
+                  <Button
+                    onClick={togglePlayPause}
+                    size="lg"
+                    className="rounded-full w-16 h-16"
+                  >
+                    {isPlaying ? (
+                      <span className="text-2xl">⏸️</span>
+                    ) : (
+                      <Volume2 className="w-8 h-8" />
+                    )}
+                  </Button>
+                  <div className="flex-1">
+                    <p className="text-sm font-medium mb-2">Audio Narration</p>
+                    <audio
+                      ref={audioRef}
+                      src={story.audio_url}
+                      onEnded={() => setIsPlaying(false)}
+                      onPlay={() => setIsPlaying(true)}
+                      onPause={() => setIsPlaying(false)}
+                      className="w-full"
+                      controls
+                    />
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Select value={selectedVoice} onValueChange={setSelectedVoice}>
+                      <SelectTrigger className="w-32">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="alloy">Alloy</SelectItem>
+                        <SelectItem value="echo">Echo</SelectItem>
+                        <SelectItem value="fable">Fable</SelectItem>
+                        <SelectItem value="onyx">Onyx</SelectItem>
+                        <SelectItem value="nova">Nova</SelectItem>
+                        <SelectItem value="shimmer">Shimmer</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={handleGenerateAudio}
+                      disabled={generatingAudio}
+                    >
+                      {generatingAudio ? (
+                        <>
+                          <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                          Generating...
+                        </>
+                      ) : (
+                        "🎙️ Regenerate"
+                      )}
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div className="mb-8 p-6 rounded-xl bg-gradient-to-br from-primary/5 to-secondary/5 border-2 border-dashed border-primary/20 text-center">
+                <div className="flex flex-col items-center gap-4">
+                  <div className="text-5xl">🎙️</div>
+                  <p className="text-muted-foreground">No audio narration yet</p>
+                  <div className="flex items-center gap-2">
+                    <Select value={selectedVoice} onValueChange={setSelectedVoice}>
+                      <SelectTrigger className="w-40">
+                        <SelectValue placeholder="Select voice" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="alloy">Alloy (Neutral)</SelectItem>
+                        <SelectItem value="echo">Echo (Male)</SelectItem>
+                        <SelectItem value="fable">Fable (British)</SelectItem>
+                        <SelectItem value="onyx">Onyx (Deep)</SelectItem>
+                        <SelectItem value="nova">Nova (Female)</SelectItem>
+                        <SelectItem value="shimmer">Shimmer (Soft)</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <Button
+                      onClick={handleGenerateAudio}
+                      disabled={generatingAudio}
+                    >
+                      {generatingAudio ? (
+                        <>
+                          <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                          Generating Audio...
+                        </>
+                      ) : (
+                        <>
+                          <Volume2 className="w-4 h-4 mr-2" />
+                          Generate Audio Narration
+                        </>
+                      )}
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Story Content */}
             <div className="prose prose-lg max-w-none">
               {story.content.split("\n\n").map((paragraph, index) => (
                 <p key={index} className="text-lg leading-relaxed mb-4">

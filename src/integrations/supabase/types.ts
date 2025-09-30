@@ -37,6 +37,7 @@ export type Database = {
       }
       stories: {
         Row: {
+          audio_url: string | null
           content: string
           content_type: string | null
           cover_image_url: string | null
@@ -52,6 +53,7 @@ export type Database = {
           title: string
         }
         Insert: {
+          audio_url?: string | null
           content: string
           content_type?: string | null
           cover_image_url?: string | null
@@ -67,6 +69,7 @@ export type Database = {
           title: string
         }
         Update: {
+          audio_url?: string | null
           content?: string
           content_type?: string | null
           cover_image_url?: string | null
