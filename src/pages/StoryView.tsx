@@ -3,6 +3,16 @@ import { useParams, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { 
   ArrowLeft, 
   BookmarkPlus, 
@@ -64,6 +74,8 @@ const StoryView = () => {
   const [isPlaying, setIsPlaying] = useState(false);
   const audioRef = useRef<HTMLAudioElement>(null);
   const [isShareDialogOpen, setIsShareDialogOpen] = useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [imageToDelete, setImageToDelete] = useState<string | null>(null);
 
   useEffect(() => {
     loadStory();
@@ -215,11 +227,18 @@ const StoryView = () => {
   };
 
   const handleDeleteImage = async (imageId: string) => {
+    setImageToDelete(imageId);
+    setDeleteDialogOpen(true);
+  };
+
+  const confirmDeleteImage = async () => {
+    if (!imageToDelete) return;
+
     try {
       const { error } = await supabase
         .from("story_images")
         .delete()
-        .eq("id", imageId);
+        .eq("id", imageToDelete);
 
       if (error) throw error;
 
@@ -232,6 +251,9 @@ const StoryView = () => {
       toast.success("Image deleted");
     } catch (error: any) {
       toast.error(error.message || "Failed to delete image");
+    } finally {
+      setDeleteDialogOpen(false);
+      setImageToDelete(null);
     }
   };
 
@@ -351,6 +373,24 @@ const StoryView = () => {
         coverImageUrl={storyImages[0]?.image_url}
       />
 
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Image?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete this image? This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmDeleteImage} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
       <main className="container mx-auto px-4 py-12 max-w-4xl">
         <Card className="shadow-2xl border-2">
           <CardHeader className="space-y-4">
@@ -389,9 +429,9 @@ const StoryView = () => {
                   )}
                 </div>
 
-                {/* Controls underneath image */}
-                <div className="flex items-center justify-between gap-2 flex-wrap">
-                  {/* Left: Re-create button */}
+                {/* Controls underneath image - single bar */}
+                <div className="flex items-center justify-between gap-4 p-3 bg-muted/50 rounded-lg">
+                  {/* Re-create button */}
                   <Button
                     variant="outline"
                     size="sm"
@@ -402,36 +442,22 @@ const StoryView = () => {
                     Re-create Image
                   </Button>
 
-                  {/* Center: Image counter, selected status, delete */}
-                  <div className="flex items-center gap-2">
+                  {/* Center: Image counter and star for cover */}
+                  <div className="flex items-center gap-3">
                     <span className="text-sm font-medium">
                       {currentImageIndex + 1}/{storyImages.length} Selected
                     </span>
-                    {storyImages[currentImageIndex].is_selected ? (
-                      <span className="text-xs text-primary font-medium flex items-center gap-1">
-                        <Star className="h-4 w-4 fill-primary" />
-                        Cover
-                      </span>
-                    ) : (
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleSelectImage(storyImages[currentImageIndex].id)}
-                      >
-                        <Star className="h-4 w-4" />
-                      </Button>
-                    )}
                     <Button
-                      variant="ghost"
+                      variant={storyImages[currentImageIndex].is_selected ? "default" : "ghost"}
                       size="sm"
-                      onClick={() => handleDeleteImage(storyImages[currentImageIndex].id)}
-                      className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                      onClick={() => handleSelectImage(storyImages[currentImageIndex].id)}
+                      disabled={storyImages[currentImageIndex].is_selected}
                     >
-                      <Trash2 className="h-4 w-4" />
+                      <Star className={`h-4 w-4 ${storyImages[currentImageIndex].is_selected ? 'fill-current' : ''}`} />
                     </Button>
                   </div>
 
-                  {/* Right: New image button */}
+                  {/* Add image button */}
                   <Button
                     variant="outline"
                     size="sm"
@@ -446,7 +472,7 @@ const StoryView = () => {
                     ) : (
                       <>
                         <Plus className="h-4 w-4 mr-2" />
-                        New Image ({storyImages.length} of 3)
+                        Add Image ({storyImages.length} of 3)
                       </>
                     )}
                   </Button>
