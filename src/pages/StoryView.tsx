@@ -3,7 +3,20 @@ import { useParams, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft, BookmarkPlus, BookmarkCheck, ChevronLeft, ChevronRight, Share2, Volume2, Loader2, Plus, Trash2, RefreshCw, Star } from "lucide-react";
+import { 
+  ArrowLeft, 
+  BookmarkPlus, 
+  BookmarkCheck, 
+  ChevronLeft, 
+  ChevronRight, 
+  Share2, 
+  Volume2, 
+  Loader2, 
+  Plus, 
+  Trash2, 
+  RefreshCw, 
+  Star 
+} from "lucide-react";
 import { toast } from "sonner";
 import {
   Select,
