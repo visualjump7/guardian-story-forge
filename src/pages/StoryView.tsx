@@ -503,31 +503,10 @@ const StoryView = () => {
                 </Button>
               </div>
             )}
-            <CardTitle className="text-4xl font-bold text-center">
-              {story.title}
-            </CardTitle>
-            <div className="flex flex-wrap items-center justify-center gap-3">
-              {story.hero_name && (
-                <span className="px-4 py-2 rounded-full bg-primary/10 text-primary font-medium">
-                  Hero: {story.hero_name}
-                </span>
-              )}
-              {story.story_type && (
-                <span className="px-4 py-2 rounded-full bg-secondary/10 text-secondary font-medium">
-                  {story.story_type}
-                </span>
-              )}
-              {story.story_themes && (
-                <span className="px-4 py-2 rounded-full bg-accent/10 text-accent font-medium">
-                  {story.story_themes.emoji} {story.story_themes.name}
-                </span>
-              )}
-            </div>
-          </CardHeader>
-          <CardContent>
+
             {/* Audio Player Section */}
             {story.audio_url ? (
-              <div className="mb-8 p-6 rounded-xl bg-gradient-to-br from-primary/5 to-secondary/5 border-2 border-primary/10">
+              <div className="p-6 rounded-xl bg-gradient-to-br from-primary/5 to-secondary/5 border-2 border-primary/10">
                 <div className="flex items-center gap-4">
                   <Button
                     onClick={togglePlayPause}
@@ -585,7 +564,7 @@ const StoryView = () => {
                 </div>
               </div>
             ) : (
-              <div className="mb-8 p-6 rounded-xl bg-gradient-to-br from-primary/5 to-secondary/5 border-2 border-dashed border-primary/20 text-center">
+              <div className="p-6 rounded-xl bg-gradient-to-br from-primary/5 to-secondary/5 border-2 border-dashed border-primary/20 text-center">
                 <div className="flex flex-col items-center gap-4">
                   <div className="text-5xl">🎙️</div>
                   <p className="text-muted-foreground">No audio narration yet</p>
@@ -624,6 +603,28 @@ const StoryView = () => {
               </div>
             )}
 
+            <CardTitle className="text-4xl font-bold text-center">
+              {story.title}
+            </CardTitle>
+            <div className="flex flex-wrap items-center justify-center gap-3">
+              {story.hero_name && (
+                <span className="px-4 py-2 rounded-full bg-primary/10 text-primary font-medium">
+                  Hero: {story.hero_name}
+                </span>
+              )}
+              {story.story_type && (
+                <span className="px-4 py-2 rounded-full bg-secondary/10 text-secondary font-medium">
+                  {story.story_type}
+                </span>
+              )}
+              {story.story_themes && (
+                <span className="px-4 py-2 rounded-full bg-accent/10 text-accent font-medium">
+                  {story.story_themes.emoji} {story.story_themes.name}
+                </span>
+              )}
+            </div>
+          </CardHeader>
+          <CardContent>
             {/* Story Content */}
             <div className="prose prose-lg max-w-none">
               {story.content.split("\n\n").map((paragraph, index) => (
