@@ -12,6 +12,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { ShareDialog } from "@/components/ShareDialog";
 
 interface StoryImage {
   id: string;
@@ -49,6 +50,7 @@ const StoryView = () => {
   const [selectedVoice, setSelectedVoice] = useState("alloy");
   const [isPlaying, setIsPlaying] = useState(false);
   const audioRef = useRef<HTMLAudioElement>(null);
+  const [isShareDialogOpen, setIsShareDialogOpen] = useState(false);
 
   useEffect(() => {
     loadStory();
@@ -141,17 +143,7 @@ const StoryView = () => {
   };
 
   const handleShare = () => {
-    const shareUrl = window.location.href;
-    if (navigator.share) {
-      navigator.share({
-        title: story?.title,
-        text: `Check out this story: ${story?.title}`,
-        url: shareUrl,
-      });
-    } else {
-      navigator.clipboard.writeText(shareUrl);
-      toast.success("Link copied to clipboard!");
-    }
+    setIsShareDialogOpen(true);
   };
 
   const handleGenerateImage = async () => {
@@ -305,6 +297,15 @@ const StoryView = () => {
           </div>
         </div>
       </header>
+
+      {/* Share Dialog */}
+      <ShareDialog 
+        open={isShareDialogOpen}
+        onOpenChange={setIsShareDialogOpen}
+        storyId={storyId!}
+        storyTitle={story.title}
+        coverImageUrl={storyImages[0]?.image_url}
+      />
 
       <main className="container mx-auto px-4 py-12 max-w-4xl">
         <Card className="shadow-2xl border-2">

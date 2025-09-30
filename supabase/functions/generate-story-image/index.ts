@@ -41,11 +41,11 @@ serve(async (req) => {
       throw new Error("Unauthorized");
     }
 
-    // Get story details
+    // Get story details (without theme join to avoid ambiguity)
     console.log("Fetching story details for ID:", storyId, "User:", user.id);
     const { data: story, error: storyError } = await supabase
       .from("stories")
-      .select("*, story_themes(name, emoji)")
+      .select("id, title, content, hero_name, story_type, art_style, created_by")
       .eq("id", storyId)
       .eq("created_by", user.id)
       .single();
@@ -55,17 +55,38 @@ serve(async (req) => {
       throw new Error("Story not found or you don't own this story");
     }
 
-    // Check if there are already 3 images
+    // Check existing images and determine type for new image
     console.log("Checking existing images count...");
-    const { count, error: countError } = await supabase
+    const { data: existingImages, error: countError } = await supabase
       .from("story_images")
-      .select("*", { count: "exact", head: true })
-      .eq("story_id", storyId);
+      .select("*")
+      .eq("story_id", storyId)
+      .order("created_at", { ascending: true });
 
-    console.log("Current image count:", count, "Count error:", countError?.message);
-    if (count && count >= 3) {
+    console.log("Current image count:", existingImages?.length, "Count error:", countError?.message);
+    if (existingImages && existingImages.length >= 3) {
       throw new Error("Maximum 3 images per story reached");
     }
+
+    // Determine image type and content to use based on count
+    const imageCount = existingImages?.length || 0;
+    let imageType: 'cover' | 'scene' | 'ending' = 'cover';
+    let contentForImage = story.content;
+
+    if (imageCount === 1) {
+      // Second image - middle scene
+      imageType = 'scene';
+      const paragraphs = story.content.split('\n\n').filter((p: string) => p.trim());
+      const middleIndex = Math.floor(paragraphs.length / 2);
+      contentForImage = paragraphs[middleIndex] || story.content;
+    } else if (imageCount === 2) {
+      // Third image - ending scene
+      imageType = 'ending';
+      const paragraphs = story.content.split('\n\n').filter((p: string) => p.trim());
+      contentForImage = paragraphs[paragraphs.length - 1] || story.content;
+    }
+    
+    console.log("Generating image type:", imageType);
 
     // Generate image using Lovable AI
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
@@ -87,11 +108,18 @@ serve(async (req) => {
 
     const styleDescription = artStylePrompts[story.art_style || 'pixar-3d'] || artStylePrompts['pixar-3d'];
 
-    // Extract first paragraph as scene description
-    const firstParagraph = story.content.split("\n\n")[0];
-    const sceneDescription = firstParagraph.substring(0, 200);
-
-    const imagePrompt = `Create a child-friendly cover illustration in ${styleDescription}. Feature ${story.hero_name} as the main character in a ${story.story_type} setting. Scene: ${sceneDescription}. Art style: colorful, family-friendly, high-quality with expressive characters and magical atmosphere.`;
+    // Build prompt based on image type
+    let imagePrompt = '';
+    
+    if (imageType === 'cover') {
+      const firstParagraph = story.content.split("\n\n")[0];
+      const sceneDescription = firstParagraph.substring(0, 200);
+      imagePrompt = `Create a child-friendly cover illustration in ${styleDescription}. Feature ${story.hero_name} as the main character in a ${story.story_type} setting. Scene: ${sceneDescription}. Art style: colorful, family-friendly, high-quality with expressive characters and magical atmosphere.`;
+    } else if (imageType === 'scene') {
+      imagePrompt = `Create a middle scene illustration in ${styleDescription} for the children's story. Feature ${story.hero_name} in this key moment: ${contentForImage}. Show the action and emotion of this scene. Child-friendly, colorful, high-quality illustration suitable for ages 8-10.`;
+    } else {
+      imagePrompt = `Create a climactic ending illustration in ${styleDescription} for the children's story. Feature ${story.hero_name} in the resolution: ${contentForImage}. Capture the emotional conclusion and sense of completion. Child-friendly, colorful, high-quality illustration suitable for ages 8-10.`;
+    }
 
     console.log("Generating image with AI...");
 
@@ -125,10 +153,10 @@ serve(async (req) => {
       throw new Error("No image generated from AI response");
     }
 
-    console.log("Saving image to story_images table...");
+    console.log("Saving image to story_images table with type:", imageType);
 
     // Check if this is the first image - if so, mark it as selected
-    const isFirstImage = (count || 0) === 0;
+    const isFirstImage = imageCount === 0;
 
     // Save image to story_images table
     const { error: insertError } = await supabase
@@ -136,7 +164,8 @@ serve(async (req) => {
       .insert({
         story_id: storyId,
         image_url: imageUrl,
-        is_selected: isFirstImage
+        is_selected: isFirstImage,
+        image_type: imageType
       });
 
     if (insertError) {
