@@ -48,6 +48,7 @@ export type Database = {
           cover_image_url: string | null
           created_at: string | null
           created_by: string | null
+          excerpt: string | null
           hero_name: string | null
           id: string
           is_featured: boolean | null
@@ -70,6 +71,7 @@ export type Database = {
           cover_image_url?: string | null
           created_at?: string | null
           created_by?: string | null
+          excerpt?: string | null
           hero_name?: string | null
           id?: string
           is_featured?: boolean | null
@@ -92,6 +94,7 @@ export type Database = {
           cover_image_url?: string | null
           created_at?: string | null
           created_by?: string | null
+          excerpt?: string | null
           hero_name?: string | null
           id?: string
           is_featured?: boolean | null

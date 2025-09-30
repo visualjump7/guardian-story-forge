@@ -29,10 +29,10 @@ serve(async (req) => {
 
     const supabase = createClient(supabaseUrl, supabaseKey);
 
-    // Fetch the story
+    // Fetch the story with excerpt and creator info
     const { data: story, error: fetchError } = await supabase
       .from('stories')
-      .select('content, title')
+      .select('content, title, excerpt, created_by')
       .eq('id', storyId)
       .single();
 
@@ -40,11 +40,36 @@ serve(async (req) => {
       throw new Error("Story not found");
     }
 
+    // Fetch creator profile info
+    let creatorName = "";
+    if (story.created_by) {
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('author_name, display_name')
+        .eq('id', story.created_by)
+        .single();
+      
+      if (profile) {
+        creatorName = profile.author_name || profile.display_name;
+      }
+    }
+
     console.log(`Generating audio for story: ${story.title}`);
 
     // OpenAI TTS has a 4096 character limit, so truncate if needed
     const MAX_TTS_LENGTH = 4000; // Leave some buffer
-    let audioContent = story.content;
+    
+    // Build the audio content: Title, Excerpt, Author, Story
+    let audioIntro = story.title;
+    if (story.excerpt) {
+      audioIntro += `. ${story.excerpt}`;
+    }
+    if (creatorName) {
+      audioIntro += ` Story created by ${creatorName}.`;
+    }
+    audioIntro += " ";
+    
+    let audioContent = audioIntro + story.content;
     
     if (audioContent.length > MAX_TTS_LENGTH) {
       // Truncate at the last complete sentence before the limit

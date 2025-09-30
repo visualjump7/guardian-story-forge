@@ -55,6 +55,7 @@ interface Story {
   id: string;
   title: string;
   content: string;
+  excerpt: string | null;
   hero_name: string | null;
   story_type: string | null;
   cover_image_url: string | null;
@@ -677,6 +678,11 @@ const StoryView = () => {
             <CardTitle className="text-4xl font-bold text-center">
               {story.title}
             </CardTitle>
+            {story.excerpt && (
+              <p className="text-center text-muted-foreground text-lg italic max-w-2xl mx-auto">
+                {story.excerpt}
+              </p>
+            )}
             {creatorProfile && (
               <p className="text-center text-muted-foreground text-sm">
                 Story Created by {creatorProfile.author_name || creatorProfile.display_name}

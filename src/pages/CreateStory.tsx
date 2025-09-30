@@ -21,6 +21,7 @@ const CreateStory = () => {
   const navigate = useNavigate();
   const [themes, setThemes] = useState<Theme[]>([]);
   const [heroName, setHeroName] = useState("");
+  const [excerpt, setExcerpt] = useState("");
   const [storyType, setStoryType] = useState("");
   const [selectedTheme, setSelectedTheme] = useState("");
   const [narrativeStructure, setNarrativeStructure] = useState("");
@@ -118,6 +119,7 @@ const CreateStory = () => {
       const { data, error } = await supabase.functions.invoke("generate-story", {
         body: {
           heroName,
+          excerpt: excerpt || undefined,
           storyType,
           themeId: selectedTheme,
           narrativeStructure,
@@ -171,6 +173,23 @@ const CreateStory = () => {
                 onChange={(e) => setHeroName(e.target.value)}
                 className="rounded-xl h-12 text-lg"
               />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="excerpt" className="text-lg">
+                Story Summary (Optional)
+              </Label>
+              <Input
+                id="excerpt"
+                placeholder="A brief 1-2 sentence summary of your story..."
+                value={excerpt}
+                onChange={(e) => setExcerpt(e.target.value)}
+                maxLength={250}
+                className="rounded-xl h-12 text-lg"
+              />
+              <p className="text-xs text-muted-foreground">
+                {excerpt.length}/250 characters - This will appear below the title and be read in the audio
+              </p>
             </div>
 
             <div className="space-y-2">

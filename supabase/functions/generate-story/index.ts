@@ -14,6 +14,7 @@ serve(async (req) => {
   try {
     const { 
       heroName, 
+      excerpt,
       storyType, 
       themeId, 
       narrativeStructure,
@@ -174,6 +175,7 @@ The story should naturally incorporate the theme of "${theme.name}" (${theme.des
       .insert({
         title,
         content: cleanContent,
+        excerpt: excerpt || null,
         hero_name: heroName,
         story_type: storyType,
         theme_id: themeId,
