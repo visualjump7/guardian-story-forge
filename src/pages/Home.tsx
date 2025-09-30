@@ -123,7 +123,7 @@ const Home = () => {
         {/* Video Section */}
         <section className="space-y-4">
           <VimeoPlayer 
-            videoId="76979871" 
+            videoId="1121252443" 
             title="Welcome to Guardian Kids"
             autoplay={false}
             muted={true}
