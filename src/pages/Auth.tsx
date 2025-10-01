@@ -152,6 +152,18 @@ const Auth = () => {
                 ? "Don't have an account? Sign up"
                 : "Already have an account? Sign in"}
             </button>
+            
+            {/* Powered by Phantom Link */}
+            <div className="mt-4">
+              <a
+                href="https://www.phantomservices.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-muted-foreground/60 hover:text-muted-foreground text-xs transition-colors"
+              >
+                Powered by Phantom
+              </a>
+            </div>
           </div>
         </CardContent>
       </Card>

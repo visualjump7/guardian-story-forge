@@ -48,6 +48,16 @@ const Index = () => {
             >
               Forgot your password?
             </button>
+            
+            {/* Powered by Phantom Link */}
+            <a
+              href="https://www.phantomservices.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-primary/60 hover:text-primary/80 text-xs mt-4 transition-colors"
+            >
+              Powered by Phantom
+            </a>
           </div>
         </div>
       </section>
