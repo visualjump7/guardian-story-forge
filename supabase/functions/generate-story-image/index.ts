@@ -64,26 +64,78 @@ serve(async (req) => {
       .order("created_at", { ascending: true });
 
     console.log("Current image count:", existingImages?.length, "Count error:", countError?.message);
-    if (existingImages && existingImages.length >= 3) {
-      throw new Error("Maximum 3 images per story reached");
+    if (existingImages && existingImages.length >= 5) {
+      throw new Error("Maximum 5 images per story reached");
     }
 
-    // Determine image type and content to use based on count
+    // Determine image type and content to use based on count with intelligent placement
     const imageCount = existingImages?.length || 0;
-    let imageType: 'cover' | 'scene' | 'ending' = 'cover';
+    const paragraphs = story.content.split('\n\n').filter((p: string) => p.trim());
+    const totalParagraphs = paragraphs.length;
+    
+    let imageType: 'cover' | 'early-scene' | 'mid-scene' | 'climax' | 'ending' = 'cover';
     let contentForImage = story.content;
+    let targetPosition = 0;
 
-    if (imageCount === 1) {
-      // Second image - middle scene
-      imageType = 'scene';
-      const paragraphs = story.content.split('\n\n').filter((p: string) => p.trim());
-      const middleIndex = Math.floor(paragraphs.length / 2);
-      contentForImage = paragraphs[middleIndex] || story.content;
+    // Analyze paragraph for visual interest (action words, descriptive language, etc.)
+    const getVisualInterestScore = (text: string): number => {
+      const actionWords = (text.match(/\b(ran|jumped|flew|fought|discovered|found|shouted|laughed|cried|grabbed|chased|explored)\b/gi) || []).length;
+      const descriptiveWords = (text.match(/\b(bright|dark|magical|enormous|tiny|beautiful|scary|mysterious|shining|glowing)\b/gi) || []).length;
+      const hasDialogue = text.includes('"') || text.includes("'");
+      const wordCount = text.split(/\s+/).length;
+      
+      return (actionWords * 3) + (descriptiveWords * 2) + (hasDialogue ? 5 : 0) + Math.min(wordCount / 20, 5);
+    };
+
+    // Find best paragraph near target position
+    const findBestParagraphNear = (targetPercent: number): { index: number; content: string } => {
+      const targetIndex = Math.floor(totalParagraphs * targetPercent);
+      const searchRange = 3;
+      const startIndex = Math.max(0, targetIndex - searchRange);
+      const endIndex = Math.min(totalParagraphs - 1, targetIndex + searchRange);
+      
+      let bestIndex = targetIndex;
+      let bestScore = 0;
+      
+      for (let i = startIndex; i <= endIndex; i++) {
+        const score = getVisualInterestScore(paragraphs[i]);
+        if (score > bestScore) {
+          bestScore = score;
+          bestIndex = i;
+        }
+      }
+      
+      return { index: bestIndex, content: paragraphs[bestIndex] };
+    };
+
+    if (imageCount === 0) {
+      // First image - cover (opening scene)
+      imageType = 'cover';
+      contentForImage = paragraphs[0];
+    } else if (imageCount === 1) {
+      // Second image - early scene (25% through story)
+      imageType = 'early-scene';
+      const best = findBestParagraphNear(0.25);
+      contentForImage = best.content;
+      targetPosition = best.index;
     } else if (imageCount === 2) {
-      // Third image - ending scene
+      // Third image - mid scene (50% through story)
+      imageType = 'mid-scene';
+      const best = findBestParagraphNear(0.50);
+      contentForImage = best.content;
+      targetPosition = best.index;
+    } else if (imageCount === 3) {
+      // Fourth image - climax (75% through story)
+      imageType = 'climax';
+      const best = findBestParagraphNear(0.75);
+      contentForImage = best.content;
+      targetPosition = best.index;
+    } else if (imageCount === 4) {
+      // Fifth image - ending (95% through story)
       imageType = 'ending';
-      const paragraphs = story.content.split('\n\n').filter((p: string) => p.trim());
-      contentForImage = paragraphs[paragraphs.length - 1] || story.content;
+      const best = findBestParagraphNear(0.95);
+      contentForImage = best.content;
+      targetPosition = best.index;
     }
     
     console.log("Generating image type:", imageType);
@@ -112,13 +164,15 @@ serve(async (req) => {
     let imagePrompt = '';
     
     if (imageType === 'cover') {
-        const firstParagraph = story.content.split("\n\n")[0];
-        const sceneDescription = firstParagraph.substring(0, 200);
-        imagePrompt = `Create a child-friendly cover illustration in ${styleDescription}. Feature ${story.hero_name} as the main character in a ${story.story_type} setting. Scene: ${sceneDescription}. Art style: colorful, family-friendly, high-quality with expressive characters and magical atmosphere.`;
-      } else if (imageType === 'scene') {
-        imagePrompt = `Create a middle scene illustration in ${styleDescription} for the children's story. Feature ${story.hero_name} in this key moment: ${contentForImage}. Show the action and emotion of this scene. Child-friendly, colorful, high-quality illustration suitable for ages 8-10.`;
+      imagePrompt = `Create a child-friendly cover illustration in ${styleDescription}. Feature ${story.hero_name} as the main character in a ${story.story_type} setting. Scene: ${contentForImage.substring(0, 200)}. Art style: colorful, family-friendly, high-quality with expressive characters and magical atmosphere.`;
+    } else if (imageType === 'early-scene') {
+      imagePrompt = `Create an early adventure scene illustration in ${styleDescription} for the children's story. Feature ${story.hero_name} in this moment: ${contentForImage}. Show the beginning of the journey with excitement and anticipation. Child-friendly, colorful, high-quality illustration suitable for ages 8-10.`;
+    } else if (imageType === 'mid-scene') {
+      imagePrompt = `Create a mid-story scene illustration in ${styleDescription} for the children's story. Feature ${story.hero_name} in this key moment: ${contentForImage}. Show the action and emotion of this pivotal scene. Child-friendly, colorful, high-quality illustration suitable for ages 8-10.`;
+    } else if (imageType === 'climax') {
+      imagePrompt = `Create a climactic scene illustration in ${styleDescription} for the children's story. Feature ${story.hero_name} at the story's peak moment: ${contentForImage}. Show the tension, excitement, or emotional high point with dramatic visuals. Child-friendly, colorful, high-quality illustration suitable for ages 8-10.`;
     } else {
-      imagePrompt = `Create a climactic ending illustration in ${styleDescription} for the children's story. Feature ${story.hero_name} in the resolution: ${contentForImage}. Capture the emotional conclusion and sense of completion. Child-friendly, colorful, high-quality illustration suitable for ages 8-10.`;
+      imagePrompt = `Create a resolution ending illustration in ${styleDescription} for the children's story. Feature ${story.hero_name} in the conclusion: ${contentForImage}. Capture the emotional resolution and sense of completion with warmth and satisfaction. Child-friendly, colorful, high-quality illustration suitable for ages 8-10.`;
     }
 
     console.log("Generating image with AI...");

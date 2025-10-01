@@ -210,8 +210,8 @@ const StoryView = () => {
   };
 
   const handleGenerateImage = async () => {
-    if (!storyId || storyImages.length >= 3) {
-      toast.error("Maximum 3 images per story");
+    if (!storyId || storyImages.length >= 5) {
+      toast.error("Maximum 5 images per story");
       return;
     }
 
@@ -362,9 +362,14 @@ const StoryView = () => {
     const paragraphs = story.content.split("\n\n");
     const totalParagraphs = paragraphs.length;
     
-    // Calculate positions for images (excluding the first cover image)
-    const middlePosition = Math.floor(totalParagraphs * 0.5);
-    const endPosition = Math.floor(totalParagraphs * 0.85);
+    // Calculate positions for all images (excluding the first cover image)
+    // Images placed at: 25%, 50%, 75%, 95% of story
+    const imagePositions = [
+      { position: Math.floor(totalParagraphs * 0.25), index: 1, label: 'Early Scene' },
+      { position: Math.floor(totalParagraphs * 0.50), index: 2, label: 'Mid Scene' },
+      { position: Math.floor(totalParagraphs * 0.75), index: 3, label: 'Climax' },
+      { position: Math.floor(totalParagraphs * 0.95), index: 4, label: 'Ending' },
+    ];
     
     return paragraphs.map((paragraph, index) => (
       <div key={index}>
@@ -372,27 +377,21 @@ const StoryView = () => {
           {paragraph}
         </p>
         
-        {/* Insert second image (scene) in the middle */}
-        {storyImages.length >= 2 && index === middlePosition && (
-          <div className="my-8 rounded-lg overflow-hidden shadow-lg">
-            <img
-              src={storyImages[1].image_url}
-              alt={`${story.title} - Scene`}
-              className="w-full aspect-video object-cover"
-            />
-          </div>
-        )}
-        
-        {/* Insert third image (ending) near the end */}
-        {storyImages.length >= 3 && index === endPosition && (
-          <div className="my-8 rounded-lg overflow-hidden shadow-lg">
-            <img
-              src={storyImages[2].image_url}
-              alt={`${story.title} - Ending`}
-              className="w-full aspect-video object-cover"
-            />
-          </div>
-        )}
+        {/* Insert images at calculated positions */}
+        {imagePositions.map(({ position, index: imageIndex, label }) => {
+          if (storyImages.length > imageIndex && index === position) {
+            return (
+              <div key={imageIndex} className="my-8 rounded-lg overflow-hidden shadow-lg">
+                <img
+                  src={storyImages[imageIndex].image_url}
+                  alt={`${story.title} - ${label}`}
+                  className="w-full aspect-video object-cover"
+                />
+              </div>
+            );
+          }
+          return null;
+        })}
       </div>
     ));
   };
@@ -500,7 +499,7 @@ const StoryView = () => {
                       variant="outline"
                       size="sm"
                       onClick={handleGenerateImage}
-                      disabled={generatingImage || storyImages.length >= 3}
+                      disabled={generatingImage || storyImages.length >= 5}
                       className="h-8"
                     >
                       {generatingImage ? (
