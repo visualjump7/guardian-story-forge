@@ -28,6 +28,7 @@ const CreateStory = () => {
   const [selectedTheme, setSelectedTheme] = useState("");
   const [narrativeStructure, setNarrativeStructure] = useState("");
   const [setting, setSetting] = useState("");
+  const [customLocation, setCustomLocation] = useState("");
   const [artStyle, setArtStyle] = useState("pixar-3d");
   const [generating, setGenerating] = useState(false);
   const [storyUniverse, setStoryUniverse] = useState("");
@@ -95,14 +96,14 @@ const CreateStory = () => {
   ];
 
   const settings = [
-    { value: "enchanted-forest", label: "🌲 Enchanted Forest" },
-    { value: "underwater-kingdom", label: "🌊 Underwater Kingdom" },
-    { value: "space-station", label: "🚀 Space Station" },
-    { value: "medieval-castle", label: "🏰 Medieval Castle" },
-    { value: "modern-city", label: "🏙️ Modern City" },
-    { value: "magical-school", label: "🎓 Magical School" },
-    { value: "desert-oasis", label: "🏜️ Desert Oasis" },
-    { value: "mountain-kingdom", label: "⛰️ Mountain Kingdom" },
+    { value: "enchanted-forest", label: "Enchanted Forest" },
+    { value: "underwater-kingdom", label: "Underwater Kingdom" },
+    { value: "space-station", label: "Space Station" },
+    { value: "medieval-castle", label: "Medieval Castle" },
+    { value: "modern-city", label: "Modern City" },
+    { value: "desert-oasis", label: "Desert Oasis" },
+    { value: "mountain-kingdom", label: "Mountain Kingdom" },
+    { value: "custom", label: "Custom Location" },
   ];
 
   const artStyles = [
@@ -128,7 +129,7 @@ const CreateStory = () => {
           narrativeStructure,
           storyLength: "medium",
           ageRange: "7-10",
-          setting: setting || undefined,
+          setting: setting === "custom" ? customLocation : (setting || undefined),
           secondaryThemeId: undefined,
           artStyle,
           storyUniverse: storyUniverse === "standalone" ? undefined : storyUniverse,
@@ -286,13 +287,18 @@ const CreateStory = () => {
 
               <div className="space-y-2">
                 <Label htmlFor="setting" className="text-base font-medium">
-                  Setting <span className="text-muted-foreground font-normal">(Optional)</span>
+                  Where does your story take place? <span className="text-muted-foreground font-normal">(Optional)</span>
                 </Label>
                 <div className="grid grid-cols-2 gap-2">
                   {settings.map((s) => (
                     <button
                       key={s.value}
-                      onClick={() => setSetting(s.value)}
+                      onClick={() => {
+                        setSetting(s.value);
+                        if (s.value !== "custom") {
+                          setCustomLocation("");
+                        }
+                      }}
                       className={cn(
                         "p-3 rounded-lg border-2 text-sm font-medium transition-all duration-200 hover:scale-[1.02]",
                         setting === s.value
@@ -304,6 +310,21 @@ const CreateStory = () => {
                     </button>
                   ))}
                 </div>
+                {setting === "custom" && (
+                  <div className="mt-3">
+                    <Input
+                      id="customLocation"
+                      placeholder="e.g., A floating island in the clouds, An underground city..."
+                      value={customLocation}
+                      onChange={(e) => setCustomLocation(e.target.value)}
+                      className="h-12 text-base"
+                      maxLength={100}
+                    />
+                    <p className="text-xs text-muted-foreground mt-1">
+                      {customLocation.length}/100 characters
+                    </p>
+                  </div>
+                )}
               </div>
             </CardContent>
           </Card>
