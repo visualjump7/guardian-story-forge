@@ -6,9 +6,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
 import { Sparkles, Wand2 } from "lucide-react";
 import { toast } from "sonner";
 import { AppHeader } from "@/components/AppHeader";
+import { cn } from "@/lib/utils";
 
 interface Theme {
   id: string;
@@ -148,168 +150,202 @@ const CreateStory = () => {
     <div className="min-h-screen bg-gradient-to-br from-background via-muted to-background">
       <AppHeader />
 
-      <main className="container mx-auto px-4 py-12 max-w-3xl">
-        <Card className="shadow-2xl border-2">
-          <CardHeader className="text-center space-y-4">
-            <div className="flex justify-center">
-              <div className="p-4 rounded-full bg-gradient-to-br from-primary to-accent">
-                <Wand2 className="w-12 h-12 text-primary-foreground" />
+      <main className="container mx-auto px-4 py-8 max-w-4xl">
+        <div className="text-center mb-8 animate-fade-in">
+          <div className="inline-flex p-3 rounded-2xl bg-gradient-to-br from-primary/10 to-accent/10 mb-4">
+            <Wand2 className="w-10 h-10 text-primary" />
+          </div>
+          <h1 className="text-4xl md:text-5xl font-poppins font-bold bg-gradient-to-r from-primary via-accent to-secondary bg-clip-text text-transparent mb-3">
+            Create Your Story
+          </h1>
+          <p className="text-lg text-muted-foreground font-inter">
+            Answer a few questions and watch the magic happen! ✨
+          </p>
+        </div>
+
+        <div className="space-y-6">
+          {/* Story Universe Section */}
+          <Card className="shadow-lg hover:shadow-xl transition-shadow duration-300 border-2">
+            <CardHeader>
+              <CardTitle className="text-2xl font-poppins">📚 Choose Your Universe</CardTitle>
+              <CardDescription>Select where your story takes place</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid gap-3">
+                {storyUniverses.map((universe) => (
+                  <button
+                    key={universe.value}
+                    onClick={() => {
+                      setStoryUniverse(universe.value);
+                      if (universe.value === "guardian-ranch") {
+                        setStoryType("Animal Story");
+                        setSetting("Guardian Ranch");
+                      }
+                    }}
+                    className={cn(
+                      "p-4 rounded-xl border-2 text-left transition-all duration-200 hover:scale-[1.02]",
+                      storyUniverse === universe.value
+                        ? "border-primary bg-primary/5 shadow-md"
+                        : "border-border hover:border-primary/50"
+                    )}
+                  >
+                    <div className="font-semibold text-lg mb-1">{universe.label}</div>
+                    <div className="text-sm text-muted-foreground">{universe.description}</div>
+                  </button>
+                ))}
               </div>
-            </div>
-            <CardTitle className="text-4xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-              Create Your Story
-            </CardTitle>
-            <CardDescription className="text-lg">
-              Answer a few questions and watch the magic happen!
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            <div className="space-y-2">
-              <Label htmlFor="storyUniverse" className="text-lg">
-                Story Universe
-              </Label>
-              <Select 
-                value={storyUniverse} 
-                onValueChange={(value) => {
-                  setStoryUniverse(value);
-                  if (value === "guardian-ranch") {
-                    setStoryType("Animal Story");
-                    setSetting("Guardian Ranch");
-                  }
-                }}
-              >
-                <SelectTrigger className="rounded-xl h-12 text-lg">
-                  <SelectValue placeholder="Choose a universe" />
-                </SelectTrigger>
-                <SelectContent>
-                  {storyUniverses.map((universe) => (
-                    <SelectItem key={universe.value} value={universe.value} className="text-lg">
-                      <div className="flex flex-col">
-                        <span>{universe.label}</span>
-                        <span className="text-xs text-muted-foreground">{universe.description}</span>
-                      </div>
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+            </CardContent>
+          </Card>
 
-            <div className="space-y-2">
-              <Label htmlFor="heroName" className="text-lg">
-                {storyUniverse === "guardian-ranch" ? "What is your animal hero's name?" : "What is your hero's name?"}
-              </Label>
-              <Input
-                id="heroName"
-                placeholder={storyUniverse === "guardian-ranch" ? "e.g., Brave Bear, Swift Rabbit" : "e.g., Luna, Max, or Zara"}
-                value={heroName}
-                onChange={(e) => setHeroName(e.target.value)}
-                className="rounded-xl h-12 text-lg"
-              />
-            </div>
+          {/* Hero Details Section */}
+          <Card className="shadow-lg hover:shadow-xl transition-shadow duration-300 border-2">
+            <CardHeader>
+              <CardTitle className="text-2xl font-poppins">🦸 Your Hero</CardTitle>
+              <CardDescription>Tell us about the main character</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="heroName" className="text-base font-medium">
+                  {storyUniverse === "guardian-ranch" ? "What is your animal hero's name?" : "What is your hero's name?"}
+                </Label>
+                <Input
+                  id="heroName"
+                  placeholder={storyUniverse === "guardian-ranch" ? "e.g., Brave Bear, Swift Rabbit" : "e.g., Luna, Max, or Zara"}
+                  value={heroName}
+                  onChange={(e) => setHeroName(e.target.value)}
+                  className="h-12 text-base"
+                />
+              </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="excerpt" className="text-lg">
-                Story Summary (Optional)
-              </Label>
-              <Input
-                id="excerpt"
-                placeholder="A brief 1-2 sentence summary of your story..."
-                value={excerpt}
-                onChange={(e) => setExcerpt(e.target.value)}
-                maxLength={250}
-                className="rounded-xl h-12 text-lg"
-              />
-              <p className="text-xs text-muted-foreground">
-                {excerpt.length}/250 characters - This will appear below the title and be read in the audio
-              </p>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="storyType" className="text-lg">
-                What kind of story do you want?
-              </Label>
-              <Select value={storyType} onValueChange={setStoryType}>
-                <SelectTrigger className="rounded-xl h-12 text-lg">
-                  <SelectValue placeholder="Choose a story type" />
-                </SelectTrigger>
-                <SelectContent>
-                  {storyTypes.map((type) => (
-                    <SelectItem key={type} value={type} className="text-lg">
-                      {type}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="narrativeStructure" className="text-lg">
-                Choose a narrative structure *
-              </Label>
-              <Select value={narrativeStructure} onValueChange={setNarrativeStructure}>
-                <SelectTrigger className="rounded-xl h-12 text-lg">
-                  <SelectValue placeholder="Select story structure" />
-                </SelectTrigger>
-                <SelectContent>
-                  {narrativeStructures.map((structure) => (
-                    <SelectItem key={structure.value} value={structure.value} className="text-lg">
-                      {structure.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              {narrativeStructure && (
-                <p className="text-sm text-muted-foreground mt-2">
-                  {narrativeStructures.find((s) => s.value === narrativeStructure)?.description}
+              <div className="space-y-2">
+                <Label htmlFor="excerpt" className="text-base font-medium">
+                  Story Summary <span className="text-muted-foreground font-normal">(Optional)</span>
+                </Label>
+                <Textarea
+                  id="excerpt"
+                  placeholder="A brief 1-2 sentence summary of your story..."
+                  value={excerpt}
+                  onChange={(e) => setExcerpt(e.target.value)}
+                  maxLength={250}
+                  className="min-h-[100px] text-base resize-none"
+                />
+                <p className="text-xs text-muted-foreground">
+                  {excerpt.length}/250 characters
                 </p>
-              )}
-            </div>
+              </div>
+            </CardContent>
+          </Card>
 
-            <div className="space-y-2">
-              <Label htmlFor="setting" className="text-lg">
-                Setting (Optional)
-              </Label>
-              <Select value={setting} onValueChange={setSetting}>
-                <SelectTrigger className="rounded-xl h-12 text-lg">
-                  <SelectValue placeholder="Choose a setting for your story" />
-                </SelectTrigger>
-                <SelectContent>
+          {/* Story Type & Structure Section */}
+          <Card className="shadow-lg hover:shadow-xl transition-shadow duration-300 border-2">
+            <CardHeader>
+              <CardTitle className="text-2xl font-poppins">📖 Story Details</CardTitle>
+              <CardDescription>Choose the type and structure of your story</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="storyType" className="text-base font-medium">
+                  Story Type
+                </Label>
+                <Select value={storyType} onValueChange={setStoryType}>
+                  <SelectTrigger className="h-12 text-base">
+                    <SelectValue placeholder="Choose a story type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {storyTypes.map((type) => (
+                      <SelectItem key={type} value={type} className="text-base">
+                        {type}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="narrativeStructure" className="text-base font-medium">
+                  Narrative Structure <span className="text-destructive">*</span>
+                </Label>
+                <Select value={narrativeStructure} onValueChange={setNarrativeStructure}>
+                  <SelectTrigger className="h-12 text-base">
+                    <SelectValue placeholder="Select story structure" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {narrativeStructures.map((structure) => (
+                      <SelectItem key={structure.value} value={structure.value} className="text-base">
+                        {structure.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                {narrativeStructure && (
+                  <p className="text-sm text-muted-foreground mt-2 p-3 bg-muted/50 rounded-lg">
+                    💡 {narrativeStructures.find((s) => s.value === narrativeStructure)?.description}
+                  </p>
+                )}
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="setting" className="text-base font-medium">
+                  Setting <span className="text-muted-foreground font-normal">(Optional)</span>
+                </Label>
+                <div className="grid grid-cols-2 gap-2">
                   {settings.map((s) => (
-                    <SelectItem key={s.value} value={s.value} className="text-lg">
+                    <button
+                      key={s.value}
+                      onClick={() => setSetting(s.value)}
+                      className={cn(
+                        "p-3 rounded-lg border-2 text-sm font-medium transition-all duration-200 hover:scale-[1.02]",
+                        setting === s.value
+                          ? "border-primary bg-primary/5 shadow-md"
+                          : "border-border hover:border-primary/50"
+                      )}
+                    >
                       {s.label}
-                    </SelectItem>
+                    </button>
                   ))}
-                </SelectContent>
-              </Select>
-            </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
 
-            <div className="space-y-2">
-              <Label htmlFor="artStyle" className="text-lg">
-                Art Style
-              </Label>
-              <Select value={artStyle} onValueChange={setArtStyle}>
-                <SelectTrigger className="rounded-xl h-12 text-lg">
-                  <SelectValue placeholder="Choose an art style..." />
-                </SelectTrigger>
-                <SelectContent>
-                  {artStyles.map((style) => (
-                    <SelectItem key={style.value} value={style.value} className="text-lg">
-                      <div className="flex flex-col">
-                        <span>{style.label}</span>
-                        <span className="text-xs text-muted-foreground">{style.description}</span>
-                      </div>
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+          {/* Art Style Section */}
+          <Card className="shadow-lg hover:shadow-xl transition-shadow duration-300 border-2">
+            <CardHeader>
+              <CardTitle className="text-2xl font-poppins">🎨 Art Style</CardTitle>
+              <CardDescription>Choose how your story will look</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid md:grid-cols-2 gap-4">
+                {artStyles.map((style) => (
+                  <button
+                    key={style.value}
+                    onClick={() => setArtStyle(style.value)}
+                    className={cn(
+                      "p-6 rounded-xl border-2 text-left transition-all duration-200 hover:scale-[1.02] group",
+                      artStyle === style.value
+                        ? "border-primary bg-primary/5 shadow-lg"
+                        : "border-border hover:border-primary/50"
+                    )}
+                  >
+                    <div className="text-4xl mb-3">{style.label.split(" ")[0]}</div>
+                    <div className="font-semibold text-lg mb-1 group-hover:text-primary transition-colors">
+                      {style.label.substring(2)}
+                    </div>
+                    <div className="text-sm text-muted-foreground">{style.description}</div>
+                  </button>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
 
+          {/* Generate Button */}
+          <div className="pt-4">
             <Button
               onClick={handleCreateStory}
               disabled={generating || !heroName || !storyType || !selectedTheme || !narrativeStructure}
               variant="magical"
               size="lg"
-              className="w-full mt-8"
+              className="w-full h-14 text-lg font-semibold"
             >
               {generating ? (
                 <>
@@ -324,12 +360,12 @@ const CreateStory = () => {
               )}
             </Button>
             {generating && (
-              <p className="text-center text-sm text-muted-foreground animate-pulse">
+              <p className="text-center text-sm text-muted-foreground animate-pulse mt-4">
                 ✨ Writing your story... 🎨 Creating beautiful illustrations...
               </p>
             )}
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       </main>
     </div>
   );
