@@ -103,7 +103,7 @@ All colors MUST be HSL.
     position: relative;
   }
 
-  /* Magical energy particles background */
+  /* Cosmic sparkle particles background */
   body::before {
     content: '';
     position: fixed;
@@ -113,24 +113,64 @@ All colors MUST be HSL.
     height: 100%;
     pointer-events: none;
     z-index: 0;
+    background-color: hsl(0 0% 0%);
     background-image: 
-      radial-gradient(2px 2px at 20% 30%, hsl(35 100% 60% / 0.3), transparent),
-      radial-gradient(2px 2px at 60% 70%, hsl(185 80% 60% / 0.2), transparent),
-      radial-gradient(1px 1px at 50% 50%, hsl(40 100% 70% / 0.3), transparent),
-      radial-gradient(1px 1px at 80% 10%, hsl(35 100% 60% / 0.4), transparent),
-      radial-gradient(2px 2px at 90% 60%, hsl(185 80% 60% / 0.2), transparent),
-      radial-gradient(1px 1px at 33% 80%, hsl(40 100% 70% / 0.3), transparent),
-      radial-gradient(1px 1px at 15% 90%, hsl(35 100% 60% / 0.3), transparent);
+      radial-gradient(3px 3px at 20% 30%, hsl(35 100% 60% / 0.8), transparent),
+      radial-gradient(2px 2px at 60% 70%, hsl(185 80% 60% / 0.6), transparent),
+      radial-gradient(2px 2px at 50% 50%, hsl(40 100% 70% / 0.7), transparent),
+      radial-gradient(3px 3px at 80% 10%, hsl(35 100% 60% / 0.9), transparent),
+      radial-gradient(2px 2px at 90% 60%, hsl(185 80% 60% / 0.6), transparent),
+      radial-gradient(2px 2px at 33% 80%, hsl(40 100% 70% / 0.7), transparent),
+      radial-gradient(3px 3px at 15% 90%, hsl(35 100% 60% / 0.8), transparent),
+      radial-gradient(1px 1px at 45% 15%, hsl(185 80% 60% / 0.9), transparent),
+      radial-gradient(2px 2px at 75% 85%, hsl(40 100% 70% / 0.8), transparent),
+      radial-gradient(1px 1px at 10% 40%, hsl(35 100% 60% / 0.7), transparent),
+      radial-gradient(2px 2px at 95% 35%, hsl(185 80% 60% / 0.8), transparent),
+      radial-gradient(1px 1px at 40% 95%, hsl(40 100% 70% / 0.6), transparent);
     background-size: 200% 200%;
-    animation: particles 20s ease-in-out infinite;
+    animation: particles 15s ease-in-out infinite;
   }
 
   @keyframes particles {
     0%, 100% {
-      background-position: 0% 0%, 100% 100%, 50% 50%, 80% 20%, 20% 80%, 70% 30%, 30% 70%;
+      background-position: 0% 0%, 100% 100%, 50% 50%, 80% 20%, 20% 80%, 70% 30%, 30% 70%, 45% 15%, 75% 85%, 10% 40%, 95% 35%, 40% 95%;
+      opacity: 1;
     }
     50% {
-      background-position: 100% 100%, 0% 0%, 25% 75%, 60% 40%, 40% 60%, 90% 10%, 10% 90%;
+      background-position: 100% 100%, 0% 0%, 25% 75%, 60% 40%, 40% 60%, 90% 10%, 10% 90%, 55% 25%, 65% 75%, 20% 50%, 85% 25%, 50% 85%;
+      opacity: 0.8;
+    }
+  }
+
+  /* Neon glow text effect */
+  .neon-text {
+    color: hsl(35 100% 55%);
+    text-shadow: 
+      0 0 10px hsl(35 100% 60% / 0.8),
+      0 0 20px hsl(35 100% 60% / 0.6),
+      0 0 30px hsl(35 100% 60% / 0.4),
+      0 0 40px hsl(35 100% 60% / 0.3),
+      0 0 60px hsl(185 80% 55% / 0.2);
+    -webkit-text-stroke: 2px hsl(185 80% 55%);
+    animation: neonGlow 3s ease-in-out infinite;
+  }
+
+  @keyframes neonGlow {
+    0%, 100% {
+      text-shadow: 
+        0 0 10px hsl(35 100% 60% / 0.8),
+        0 0 20px hsl(35 100% 60% / 0.6),
+        0 0 30px hsl(35 100% 60% / 0.4),
+        0 0 40px hsl(35 100% 60% / 0.3),
+        0 0 60px hsl(185 80% 55% / 0.2);
+    }
+    50% {
+      text-shadow: 
+        0 0 15px hsl(35 100% 60% / 1),
+        0 0 25px hsl(35 100% 60% / 0.8),
+        0 0 35px hsl(35 100% 60% / 0.6),
+        0 0 50px hsl(35 100% 60% / 0.4),
+        0 0 80px hsl(185 80% 55% / 0.3);
     }
   }
 
