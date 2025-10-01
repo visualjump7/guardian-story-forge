@@ -7,7 +7,6 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { Sparkles, Wand2 } from "lucide-react";
 import { toast } from "sonner";
 import { AppHeader } from "@/components/AppHeader";
 import { cn } from "@/lib/utils";
@@ -60,7 +59,7 @@ const CreateStory = () => {
 
   const storyUniverses = [
     { value: "standalone", label: "Standalone Story", description: "A unique one-time adventure" },
-    { value: "guardian-ranch", label: "🐾 Guardian Ranch", description: "Animal heroes rescue friends from Doctor Shadow" },
+    { value: "guardian-ranch", label: "Guardian Ranch", description: "Animal heroes rescue friends from Doctor Shadow" },
   ];
 
   const storyTypes = [
@@ -107,8 +106,8 @@ const CreateStory = () => {
   ];
 
   const artStyles = [
-    { value: "pixar-3d", label: "🎬 3D Animation", description: "Vibrant 3D animation style" },
-    { value: "ghibli-2d", label: "🎨 2D Animation/Cartoon", description: "Classic 2D illustrated style" },
+    { value: "pixar-3d", label: "3D Animation", description: "Vibrant 3D animation style" },
+    { value: "ghibli-2d", label: "2D Animation/Cartoon", description: "Classic 2D illustrated style" },
   ];
 
   const handleCreateStory = async () => {
@@ -153,14 +152,11 @@ const CreateStory = () => {
 
       <main className="container mx-auto px-4 py-8 max-w-4xl">
         <div className="text-center mb-8 animate-fade-in">
-          <div className="inline-flex p-3 rounded-2xl bg-gradient-to-br from-primary/10 to-accent/10 mb-4">
-            <Wand2 className="w-10 h-10 text-primary" />
-          </div>
           <h1 className="text-4xl md:text-5xl font-poppins font-bold bg-gradient-to-r from-primary via-accent to-secondary bg-clip-text text-transparent mb-3">
             Create Your Story
           </h1>
           <p className="text-lg text-muted-foreground font-inter">
-            Answer a few questions and watch the magic happen! ✨
+            Answer a few questions and watch the magic happen!
           </p>
         </div>
 
@@ -168,7 +164,7 @@ const CreateStory = () => {
           {/* Story Universe Section */}
           <Card className="shadow-lg hover:shadow-xl transition-shadow duration-300 border-2">
             <CardHeader>
-              <CardTitle className="text-2xl font-poppins">📚 Choose Your Universe</CardTitle>
+              <CardTitle className="text-2xl font-poppins">Choose Your Universe</CardTitle>
               <CardDescription>Select where your story takes place</CardDescription>
             </CardHeader>
             <CardContent>
@@ -201,7 +197,7 @@ const CreateStory = () => {
           {/* Hero Details Section */}
           <Card className="shadow-lg hover:shadow-xl transition-shadow duration-300 border-2">
             <CardHeader>
-              <CardTitle className="text-2xl font-poppins">🦸 Your Hero</CardTitle>
+              <CardTitle className="text-2xl font-poppins">Your Hero</CardTitle>
               <CardDescription>Tell us about the main character</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -240,7 +236,7 @@ const CreateStory = () => {
           {/* Story Type & Structure Section */}
           <Card className="shadow-lg hover:shadow-xl transition-shadow duration-300 border-2">
             <CardHeader>
-              <CardTitle className="text-2xl font-poppins">📖 Story Details</CardTitle>
+              <CardTitle className="text-2xl font-poppins">Story Details</CardTitle>
               <CardDescription>Choose the type and structure of your story</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -280,7 +276,7 @@ const CreateStory = () => {
                 </Select>
                 {narrativeStructure && (
                   <p className="text-sm text-muted-foreground mt-2 p-3 bg-muted/50 rounded-lg">
-                    💡 {narrativeStructures.find((s) => s.value === narrativeStructure)?.description}
+                    {narrativeStructures.find((s) => s.value === narrativeStructure)?.description}
                   </p>
                 )}
               </div>
@@ -332,7 +328,7 @@ const CreateStory = () => {
           {/* Art Style Section */}
           <Card className="shadow-lg hover:shadow-xl transition-shadow duration-300 border-2">
             <CardHeader>
-              <CardTitle className="text-2xl font-poppins">🎨 Art Style</CardTitle>
+              <CardTitle className="text-2xl font-poppins">Art Style</CardTitle>
               <CardDescription>Choose how your story will look</CardDescription>
             </CardHeader>
             <CardContent>
@@ -348,9 +344,8 @@ const CreateStory = () => {
                         : "border-border hover:border-primary/50"
                     )}
                   >
-                    <div className="text-4xl mb-3">{style.label.split(" ")[0]}</div>
                     <div className="font-semibold text-lg mb-1 group-hover:text-primary transition-colors">
-                      {style.label.substring(2)}
+                      {style.label}
                     </div>
                     <div className="text-sm text-muted-foreground">{style.description}</div>
                   </button>
@@ -368,21 +363,11 @@ const CreateStory = () => {
               size="lg"
               className="w-full h-14 text-lg font-semibold"
             >
-              {generating ? (
-                <>
-                  <Sparkles className="w-6 h-6 animate-spin" />
-                  Creating magical story and illustrations...
-                </>
-              ) : (
-                <>
-                  <Wand2 className="w-6 h-6" />
-                  Generate My Story
-                </>
-              )}
+              {generating ? "Creating magical story and illustrations..." : "Generate My Story"}
             </Button>
             {generating && (
               <p className="text-center text-sm text-muted-foreground animate-pulse mt-4">
-                ✨ Writing your story... 🎨 Creating beautiful illustrations...
+                Writing your story... Creating beautiful illustrations...
               </p>
             )}
           </div>
