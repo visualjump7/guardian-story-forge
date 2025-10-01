@@ -25,7 +25,7 @@ const Index = () => {
             <Button
               variant="warm"
               size="lg"
-              onClick={() => navigate("/auth")}
+              onClick={() => navigate("/auth?mode=signup")}
               className="shadow-2xl text-xl px-16 py-8 min-w-[300px]"
             >
               <Sparkles className="w-6 h-6" />
@@ -34,7 +34,7 @@ const Index = () => {
             <Button
               variant="outline"
               size="lg"
-              onClick={() => navigate("/auth")}
+              onClick={() => navigate("/auth?mode=login")}
               className="bg-transparent border-2 border-primary text-primary hover:bg-primary/10 shadow-xl text-xl px-16 py-8 min-w-[300px]"
             >
               <BookOpen className="w-6 h-6" />
