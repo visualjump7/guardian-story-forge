@@ -24,8 +24,17 @@ import {
   Plus, 
   Trash2, 
   RefreshCw, 
-  Star 
+  Star,
+  Play,
+  Pause,
+  MoreVertical
 } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { toast } from "sonner";
 import {
   Select,
@@ -483,72 +492,86 @@ const StoryView = () => {
                   )}
                 </Carousel>
 
-                {/* Dot indicators */}
-                {storyImages.length > 1 && (
-                  <div className="flex justify-center gap-2 py-2">
-                    {storyImages.map((image, index) => (
-                      <button
-                        key={image.id}
-                        onClick={() => setCurrentImageIndex(index)}
-                        className={`h-2 rounded-full transition-all ${
-                          index === currentImageIndex 
-                            ? 'w-8 bg-primary' 
-                            : 'w-2 bg-muted-foreground/30'
-                        }`}
-                        aria-label={`Go to image ${index + 1}`}
-                      />
-                    ))}
+                {/* Compact Control Bar with Dots */}
+                <div className="flex items-center justify-between gap-3 px-4 py-2 bg-muted/30 rounded-lg border border-border/50">
+                  {/* Left: Primary Actions */}
+                  <div className="flex items-center gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={handleGenerateImage}
+                      disabled={generatingImage || storyImages.length >= 3}
+                      className="h-8"
+                    >
+                      {generatingImage ? (
+                        <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                      ) : (
+                        <Plus className="h-3.5 w-3.5" />
+                      )}
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={handleRecreateImage}
+                      disabled={generatingImage}
+                      className="h-8"
+                    >
+                      <RefreshCw className="h-3.5 w-3.5" />
+                    </Button>
                   </div>
-                )}
 
-                {/* Controls underneath image - single bar */}
-                <div className="flex items-center justify-between gap-4 p-3 bg-muted/50 rounded-lg">
-                  {/* Re-create button */}
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={handleRecreateImage}
-                    disabled={generatingImage}
-                  >
-                    <RefreshCw className="h-4 w-4 mr-2" />
-                    Re-create
-                  </Button>
-
-                  {/* Center: Image counter and star for cover */}
+                  {/* Center: Dots + Counter */}
                   <div className="flex items-center gap-3">
-                    <span className="text-sm font-medium">
+                    {storyImages.length > 1 && (
+                      <div className="flex gap-1.5">
+                        {storyImages.map((image, index) => (
+                          <button
+                            key={image.id}
+                            onClick={() => setCurrentImageIndex(index)}
+                            className={`h-1.5 rounded-full transition-all ${
+                              index === currentImageIndex 
+                                ? 'w-6 bg-primary' 
+                                : 'w-1.5 bg-muted-foreground/30'
+                            }`}
+                            aria-label={`Go to image ${index + 1}`}
+                          />
+                        ))}
+                      </div>
+                    )}
+                    <span className="text-xs font-medium text-muted-foreground">
                       {currentImageIndex + 1}/{storyImages.length}
                     </span>
+                  </div>
+
+                  {/* Right: Secondary Actions */}
+                  <div className="flex items-center gap-2">
                     <Button
                       variant={storyImages[currentImageIndex].is_selected ? "default" : "ghost"}
                       size="sm"
                       onClick={() => handleSelectImage(storyImages[currentImageIndex].id)}
                       disabled={storyImages[currentImageIndex].is_selected}
-                      title="Set as cover image"
+                      className="h-8"
+                      title="Set as cover"
                     >
-                      <Star className={`h-4 w-4 ${storyImages[currentImageIndex].is_selected ? 'fill-current' : ''}`} />
+                      <Star className={`h-3.5 w-3.5 ${storyImages[currentImageIndex].is_selected ? 'fill-current' : ''}`} />
                     </Button>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                          <MoreVertical className="h-3.5 w-3.5" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuItem 
+                          onClick={() => handleDeleteImage(storyImages[currentImageIndex].id)}
+                          className="text-destructive focus:text-destructive"
+                        >
+                          <Trash2 className="h-4 w-4 mr-2" />
+                          Delete Image
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
                   </div>
-
-                  {/* Add image button */}
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={handleGenerateImage}
-                    disabled={generatingImage || storyImages.length >= 3}
-                  >
-                    {generatingImage ? (
-                      <>
-                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                        Generating...
-                      </>
-                    ) : (
-                      <>
-                        <Plus className="h-4 w-4 mr-2" />
-                        Add ({storyImages.length}/3)
-                      </>
-                    )}
-                  </Button>
                 </div>
               </div>
             ) : (
@@ -577,104 +600,76 @@ const StoryView = () => {
               </div>
             )}
 
-            {/* Audio Player Section */}
-            {story.audio_url ? (
-              <div className="p-6 rounded-xl bg-gradient-to-br from-primary/5 to-secondary/5 border-2 border-primary/10">
-                <div className="flex items-center gap-4">
+            {/* Compact Audio Player */}
+            <div className="px-4 py-3 rounded-lg bg-muted/30 border border-border/50">
+              <div className="flex items-center gap-3">
+                {/* Play/Pause Button */}
+                <Button
+                  onClick={story.audio_url ? togglePlayPause : handleGenerateAudio}
+                  size="sm"
+                  variant={story.audio_url ? "default" : "outline"}
+                  className="h-9 w-9 rounded-full p-0 flex-shrink-0"
+                  disabled={isGeneratingAudio}
+                >
+                  {isGeneratingAudio ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : story.audio_url && isPlaying ? (
+                    <Pause className="h-4 w-4" />
+                  ) : (
+                    <Play className="h-4 w-4" />
+                  )}
+                </Button>
+
+                {/* Audio Progress or Generate Label */}
+                <div className="flex-1 min-w-0">
+                  {story.audio_url ? (
+                    <>
+                      <audio
+                        ref={audioRef}
+                        src={story.audio_url}
+                        onEnded={() => setIsPlaying(false)}
+                        onPlay={() => setIsPlaying(true)}
+                        onPause={() => setIsPlaying(false)}
+                        className="w-full h-1"
+                        style={{ accentColor: 'hsl(var(--primary))' }}
+                      />
+                      <p className="text-xs text-muted-foreground mt-1">Audio Narration</p>
+                    </>
+                  ) : (
+                    <p className="text-sm text-muted-foreground">Generate audio narration</p>
+                  )}
+                </div>
+
+                {/* Voice Select */}
+                <Select value={selectedVoice} onValueChange={setSelectedVoice}>
+                  <SelectTrigger className="w-28 h-8 text-xs">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="alloy">Alloy</SelectItem>
+                    <SelectItem value="echo">Echo</SelectItem>
+                    <SelectItem value="fable">Fable</SelectItem>
+                    <SelectItem value="onyx">Onyx</SelectItem>
+                    <SelectItem value="nova">Nova</SelectItem>
+                    <SelectItem value="shimmer">Shimmer</SelectItem>
+                  </SelectContent>
+                </Select>
+
+                {/* Regenerate Button (only show if audio exists) */}
+                {story.audio_url && (
                   <Button
-                    onClick={togglePlayPause}
-                    size="lg"
-                    className="rounded-full w-16 h-16"
+                    variant="ghost"
+                    size="sm"
+                    onClick={handleGenerateAudio}
+                    disabled={isGeneratingAudio}
+                    className="h-8 px-2"
+                    title="Regenerate with new voice"
                   >
-                    {isPlaying ? (
-                      <span className="text-2xl">⏸️</span>
-                    ) : (
-                      <Volume2 className="w-8 h-8" />
-                    )}
+                    <RefreshCw className="h-3.5 w-3.5" />
                   </Button>
-                  <div className="flex-1">
-                    <p className="text-sm font-medium mb-2">Audio Narration</p>
-                    <audio
-                      ref={audioRef}
-                      src={story.audio_url}
-                      onEnded={() => setIsPlaying(false)}
-                      onPlay={() => setIsPlaying(true)}
-                      onPause={() => setIsPlaying(false)}
-                      className="w-full"
-                      controls
-                    />
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Select value={selectedVoice} onValueChange={setSelectedVoice}>
-                      <SelectTrigger className="w-32">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="alloy">Alloy</SelectItem>
-                        <SelectItem value="echo">Echo</SelectItem>
-                        <SelectItem value="fable">Fable</SelectItem>
-                        <SelectItem value="onyx">Onyx</SelectItem>
-                        <SelectItem value="nova">Nova</SelectItem>
-                        <SelectItem value="shimmer">Shimmer</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={handleGenerateAudio}
-                      disabled={isGeneratingAudio}
-                    >
-                      {isGeneratingAudio ? (
-                        <>
-                          <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                          Generating...
-                        </>
-                      ) : (
-                        "🎙️ Regenerate"
-                      )}
-                    </Button>
-                  </div>
-                </div>
+                )}
               </div>
-            ) : (
-              <div className="p-6 rounded-xl bg-gradient-to-br from-primary/5 to-secondary/5 border-2 border-dashed border-primary/20 text-center">
-                <div className="flex flex-col items-center gap-4">
-                  <div className="text-5xl">🎙️</div>
-                  <p className="text-muted-foreground">No audio narration yet</p>
-                  <div className="flex items-center gap-2">
-                    <Select value={selectedVoice} onValueChange={setSelectedVoice}>
-                      <SelectTrigger className="w-40">
-                        <SelectValue placeholder="Select voice" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="alloy">Alloy (Neutral)</SelectItem>
-                        <SelectItem value="echo">Echo (Male)</SelectItem>
-                        <SelectItem value="fable">Fable (British)</SelectItem>
-                        <SelectItem value="onyx">Onyx (Deep)</SelectItem>
-                        <SelectItem value="nova">Nova (Female)</SelectItem>
-                        <SelectItem value="shimmer">Shimmer (Soft)</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <Button
-                      onClick={handleGenerateAudio}
-                      disabled={isGeneratingAudio}
-                    >
-                      {isGeneratingAudio ? (
-                        <>
-                          <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                          Generating Audio...
-                        </>
-                      ) : (
-                        <>
-                          <Volume2 className="w-4 h-4 mr-2" />
-                          Generate Audio Narration
-                        </>
-                      )}
-                    </Button>
-                  </div>
-                </div>
-              </div>
-            )}
+            </div>
 
             <CardTitle className="text-4xl font-bold text-center">
               {story.title}
