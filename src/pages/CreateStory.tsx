@@ -104,13 +104,8 @@ const CreateStory = () => {
   ];
 
   const artStyles = [
-    { value: "pixar-3d", label: "🎬 Pixar/Disney 3D", description: "Vibrant 3D animation style" },
-    { value: "ghibli-2d", label: "🎨 Studio Ghibli 2D", description: "Soft watercolor animation" },
-    { value: "watercolor", label: "🖌️ Watercolor Illustration", description: "Gentle children's book art" },
-    { value: "classic-disney", label: "✨ Classic Disney 2D", description: "Traditional hand-drawn animation" },
-    { value: "modern-cartoon", label: "🎭 Modern 2D Cartoon", description: "Bold contemporary animation" },
-    { value: "anime", label: "⚡ Anime Style", description: "Japanese anime aesthetic" },
-    { value: "comic-book", label: "💥 Comic Book", description: "Dynamic illustrated panels" },
+    { value: "pixar-3d", label: "🎬 3D Animation", description: "Vibrant 3D animation style" },
+    { value: "ghibli-2d", label: "🎨 2D Animation/Cartoon", description: "Classic 2D illustrated style" },
   ];
 
   const handleCreateStory = async () => {
