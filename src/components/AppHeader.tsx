@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, User } from "lucide-react";
-import logo from "@/assets/logo.png";
+import logo from "@/assets/guardian-kids-logo.png";
 
 interface AppHeaderProps {
   showBackButton?: boolean;

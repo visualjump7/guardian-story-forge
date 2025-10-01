@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Sparkles, BookOpen } from "lucide-react";
+import logo from "@/assets/guardian-kids-logo.png";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -10,10 +11,14 @@ const Index = () => {
       {/* Hero Section */}
       <section className="relative min-h-screen w-full flex items-center justify-center">
         <div className="relative z-10 container mx-auto px-4 text-center space-y-12">
-          {/* Large Neon Guardian Kids Text */}
-          <h1 className="text-7xl md:text-9xl font-bold neon-text animate-fade-in">
-            Guardian Kids
-          </h1>
+          {/* Guardian Kids Logo */}
+          <div className="flex justify-center animate-fade-in">
+            <img 
+              src={logo} 
+              alt="Guardian Kids" 
+              className="w-[500px] md:w-[700px] max-w-full h-auto"
+            />
+          </div>
           
           {/* Buttons */}
           <div className="flex flex-col items-center justify-center gap-6 pt-8">
