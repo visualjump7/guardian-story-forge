@@ -187,7 +187,7 @@ const Profile = () => {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="displayName">Display Name</Label>
+                <Label htmlFor="displayName">Your Name</Label>
                 <Input
                   id="displayName"
                   placeholder="Your display name"
@@ -201,7 +201,7 @@ const Profile = () => {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="authorName">Author Name</Label>
+                <Label htmlFor="authorName">Your Author Display Name</Label>
                 <Input
                   id="authorName"
                   placeholder="Your author name (optional)"
