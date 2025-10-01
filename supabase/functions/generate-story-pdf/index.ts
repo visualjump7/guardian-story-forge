@@ -70,13 +70,30 @@ serve(async (req) => {
   <style>
     @page { 
       size: A4; 
-      margin: 2cm; 
+      margin: 1cm; 
     }
     body {
       font-family: 'Georgia', serif;
       line-height: 1.8;
       color: #333;
+      margin: 0;
+      padding: 0;
     }
+    
+    /* Responsive text margins */
+    .story-text {
+      font-size: 14pt;
+      text-align: justify;
+      margin: 0.5cm 0;
+      padding: 0 25%;
+    }
+    
+    @media screen and (max-width: 768px) {
+      .story-text {
+        padding: 0 15%;
+      }
+    }
+    
     .story-text.first-paragraph::first-letter {
       float: left;
       font-size: 4em;
@@ -85,46 +102,49 @@ serve(async (req) => {
       color: #2c3e50;
       font-weight: bold;
     }
+    
     .cover {
       text-align: center;
       page-break-after: always;
-      padding: 2cm 0;
+      padding: 1cm 0;
     }
     .cover h1 {
       font-size: 32pt;
       color: #2c3e50;
-      margin-bottom: 0.5cm;
+      margin-bottom: 0.3cm;
+      padding: 0 15%;
     }
     .cover .subtitle {
       font-size: 16pt;
       color: #7f8c8d;
-      margin-bottom: 1cm;
+      margin-bottom: 0.5cm;
+      padding: 0 15%;
     }
     .cover img {
-      max-width: 100%;
+      width: 100%;
       max-height: 15cm;
-      border-radius: 8px;
+      border-radius: 0;
       aspect-ratio: 16 / 9;
       object-fit: cover;
+      margin: 0.5cm 0 0 0;
     }
+    
     .story-page {
       page-break-after: always;
-      padding: 1cm 0;
+      padding: 0;
     }
+    
+    /* Full-width images */
     .story-page img {
-      max-width: 100%;
-      max-height: 10cm;
+      width: 100%;
+      max-height: 12cm;
       display: block;
-      margin: 1cm auto;
-      border-radius: 8px;
+      margin: 0.5cm 0;
+      border-radius: 0;
       aspect-ratio: 16 / 9;
       object-fit: cover;
     }
-    .story-text {
-      font-size: 14pt;
-      text-align: justify;
-      margin: 1cm 0;
-    }
+    
     .hero-badge {
       display: inline-block;
       background: #3498db;
@@ -132,7 +152,7 @@ serve(async (req) => {
       padding: 0.2cm 0.5cm;
       border-radius: 4px;
       font-size: 12pt;
-      margin: 0.5cm 0;
+      margin: 0.3cm 0;
     }
   </style>
 </head>
