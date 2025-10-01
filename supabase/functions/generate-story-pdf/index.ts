@@ -47,6 +47,15 @@ serve(async (req) => {
       throw new Error("Story not found");
     }
 
+    // Get creator profile information
+    const { data: creatorProfile } = await supabase
+      .from("profiles")
+      .select("display_name")
+      .eq("id", story.created_by)
+      .single();
+
+    const creatorName = creatorProfile?.display_name || "Anonymous";
+
     // Check if user owns the story or if it's public
     if (story.created_by !== user.id && !story.is_public && !story.is_featured) {
       throw new Error("Not authorized to access this story");
@@ -154,6 +163,57 @@ serve(async (req) => {
       font-size: 12pt;
       margin: 0.3cm 0;
     }
+    
+    .creator-signature {
+      font-size: 11pt;
+      color: #7f8c8d;
+      font-style: italic;
+      margin-top: 0.5cm;
+      padding: 0 15%;
+    }
+    
+    .the-end-page {
+      page-break-before: always;
+      text-align: center;
+      padding: 4cm 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 20cm;
+    }
+    
+    .the-end-text {
+      font-size: 48pt;
+      color: #2c3e50;
+      font-weight: bold;
+      margin: 1cm 0;
+      letter-spacing: 0.2em;
+      position: relative;
+    }
+    
+    .the-end-text::before,
+    .the-end-text::after {
+      content: "✦";
+      font-size: 24pt;
+      color: #3498db;
+      margin: 0 0.5cm;
+      vertical-align: middle;
+    }
+    
+    .end-signature {
+      font-size: 14pt;
+      color: #7f8c8d;
+      font-style: italic;
+      margin-top: 1cm;
+    }
+    
+    .decorative-line {
+      width: 8cm;
+      height: 2px;
+      background: linear-gradient(to right, transparent, #3498db, transparent);
+      margin: 0.5cm auto;
+    }
   </style>
 </head>
 <body>
@@ -162,6 +222,7 @@ serve(async (req) => {
     ${story.hero_name ? `<div class="hero-badge">Starring: ${story.hero_name}</div>` : ''}
     ${story.story_type ? `<div class="subtitle">${story.story_type}</div>` : ''}
     ${images && images[0] ? `<img src="${images[0].image_url}" alt="Cover">` : ''}
+    <div class="creator-signature">Story Created by ${creatorName}</div>
   </div>
   
   ${paragraphs.map((paragraph: string, index: number) => {
@@ -177,6 +238,13 @@ serve(async (req) => {
       </div>
     `;
   }).join('\n')}
+  
+  <div class="the-end-page">
+    <div class="decorative-line"></div>
+    <div class="the-end-text">The End</div>
+    <div class="decorative-line"></div>
+    <div class="end-signature">Story Created by ${creatorName}</div>
+  </div>
 </body>
 </html>`;
 
