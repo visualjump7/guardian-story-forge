@@ -16,6 +16,7 @@ const Auth = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [displayName, setDisplayName] = useState("");
+  const [authorName, setAuthorName] = useState("");
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -44,6 +45,7 @@ const Auth = () => {
             emailRedirectTo: `${window.location.origin}/home`,
             data: {
               display_name: displayName || "Guardian",
+              author_name: authorName || null,
             },
           },
         });
@@ -62,9 +64,6 @@ const Auth = () => {
     <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-primary via-primary-glow to-secondary">
       <Card className="w-full max-w-md shadow-2xl border-0">
         <CardHeader className="text-center space-y-4">
-          <div className="flex justify-center">
-            <img src={logo} alt="Guardian Kids Logo" className="w-20 h-20 animate-bounce" />
-          </div>
           <CardTitle className="text-3xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
             {isLogin ? "Welcome Back!" : "Join Guardian Kids"}
           </CardTitle>
@@ -77,17 +76,30 @@ const Auth = () => {
         <CardContent>
           <form onSubmit={handleAuth} className="space-y-4">
             {!isLogin && (
-              <div className="space-y-2">
-                <Label htmlFor="displayName">Your Name</Label>
-                <Input
-                  id="displayName"
-                  type="text"
-                  placeholder="Enter your name"
-                  value={displayName}
-                  onChange={(e) => setDisplayName(e.target.value)}
-                  className="rounded-xl h-12"
-                />
-              </div>
+              <>
+                <div className="space-y-2">
+                  <Label htmlFor="displayName">Your Name</Label>
+                  <Input
+                    id="displayName"
+                    type="text"
+                    placeholder="Enter your name"
+                    value={displayName}
+                    onChange={(e) => setDisplayName(e.target.value)}
+                    className="rounded-xl h-12"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="authorName">Your Author Display Name</Label>
+                  <Input
+                    id="authorName"
+                    type="text"
+                    placeholder="Enter your author name (optional)"
+                    value={authorName}
+                    onChange={(e) => setAuthorName(e.target.value)}
+                    className="rounded-xl h-12"
+                  />
+                </div>
+              </>
             )}
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
