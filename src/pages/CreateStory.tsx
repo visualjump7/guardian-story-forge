@@ -56,7 +56,7 @@ const CreateStory = () => {
   };
 
   const storyUniverses = [
-    { value: "", label: "Standalone Story", description: "A unique one-time adventure" },
+    { value: "standalone", label: "Standalone Story", description: "A unique one-time adventure" },
     { value: "guardian-ranch", label: "🐾 Guardian Ranch", description: "Animal heroes rescue friends from Doctor Shadow" },
   ];
 
@@ -134,7 +134,7 @@ const CreateStory = () => {
           setting: setting || undefined,
           secondaryThemeId: undefined,
           artStyle,
-          storyUniverse: storyUniverse || undefined,
+          storyUniverse: storyUniverse === "standalone" ? undefined : storyUniverse,
         },
       });
 
