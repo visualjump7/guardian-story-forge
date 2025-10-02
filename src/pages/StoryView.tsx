@@ -388,11 +388,11 @@ const StoryView = () => {
         {imagePositions.map(({ position, index: imageIndex, label }) => {
           if (storyImages.length > imageIndex && index === position) {
             return (
-              <div key={imageIndex} className="my-8 rounded-lg overflow-hidden shadow-lg">
+              <div key={imageIndex} className="my-8 rounded-lg overflow-hidden shadow-lg bg-muted/30">
                 <img
                   src={storyImages[imageIndex].image_url}
                   alt={`${story.title} - ${label}`}
-                  className="w-full aspect-video object-cover"
+                  className="w-full max-h-[600px] object-contain"
                 />
               </div>
             );
@@ -491,11 +491,11 @@ const StoryView = () => {
                   <CarouselContent>
                     {storyImages.map((image, index) => (
                       <CarouselItem key={image.id}>
-                        <div className="relative aspect-video w-full overflow-hidden rounded-lg bg-muted">
+                        <div className="relative aspect-video w-full overflow-hidden rounded-lg bg-muted flex items-center justify-center">
                           <img
                             src={image.image_url}
                             alt={`${story.title} - Image ${index + 1}`}
-                            className="h-full w-full object-cover"
+                            className="h-full w-full object-contain"
                           />
                         </div>
                       </CarouselItem>
