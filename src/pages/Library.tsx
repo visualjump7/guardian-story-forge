@@ -244,7 +244,7 @@ const Library = () => {
                     <p className="text-muted-foreground line-clamp-3 mb-4 italic text-sm leading-relaxed">
                       {saved.stories.content.substring(0, 120)}...
                     </p>
-                    <div className="flex gap-2" onClick={(e) => e.stopPropagation()}>
+                    <div className="space-y-2" onClick={(e) => e.stopPropagation()}>
                       <Button
                         variant="magical"
                         size="sm"
@@ -252,35 +252,39 @@ const Library = () => {
                           e.stopPropagation();
                           navigate(`/story/${saved.stories.id}`);
                         }}
-                        className="flex-1 gap-2"
+                        className="w-full gap-2"
                       >
                         <BookOpen className="w-4 h-4" />
                         View Story
                       </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleShare(saved);
-                        }}
-                      >
-                        <Share2 className="w-4 h-4" />
-                      </Button>
+                      <div className="flex gap-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleShare(saved);
+                          }}
+                          className="flex-1"
+                        >
+                          <Share2 className="mr-2 h-4 w-4" />
+                          Share
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setStoryToRemove(saved);
+                            setDialogOpen(true);
+                          }}
+                          className="flex-1"
+                        >
+                          <Trash2 className="mr-2 h-4 w-4" />
+                          Delete
+                        </Button>
+                      </div>
                     </div>
-                    <Button
-                      variant="outline"
-                      size="icon"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setStoryToRemove(saved);
-                        setDialogOpen(true);
-                      }}
-                      className="absolute bottom-4 right-4 h-8 w-8"
-                      aria-label="Remove story from library"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
                   </CardContent>
                 </Card>
               ))}
