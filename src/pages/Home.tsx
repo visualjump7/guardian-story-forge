@@ -7,6 +7,8 @@ import { BookOpen, Sparkles, Library, User, PlusCircle, Wand2 } from "lucide-rea
 import { toast } from "sonner";
 import logo from "@/assets/logo.png";
 import VimeoPlayer from "@/components/VimeoPlayer";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { MobileNav } from "@/components/MobileNav";
 
 interface Story {
   id: string;
@@ -24,6 +26,7 @@ interface Story {
 
 const Home = () => {
   const navigate = useNavigate();
+  const isMobile = useIsMobile();
   const [user, setUser] = useState<any>(null);
   const [profile, setProfile] = useState<any>(null);
   const [stories, setStories] = useState<Story[]>([]);
@@ -92,26 +95,43 @@ const Home = () => {
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <img src={logo} alt="Guardian Kids" className="w-12 h-12" />
-            <div>
-              <h1 className="text-2xl font-bold text-primary">Guardian Kids</h1>
-              <p className="text-sm text-muted-foreground">
-                Welcome back, {profile?.display_name || "Guardian"}!
-              </p>
-            </div>
+            {!isMobile && (
+              <div>
+                <h1 className="text-2xl font-bold text-primary">Guardian Kids</h1>
+                <p className="text-sm text-muted-foreground">
+                  Welcome back, {profile?.display_name || "Guardian"}!
+                </p>
+              </div>
+            )}
           </div>
-          <nav className="flex items-center gap-2">
-            <Button variant="default" size="sm" onClick={() => navigate("/create")}>
-              <Wand2 className="w-4 h-4" />
-              Create A Story
-            </Button>
-            <Button variant="outline" size="sm" onClick={() => navigate("/library")}>
-              <Library className="w-4 h-4" />
-              My Library
-            </Button>
-            <Button variant="ghost" size="icon" onClick={() => navigate("/profile")}>
-              <User className="w-5 h-5" />
-            </Button>
-          </nav>
+
+          {isMobile ? (
+            <div className="flex items-center gap-2">
+              <Button
+                variant="default"
+                size="icon"
+                onClick={() => navigate("/create")}
+                className="rounded-full shadow-lg"
+              >
+                <Wand2 className="w-5 h-5" />
+              </Button>
+              <MobileNav profile={profile} />
+            </div>
+          ) : (
+            <nav className="flex items-center gap-2">
+              <Button variant="default" size="sm" onClick={() => navigate("/create")}>
+                <Wand2 className="w-4 h-4 mr-2" />
+                Create A Story
+              </Button>
+              <Button variant="outline" size="sm" onClick={() => navigate("/library")}>
+                <Library className="w-4 h-4 mr-2" />
+                My Library
+              </Button>
+              <Button variant="ghost" size="icon" onClick={() => navigate("/profile")}>
+                <User className="w-5 h-5" />
+              </Button>
+            </nav>
+          )}
         </div>
       </header>
 
