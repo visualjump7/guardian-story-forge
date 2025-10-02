@@ -131,7 +131,7 @@ export function ImagePromptDialog({
             Create New Illustration
           </DialogTitle>
           <DialogDescription>
-            Customize the image prompt for your story illustration. The AI will generate an image based on your description.
+            Describe the image you'd like to generate. Your description will enhance our AI's understanding.
           </DialogDescription>
         </DialogHeader>
 
@@ -160,28 +160,10 @@ export function ImagePromptDialog({
             </Badge>
           </div>
 
-          {/* Core Prompt (Read-only) */}
-          <div className="space-y-2">
-            <Label htmlFor="core-prompt" className="flex items-center gap-2">
-              <Sparkles className="h-4 w-4" />
-              Base Prompt (Auto-Generated)
-            </Label>
-            <Textarea
-              id="core-prompt"
-              value={corePrompt}
-              className="min-h-[120px] resize-none bg-muted"
-              disabled
-              readOnly
-            />
-            <p className="text-xs text-muted-foreground">
-              This base prompt is automatically generated based on your story details and art style.
-            </p>
-          </div>
-
           {/* Customizations Editor */}
           <div className="space-y-2">
             <Label htmlFor="customizations">
-              Your Customizations (Optional)
+              Image Details
               <span className="text-xs text-muted-foreground ml-2">
                 ({charCount}/{maxChars} characters)
               </span>
@@ -190,12 +172,12 @@ export function ImagePromptDialog({
               id="customizations"
               value={customizations}
               onChange={(e) => handleCustomizationsChange(e.target.value)}
-              placeholder="Add your own details to enhance the image (e.g., 'Add more magical elements', 'Include a castle in the background')..."
+              placeholder="Example: Add more trees in the background, make the sky orange at sunset, include a friendly dog..."
               className="min-h-[120px] resize-none"
               disabled={isGenerating}
             />
             <p className="text-xs text-muted-foreground">
-              💡 <strong>Tips:</strong> Your customizations will be added to the base prompt. Be specific about additional elements, mood, or composition changes you'd like.
+              💡 <strong>Tip:</strong> Describe what you'd like to see in this illustration. Be specific about elements, mood, or composition.
             </p>
           </div>
 
