@@ -224,15 +224,6 @@ const Library = () => {
                         </span>
                       </div>
                     )}
-                    
-                    {/* Theme Badge Overlay */}
-                    {saved.stories.story_themes?.name && (
-                      <div className="absolute top-4 left-4">
-                        <span className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-red-600/90 backdrop-blur-sm text-white text-sm font-semibold shadow-lg border border-white/20">
-                          {saved.stories.story_themes.emoji} {saved.stories.story_themes.name}
-                        </span>
-                      </div>
-                    )}
 
                     {/* Action Buttons Overlay - Top Right */}
                     <div className="absolute top-4 right-4 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
