@@ -13,11 +13,29 @@ serve(async (req) => {
   }
 
   try {
-    const { storyId, voice = "alloy" } = await req.json();
+    const { storyId, voiceType = "whimsical" } = await req.json();
 
     if (!storyId) {
       throw new Error("Story ID is required");
     }
+
+    // Map voice types to OpenAI voices and narrative styles
+    const voiceConfig = {
+      whimsical: {
+        voice: "shimmer",
+        style: "Read this story with a magical, light-hearted tone. Use varied pacing with gentle emphasis on wonder and imagination. ",
+      },
+      adventure: {
+        voice: "onyx",
+        style: "Read this story with an energetic, dynamic tone. Build excitement with dramatic emphasis and confident delivery. ",
+      },
+      ranch: {
+        voice: "echo",
+        style: "Read this story with a slow, southern drawl. Take your time with each word, using a warm Texas ranch accent with cinematic pauses and a relaxed, storytelling cadence. ",
+      },
+    };
+
+    const config = voiceConfig[voiceType as keyof typeof voiceConfig] || voiceConfig.whimsical;
 
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
@@ -59,8 +77,9 @@ serve(async (req) => {
     // OpenAI TTS has a 4096 character limit, so truncate if needed
     const MAX_TTS_LENGTH = 4000; // Leave some buffer
     
-    // Build the audio content: Title, Excerpt, Author, Story
-    let audioIntro = story.title;
+    // Build the audio content with narrative style instructions
+    let audioIntro = config.style; // Add narrative style at the beginning
+    audioIntro += story.title;
     if (story.excerpt) {
       audioIntro += `. ${story.excerpt}`;
     }
@@ -97,7 +116,7 @@ serve(async (req) => {
       body: JSON.stringify({
         model: 'tts-1',
         input: audioContent,
-        voice: voice,
+        voice: config.voice,
         response_format: 'mp3',
       }),
     });

@@ -105,7 +105,7 @@ const StoryView = () => {
   const [userId, setUserId] = useState<string | null>(null);
   const [generatingImage, setGeneratingImage] = useState(false);
   const [isGeneratingAudio, setIsGeneratingAudio] = useState(false);
-  const [selectedVoice, setSelectedVoice] = useState("alloy");
+  const [selectedVoiceType, setSelectedVoiceType] = useState("whimsical");
   const [isShareDialogOpen, setIsShareDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [imageToDelete, setImageToDelete] = useState<string | null>(null);
@@ -365,7 +365,7 @@ const StoryView = () => {
     setIsGeneratingAudio(true);
     try {
       const { data, error } = await supabase.functions.invoke("generate-story-audio", {
-        body: { storyId, voice: selectedVoice },
+        body: { storyId, voiceType: selectedVoiceType },
       });
 
       if (error) throw error;
@@ -700,17 +700,29 @@ const StoryView = () => {
                   </div>
                   
                   <div className="flex items-center justify-center gap-3">
-                    <Select value={selectedVoice} onValueChange={setSelectedVoice}>
-                      <SelectTrigger className="w-40">
+                    <Select value={selectedVoiceType} onValueChange={setSelectedVoiceType}>
+                      <SelectTrigger className="w-48">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="alloy">Alloy (Neutral)</SelectItem>
-                        <SelectItem value="echo">Echo (Deep)</SelectItem>
-                        <SelectItem value="fable">Fable (Warm)</SelectItem>
-                        <SelectItem value="onyx">Onyx (Rich)</SelectItem>
-                        <SelectItem value="nova">Nova (Bright)</SelectItem>
-                        <SelectItem value="shimmer">Shimmer (Soft)</SelectItem>
+                        <SelectItem value="whimsical">
+                          <div className="flex flex-col">
+                            <span className="font-medium">Whimsical</span>
+                            <span className="text-xs text-muted-foreground">Magical & light-hearted</span>
+                          </div>
+                        </SelectItem>
+                        <SelectItem value="adventure">
+                          <div className="flex flex-col">
+                            <span className="font-medium">Adventure</span>
+                            <span className="text-xs text-muted-foreground">Energetic & dynamic</span>
+                          </div>
+                        </SelectItem>
+                        <SelectItem value="ranch">
+                          <div className="flex flex-col">
+                            <span className="font-medium">Ranch Narrator</span>
+                            <span className="text-xs text-muted-foreground">Southern drawl & cinematic</span>
+                          </div>
+                        </SelectItem>
                       </SelectContent>
                     </Select>
                     
@@ -746,17 +758,14 @@ const StoryView = () => {
                       <span>Want a different voice?</span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <Select value={selectedVoice} onValueChange={setSelectedVoice}>
-                        <SelectTrigger className="w-32 h-8 text-xs">
+                      <Select value={selectedVoiceType} onValueChange={setSelectedVoiceType}>
+                        <SelectTrigger className="w-40 h-8 text-xs">
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="alloy">Alloy</SelectItem>
-                          <SelectItem value="echo">Echo</SelectItem>
-                          <SelectItem value="fable">Fable</SelectItem>
-                          <SelectItem value="onyx">Onyx</SelectItem>
-                          <SelectItem value="nova">Nova</SelectItem>
-                          <SelectItem value="shimmer">Shimmer</SelectItem>
+                          <SelectItem value="whimsical">Whimsical</SelectItem>
+                          <SelectItem value="adventure">Adventure</SelectItem>
+                          <SelectItem value="ranch">Ranch Narrator</SelectItem>
                         </SelectContent>
                       </Select>
                       <Button
