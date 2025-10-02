@@ -29,7 +29,8 @@ import {
   Pause,
   MoreVertical,
   Info,
-  Palette
+  Palette,
+  Library
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -432,6 +433,10 @@ const StoryView = () => {
       <AppHeader 
         rightContent={
           <>
+            <Button variant="outline" size="sm" onClick={() => navigate("/library")}>
+              <Library className="w-4 h-4" />
+              My Library
+            </Button>
             <Button variant="outline" size="sm" onClick={handleShare}>
               <Share2 className="w-4 h-4" />
               Share
