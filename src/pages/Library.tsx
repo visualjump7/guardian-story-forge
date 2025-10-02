@@ -8,6 +8,7 @@ import { toast } from "sonner";
 import { ShareDialog } from "@/components/ShareDialog";
 import { AppHeader } from "@/components/AppHeader";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/hooks/useAuth";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -79,6 +80,8 @@ const getThemeBadgeStyle = (themeName?: string) => {
 
 const Library = () => {
   const navigate = useNavigate();
+  const { isAdmin } = useAuth();
+  const [profile, setProfile] = useState<any>(null);
   const [savedStories, setSavedStories] = useState<SavedStory[]>([]);
   const [loading, setLoading] = useState(true);
   const [storyToRemove, setStoryToRemove] = useState<SavedStory | null>(null);
@@ -96,6 +99,15 @@ const Library = () => {
       navigate("/auth");
       return;
     }
+
+    // Load profile
+    const { data: profileData } = await supabase
+      .from("profiles")
+      .select("*")
+      .eq("id", session.user.id)
+      .single();
+    
+    setProfile(profileData);
 
     const { data, error } = await supabase
       .from("user_libraries")
@@ -160,6 +172,8 @@ const Library = () => {
     <div className="min-h-screen bg-gradient-to-br from-background via-muted to-background">
       <AppHeader 
         title="My Library"
+        profile={profile}
+        isAdmin={isAdmin}
         rightContent={
           <Button
             onClick={() => navigate("/create")}

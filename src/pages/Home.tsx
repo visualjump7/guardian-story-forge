@@ -10,6 +10,7 @@ import VimeoPlayer from "@/components/VimeoPlayer";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { MobileNav } from "@/components/MobileNav";
 import { ShareDialog } from "@/components/ShareDialog";
+import { useAuth } from "@/hooks/useAuth";
 
 interface Story {
   id: string;
@@ -28,6 +29,7 @@ interface Story {
 const Home = () => {
   const navigate = useNavigate();
   const isMobile = useIsMobile();
+  const { isAdmin } = useAuth();
   const [user, setUser] = useState<any>(null);
   const [profile, setProfile] = useState<any>(null);
   const [stories, setStories] = useState<Story[]>([]);
@@ -124,7 +126,7 @@ const Home = () => {
               >
                 <Wand2 className="w-5 h-5" />
               </Button>
-              <MobileNav profile={profile} />
+              <MobileNav profile={profile} isAdmin={isAdmin} />
             </div>
           ) : (
             <nav className="flex items-center gap-2">

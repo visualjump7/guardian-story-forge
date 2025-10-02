@@ -6,8 +6,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { ArrowLeft, User, Save, LogOut } from "lucide-react";
+import { User, Save, LogOut } from "lucide-react";
 import { toast } from "sonner";
+import { AppHeader } from "@/components/AppHeader";
+import { useAuth } from "@/hooks/useAuth";
 
 interface Profile {
   id: string;
@@ -17,6 +19,7 @@ interface Profile {
 
 const Profile = () => {
   const navigate = useNavigate();
+  const { isAdmin } = useAuth();
   const [profile, setProfile] = useState<Profile | null>(null);
   const [email, setEmail] = useState("");
   const [displayName, setDisplayName] = useState("");
@@ -143,14 +146,7 @@ const Profile = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-muted to-background">
-      <header className="border-b bg-card/50 backdrop-blur-sm sticky top-0 z-50 shadow-md">
-        <div className="container mx-auto px-4 py-4">
-          <Button variant="ghost" onClick={() => navigate("/home")}>
-            <ArrowLeft className="w-5 h-5 mr-2" />
-            Back to Home
-          </Button>
-        </div>
-      </header>
+      <AppHeader profile={profile} isAdmin={isAdmin} />
 
       <main className="container mx-auto px-4 py-12 max-w-2xl">
         <Card className="shadow-2xl border-2">

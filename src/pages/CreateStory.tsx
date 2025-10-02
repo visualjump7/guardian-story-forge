@@ -11,6 +11,7 @@ import { toast } from "sonner";
 import { AppHeader } from "@/components/AppHeader";
 import { LoadingAnimation } from "@/components/LoadingAnimation";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/hooks/useAuth";
 
 interface Theme {
   id: string;
@@ -21,6 +22,8 @@ interface Theme {
 
 const CreateStory = () => {
   const navigate = useNavigate();
+  const { isAdmin } = useAuth();
+  const [profile, setProfile] = useState<any>(null);
   const [themes, setThemes] = useState<Theme[]>([]);
   const [heroName, setHeroName] = useState("");
   const [excerpt, setExcerpt] = useState("");
@@ -43,6 +46,15 @@ const CreateStory = () => {
       navigate("/auth");
       return;
     }
+
+    // Load profile
+    const { data: profileData } = await supabase
+      .from("profiles")
+      .select("*")
+      .eq("id", session.user.id)
+      .single();
+    
+    setProfile(profileData);
 
     const { data: themesData } = await supabase
       .from("story_themes")
@@ -149,7 +161,7 @@ const CreateStory = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-muted to-background">
-      <AppHeader />
+      <AppHeader profile={profile} isAdmin={isAdmin} />
 
       <main className="container mx-auto px-4 py-8 max-w-4xl">
         <div className="text-center mb-8 animate-fade-in">

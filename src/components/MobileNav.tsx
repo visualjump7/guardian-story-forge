@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Menu, Library, Wand2, User, LogOut } from "lucide-react";
+import { Menu, Library, Wand2, User, LogOut, Shield } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
@@ -14,9 +14,10 @@ import { toast } from "sonner";
 
 interface MobileNavProps {
   profile: any;
+  isAdmin?: boolean;
 }
 
-export const MobileNav = ({ profile }: MobileNavProps) => {
+export const MobileNav = ({ profile, isAdmin = false }: MobileNavProps) => {
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
 
@@ -59,19 +60,19 @@ export const MobileNav = ({ profile }: MobileNavProps) => {
           <Button
             variant="ghost"
             className="justify-start h-12 text-base"
-            onClick={() => handleNavigation("/library")}
+            onClick={() => handleNavigation("/create")}
           >
-            <Library className="w-5 h-5 mr-3" />
-            My Library
+            <Wand2 className="w-5 h-5 mr-3" />
+            Create A Story
           </Button>
 
           <Button
             variant="ghost"
             className="justify-start h-12 text-base"
-            onClick={() => handleNavigation("/create")}
+            onClick={() => handleNavigation("/library")}
           >
-            <Wand2 className="w-5 h-5 mr-3" />
-            Create A Story
+            <Library className="w-5 h-5 mr-3" />
+            My Library
           </Button>
 
           <Button
@@ -82,6 +83,17 @@ export const MobileNav = ({ profile }: MobileNavProps) => {
             <User className="w-5 h-5 mr-3" />
             Profile
           </Button>
+
+          {isAdmin && (
+            <Button
+              variant="ghost"
+              className="justify-start h-12 text-base"
+              onClick={() => handleNavigation("/admin/dashboard")}
+            >
+              <Shield className="w-5 h-5 mr-3" />
+              Admin Dashboard
+            </Button>
+          )}
 
           <div className="mt-auto pt-4 border-t">
             <Button
