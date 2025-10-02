@@ -9,6 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { AppHeader } from "@/components/AppHeader";
+import { LoadingAnimation } from "@/components/LoadingAnimation";
 import { cn } from "@/lib/utils";
 
 interface Theme {
@@ -365,14 +366,11 @@ const CreateStory = () => {
             >
               {generating ? "Creating magical story and illustrations..." : "Generate My Story"}
             </Button>
-            {generating && (
-              <p className="text-center text-sm text-muted-foreground animate-pulse mt-4">
-                Writing your story... Creating beautiful illustrations...
-              </p>
-            )}
           </div>
         </div>
       </main>
+
+      {generating && <LoadingAnimation />}
     </div>
   );
 };
