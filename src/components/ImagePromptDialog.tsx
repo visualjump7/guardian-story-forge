@@ -10,7 +10,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 interface ImagePromptDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onGenerate: (customPrompt: string) => void;
+  onGenerate: (customizations: string) => void;
   storyTitle: string;
   heroName: string;
   artStyle: string;
@@ -70,11 +70,12 @@ export function ImagePromptDialog({
   imageCount,
   isGenerating
 }: ImagePromptDialogProps) {
-  const [customPrompt, setCustomPrompt] = useState("");
+  const [corePrompt, setCorePrompt] = useState("");
+  const [customizations, setCustomizations] = useState("");
   const [charCount, setCharCount] = useState(0);
-  const maxChars = 1000;
+  const maxChars = 500;
 
-  // Generate default prompt based on image type and story
+  // Generate core prompt based on image type and story
   useEffect(() => {
     if (open) {
       const artStylePrompts: Record<string, string> = {
@@ -88,34 +89,35 @@ export function ImagePromptDialog({
       };
 
       const styleDescription = artStylePrompts[artStyle] || artStylePrompts['pixar-3d'];
-      let defaultPrompt = '';
+      let generatedPrompt = '';
 
       if (imageType === 'cover') {
-        defaultPrompt = `Create a child-friendly cover illustration in ${styleDescription}. Feature ${heroName} as the main character. Scene: ${storyExcerpt}. Art style: colorful, family-friendly, high-quality with expressive characters and magical atmosphere.`;
+        generatedPrompt = `Create a child-friendly cover illustration in ${styleDescription}. Feature ${heroName} as the main character. Scene: ${storyExcerpt}. Art style: colorful, family-friendly, high-quality with expressive characters and magical atmosphere.`;
       } else if (imageType === 'early-scene') {
-        defaultPrompt = `Create an early adventure scene in ${styleDescription}. Feature ${heroName} in this moment: ${storyExcerpt}. Show the beginning of the journey with excitement and anticipation. Child-friendly, colorful illustration.`;
+        generatedPrompt = `Create an early adventure scene in ${styleDescription}. Feature ${heroName} in this moment: ${storyExcerpt}. Show the beginning of the journey with excitement and anticipation. Child-friendly, colorful illustration.`;
       } else if (imageType === 'mid-scene') {
-        defaultPrompt = `Create a mid-story scene in ${styleDescription}. Feature ${heroName} in this key moment: ${storyExcerpt}. Show the action and emotion. Child-friendly, colorful illustration.`;
+        generatedPrompt = `Create a mid-story scene in ${styleDescription}. Feature ${heroName} in this key moment: ${storyExcerpt}. Show the action and emotion. Child-friendly, colorful illustration.`;
       } else if (imageType === 'climax') {
-        defaultPrompt = `Create a climactic scene in ${styleDescription}. Feature ${heroName} at the peak moment: ${storyExcerpt}. Show the tension and excitement with dramatic visuals. Child-friendly, colorful illustration.`;
+        generatedPrompt = `Create a climactic scene in ${styleDescription}. Feature ${heroName} at the peak moment: ${storyExcerpt}. Show the tension and excitement with dramatic visuals. Child-friendly, colorful illustration.`;
       } else {
-        defaultPrompt = `Create a resolution scene in ${styleDescription}. Feature ${heroName} in the conclusion: ${storyExcerpt}. Capture the emotional resolution with warmth. Child-friendly, colorful illustration.`;
+        generatedPrompt = `Create a resolution scene in ${styleDescription}. Feature ${heroName} in the conclusion: ${storyExcerpt}. Capture the emotional resolution with warmth. Child-friendly, colorful illustration.`;
       }
 
-      setCustomPrompt(defaultPrompt);
-      setCharCount(defaultPrompt.length);
+      setCorePrompt(generatedPrompt);
+      setCustomizations("");
+      setCharCount(0);
     }
   }, [open, imageType, storyExcerpt, heroName, artStyle]);
 
-  const handlePromptChange = (value: string) => {
+  const handleCustomizationsChange = (value: string) => {
     if (value.length <= maxChars) {
-      setCustomPrompt(value);
+      setCustomizations(value);
       setCharCount(value.length);
     }
   };
 
   const handleGenerate = () => {
-    onGenerate(customPrompt);
+    onGenerate(customizations);
   };
 
   const typeInfo = imageTypeLabels[imageType];
@@ -158,36 +160,53 @@ export function ImagePromptDialog({
             </Badge>
           </div>
 
-          {/* Prompt Editor */}
+          {/* Core Prompt (Read-only) */}
           <div className="space-y-2">
-            <Label htmlFor="prompt">
-              Image Prompt
+            <Label htmlFor="core-prompt" className="flex items-center gap-2">
+              <Sparkles className="h-4 w-4" />
+              Base Prompt (Auto-Generated)
+            </Label>
+            <Textarea
+              id="core-prompt"
+              value={corePrompt}
+              className="min-h-[120px] resize-none bg-muted"
+              disabled
+              readOnly
+            />
+            <p className="text-xs text-muted-foreground">
+              This base prompt is automatically generated based on your story details and art style.
+            </p>
+          </div>
+
+          {/* Customizations Editor */}
+          <div className="space-y-2">
+            <Label htmlFor="customizations">
+              Your Customizations (Optional)
               <span className="text-xs text-muted-foreground ml-2">
                 ({charCount}/{maxChars} characters)
               </span>
             </Label>
             <Textarea
-              id="prompt"
-              value={customPrompt}
-              onChange={(e) => handlePromptChange(e.target.value)}
-              placeholder="Describe the scene you want to create..."
-              className="min-h-[200px] resize-none"
+              id="customizations"
+              value={customizations}
+              onChange={(e) => handleCustomizationsChange(e.target.value)}
+              placeholder="Add your own details to enhance the image (e.g., 'Add more magical elements', 'Include a castle in the background')..."
+              className="min-h-[120px] resize-none"
               disabled={isGenerating}
             />
             <p className="text-xs text-muted-foreground">
-              💡 <strong>Tips:</strong> Be specific about the scene, mood, and composition. 
-              The AI will maintain the {artStyleLabels[artStyle]} style and include {heroName} as the main character.
+              💡 <strong>Tips:</strong> Your customizations will be added to the base prompt. Be specific about additional elements, mood, or composition changes you'd like.
             </p>
           </div>
 
-          {/* Quick Templates */}
+          {/* Quick Additions */}
           <div className="space-y-2">
             <Label className="text-xs">Quick Additions:</Label>
             <div className="flex flex-wrap gap-2">
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => handlePromptChange(customPrompt + " Add more magical elements and sparkles.")}
+                onClick={() => handleCustomizationsChange(customizations + (customizations ? " " : "") + "Add more magical elements and sparkles.")}
                 disabled={isGenerating}
               >
                 + More Magic
@@ -195,7 +214,7 @@ export function ImagePromptDialog({
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => handlePromptChange(customPrompt + " Make it more adventurous and exciting.")}
+                onClick={() => handleCustomizationsChange(customizations + (customizations ? " " : "") + "Make it more adventurous and exciting.")}
                 disabled={isGenerating}
               >
                 + More Adventure
@@ -203,7 +222,7 @@ export function ImagePromptDialog({
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => handlePromptChange(customPrompt + " Add more vibrant colors and lighting effects.")}
+                onClick={() => handleCustomizationsChange(customizations + (customizations ? " " : "") + "Add more vibrant colors and lighting effects.")}
                 disabled={isGenerating}
               >
                 + More Vibrant
@@ -211,7 +230,7 @@ export function ImagePromptDialog({
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => handlePromptChange(customPrompt + " Include more emotional expression and warmth.")}
+                onClick={() => handleCustomizationsChange(customizations + (customizations ? " " : "") + "Include more emotional expression and warmth.")}
                 disabled={isGenerating}
               >
                 + More Emotion
@@ -230,7 +249,7 @@ export function ImagePromptDialog({
           </Button>
           <Button
             onClick={handleGenerate}
-            disabled={isGenerating || customPrompt.trim().length === 0}
+            disabled={isGenerating}
           >
             {isGenerating ? (
               <>

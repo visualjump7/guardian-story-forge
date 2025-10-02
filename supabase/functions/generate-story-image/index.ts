@@ -13,9 +13,9 @@ serve(async (req) => {
 
   try {
     console.log("Image generation started");
-    const { storyId, customPrompt } = await req.json();
+    const { storyId, customizations } = await req.json();
     console.log("Story ID received:", storyId);
-    console.log("Custom prompt provided:", !!customPrompt);
+    console.log("Customizations provided:", !!customizations);
 
     if (!storyId) {
       throw new Error("Missing storyId");
@@ -161,27 +161,27 @@ serve(async (req) => {
 
     const styleDescription = artStylePrompts[story.art_style || 'pixar-3d'] || artStylePrompts['pixar-3d'];
 
-    // Use custom prompt if provided, otherwise build default prompt based on image type
-    let imagePrompt = '';
+    // Always generate the core prompt based on image type
+    console.log("Generating core prompt for type:", imageType);
+    let corePrompt = '';
     
-    if (customPrompt && customPrompt.trim()) {
-      // Use the custom prompt provided by the user
-      console.log("Using custom prompt from user");
-      imagePrompt = customPrompt;
+    if (imageType === 'cover') {
+      corePrompt = `Create a child-friendly cover illustration in ${styleDescription}. Feature ${story.hero_name} as the main character in a ${story.story_type} setting. Scene: ${contentForImage.substring(0, 200)}. Art style: colorful, family-friendly, high-quality with expressive characters and magical atmosphere.`;
+    } else if (imageType === 'early-scene') {
+      corePrompt = `Create an early adventure scene illustration in ${styleDescription} for the children's story. Feature ${story.hero_name} in this moment: ${contentForImage}. Show the beginning of the journey with excitement and anticipation. Child-friendly, colorful, high-quality illustration suitable for ages 8-10.`;
+    } else if (imageType === 'mid-scene') {
+      corePrompt = `Create a mid-story scene illustration in ${styleDescription} for the children's story. Feature ${story.hero_name} in this key moment: ${contentForImage}. Show the action and emotion of this pivotal scene. Child-friendly, colorful, high-quality illustration suitable for ages 8-10.`;
+    } else if (imageType === 'climax') {
+      corePrompt = `Create a climactic scene illustration in ${styleDescription} for the children's story. Feature ${story.hero_name} at the story's peak moment: ${contentForImage}. Show the tension, excitement, or emotional high point with dramatic visuals. Child-friendly, colorful, high-quality illustration suitable for ages 8-10.`;
     } else {
-      // Generate default prompt based on image type
-      console.log("Using default generated prompt for type:", imageType);
-      if (imageType === 'cover') {
-        imagePrompt = `Create a child-friendly cover illustration in ${styleDescription}. Feature ${story.hero_name} as the main character in a ${story.story_type} setting. Scene: ${contentForImage.substring(0, 200)}. Art style: colorful, family-friendly, high-quality with expressive characters and magical atmosphere.`;
-      } else if (imageType === 'early-scene') {
-        imagePrompt = `Create an early adventure scene illustration in ${styleDescription} for the children's story. Feature ${story.hero_name} in this moment: ${contentForImage}. Show the beginning of the journey with excitement and anticipation. Child-friendly, colorful, high-quality illustration suitable for ages 8-10.`;
-      } else if (imageType === 'mid-scene') {
-        imagePrompt = `Create a mid-story scene illustration in ${styleDescription} for the children's story. Feature ${story.hero_name} in this key moment: ${contentForImage}. Show the action and emotion of this pivotal scene. Child-friendly, colorful, high-quality illustration suitable for ages 8-10.`;
-      } else if (imageType === 'climax') {
-        imagePrompt = `Create a climactic scene illustration in ${styleDescription} for the children's story. Feature ${story.hero_name} at the story's peak moment: ${contentForImage}. Show the tension, excitement, or emotional high point with dramatic visuals. Child-friendly, colorful, high-quality illustration suitable for ages 8-10.`;
-      } else {
-        imagePrompt = `Create a resolution ending illustration in ${styleDescription} for the children's story. Feature ${story.hero_name} in the conclusion: ${contentForImage}. Capture the emotional resolution and sense of completion with warmth and satisfaction. Child-friendly, colorful, high-quality illustration suitable for ages 8-10.`;
-      }
+      corePrompt = `Create a resolution ending illustration in ${styleDescription} for the children's story. Feature ${story.hero_name} in the conclusion: ${contentForImage}. Capture the emotional resolution and sense of completion with warmth and satisfaction. Child-friendly, colorful, high-quality illustration suitable for ages 8-10.`;
+    }
+
+    // Append customizations if provided
+    let imagePrompt = corePrompt;
+    if (customizations && customizations.trim()) {
+      console.log("Appending user customizations to core prompt");
+      imagePrompt = `${corePrompt} ${customizations.trim()}`;
     }
 
     console.log("Generating image with AI...");

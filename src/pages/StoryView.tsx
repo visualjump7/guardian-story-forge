@@ -227,7 +227,7 @@ const StoryView = () => {
     setIsImagePromptDialogOpen(true);
   };
 
-  const handleGenerateImage = async (customPrompt?: string) => {
+  const handleGenerateImage = async (customizations?: string) => {
     if (!storyId || storyImages.length >= 5) {
       toast.error("Maximum 5 images per story");
       return;
@@ -241,7 +241,7 @@ const StoryView = () => {
       const { error } = await supabase.functions.invoke("generate-story-image", {
         body: { 
           storyId,
-          customPrompt: customPrompt || undefined
+          customizations: customizations || undefined
         },
       });
 
