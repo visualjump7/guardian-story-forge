@@ -28,7 +28,8 @@ import {
   Play,
   Pause,
   MoreVertical,
-  Info
+  Info,
+  Palette
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -47,6 +48,7 @@ import {
 import { ShareDialog } from "@/components/ShareDialog";
 import { AudioPlayer } from "@/components/AudioPlayer";
 import { AppHeader } from "@/components/AppHeader";
+import { ImagePromptDialog } from "@/components/ImagePromptDialog";
 import {
   Carousel,
   CarouselContent,
@@ -107,6 +109,7 @@ const StoryView = () => {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [imageToDelete, setImageToDelete] = useState<string | null>(null);
   const [creatorProfile, setCreatorProfile] = useState<CreatorProfile | null>(null);
+  const [isImagePromptDialogOpen, setIsImagePromptDialogOpen] = useState(false);
 
   useEffect(() => {
     loadStory();
@@ -215,18 +218,30 @@ const StoryView = () => {
     setIsShareDialogOpen(true);
   };
 
-  const handleGenerateImage = async () => {
+  const handleOpenImageDialog = () => {
+    if (storyImages.length >= 5) {
+      toast.error("Maximum 5 images per story");
+      return;
+    }
+    setIsImagePromptDialogOpen(true);
+  };
+
+  const handleGenerateImage = async (customPrompt?: string) => {
     if (!storyId || storyImages.length >= 5) {
       toast.error("Maximum 5 images per story");
       return;
     }
 
     setGeneratingImage(true);
+    setIsImagePromptDialogOpen(false);
     toast.loading("Creating your illustration...", { id: "generate-image" });
     
     try {
       const { error } = await supabase.functions.invoke("generate-story-image", {
-        body: { storyId },
+        body: { 
+          storyId,
+          customPrompt: customPrompt || undefined
+        },
       });
 
       if (error) throw error;
@@ -529,9 +544,9 @@ const StoryView = () => {
                       <Tooltip>
                         <TooltipTrigger asChild>
                           <Button
-                            variant="outline"
+                            variant="default"
                             size="sm"
-                            onClick={handleGenerateImage}
+                            onClick={handleOpenImageDialog}
                             disabled={generatingImage || storyImages.length >= 5}
                             className="h-8 gap-1.5"
                           >
@@ -539,14 +554,14 @@ const StoryView = () => {
                               <Loader2 className="h-3.5 w-3.5 animate-spin" />
                             ) : (
                               <>
-                                <Plus className="h-3.5 w-3.5" />
-                                <span className="text-xs">Add Image</span>
+                                <Palette className="h-3.5 w-3.5" />
+                                <span className="text-xs font-medium">Create New Illustration</span>
                               </>
                             )}
                           </Button>
                         </TooltipTrigger>
                         <TooltipContent>
-                          <p>Add up to 5 images to your story - they'll be placed throughout the narrative</p>
+                          <p>Create custom illustrations for your story - up to 5 images total</p>
                         </TooltipContent>
                       </Tooltip>
                     </TooltipProvider>
@@ -616,45 +631,38 @@ const StoryView = () => {
                 </div>
               </div>
             ) : (
-              <div className="flex flex-col items-center justify-center gap-4 py-8">
-                <div className="text-7xl">
+              <div className="flex flex-col items-center justify-center gap-6 py-12 px-4">
+                <div className="text-8xl animate-pulse">
                   {story.story_themes?.emoji || "📖"}
                 </div>
-                <div className="flex items-center gap-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={handleGenerateImage}
-                    disabled={generatingImage}
-                  >
-                    {generatingImage ? (
-                      <>
-                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                        Generating...
-                      </>
-                    ) : (
-                      <>
-                        <Plus className="w-4 h-4 mr-2" />
-                        Generate Illustration
-                      </>
-                    )}
-                  </Button>
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                          <Info className="h-4 w-4 text-muted-foreground" />
-                        </Button>
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        <p>Add up to 5 images that will be placed throughout your story</p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
+                <div className="text-center space-y-2">
+                  <h3 className="text-lg font-semibold">Bring Your Story to Life</h3>
+                  <p className="text-sm text-muted-foreground max-w-md">
+                    Create stunning illustrations to accompany your story. Add up to 5 custom images that will be beautifully woven throughout the narrative.
+                  </p>
                 </div>
-                <p className="text-sm text-muted-foreground text-center max-w-md">
-                  Generate beautiful illustrations that will be automatically placed throughout your story
-                </p>
+                <Button
+                  size="lg"
+                  onClick={handleOpenImageDialog}
+                  disabled={generatingImage}
+                  className="gap-2"
+                >
+                  {generatingImage ? (
+                    <>
+                      <Loader2 className="w-5 h-5 animate-spin" />
+                      Creating Illustration...
+                    </>
+                  ) : (
+                    <>
+                      <Palette className="w-5 h-5" />
+                      Create Your First Illustration
+                    </>
+                  )}
+                </Button>
+                <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                  <Info className="h-3.5 w-3.5" />
+                  <span>Customize the prompt to match your vision</span>
+                </div>
               </div>
             )}
 
@@ -848,6 +856,27 @@ const StoryView = () => {
           </CardContent>
         </Card>
       </main>
+
+      {/* Image Prompt Dialog */}
+      {story && (
+        <ImagePromptDialog
+          open={isImagePromptDialogOpen}
+          onOpenChange={setIsImagePromptDialogOpen}
+          onGenerate={handleGenerateImage}
+          storyTitle={story.title}
+          heroName={story.hero_name || "the hero"}
+          artStyle={story.art_style || "pixar-3d"}
+          imageType={
+            storyImages.length === 0 ? 'cover' :
+            storyImages.length === 1 ? 'early-scene' :
+            storyImages.length === 2 ? 'mid-scene' :
+            storyImages.length === 3 ? 'climax' : 'ending'
+          }
+          storyExcerpt={story.content.split('\n\n').find((p: string) => p.trim()) || story.content.substring(0, 200)}
+          imageCount={storyImages.length}
+          isGenerating={generatingImage}
+        />
+      )}
     </div>
   );
 };
