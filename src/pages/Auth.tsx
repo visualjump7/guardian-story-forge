@@ -63,7 +63,7 @@ const Auth = () => {
 
   return (
     <div 
-      className="min-h-screen flex items-center justify-center p-4 bg-cover bg-center bg-no-repeat"
+      className="min-h-screen flex items-center justify-center p-4 bg-cover bg-bottom bg-no-repeat"
       style={{ backgroundImage: `url(${bgImage})` }}
     >
       <Card className="w-full max-w-md shadow-2xl border-0 bg-black/80">
