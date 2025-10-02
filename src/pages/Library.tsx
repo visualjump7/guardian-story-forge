@@ -201,91 +201,89 @@ const Library = () => {
                 <Card
                   key={saved.id}
                   variant="storybook"
-                  className="group cursor-pointer"
+                  className="group relative overflow-hidden cursor-pointer"
                   onClick={() => navigate(`/story/${saved.stories.id}`)}
                 >
-                  <div
-                    className={cn(
-                      "h-48 flex items-center justify-center overflow-hidden relative",
-                      getThemeGradient(saved.stories.story_themes?.name)
-                    )}
-                  >
+                  {/* Hero Image Section */}
+                  <div className="relative h-56 md:h-64 overflow-hidden">
                     {saved.stories.cover_image_url ? (
                       <img
                         src={saved.stories.cover_image_url}
                         alt={saved.stories.title}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                       />
                     ) : (
-                      <span className="text-7xl group-hover:scale-110 transition-transform duration-300">
-                        {saved.stories.story_themes?.emoji || "📖"}
-                      </span>
-                    )}
-                  </div>
-                  <CardHeader className="pb-3">
-                    <CardTitle className="text-xl line-clamp-2 group-hover:text-primary transition-colors font-serif">
-                      {saved.stories.title}
-                    </CardTitle>
-                    <CardDescription className="flex items-center gap-2 mt-3">
-                      {saved.stories.story_themes?.name && (
-                        <span
-                          className={cn(
-                            "inline-flex items-center gap-1 px-3 py-1 rounded-full text-sm font-medium backdrop-blur-sm border",
-                            getThemeBadgeStyle(saved.stories.story_themes.name)
-                          )}
-                        >
-                          {saved.stories.story_themes.emoji}{" "}
-                          {saved.stories.story_themes.name}
+                      <div
+                        className={cn(
+                          "w-full h-full flex items-center justify-center",
+                          getThemeGradient(saved.stories.story_themes?.name)
+                        )}
+                      >
+                        <span className="text-8xl group-hover:scale-110 transition-transform duration-300">
+                          {saved.stories.story_themes?.emoji || "📖"}
                         </span>
-                      )}
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent className="relative pb-6">
-                    <p className="text-muted-foreground line-clamp-3 mb-4 italic text-sm leading-relaxed">
-                      {saved.stories.content.substring(0, 120)}...
-                    </p>
-                    <div className="space-y-2" onClick={(e) => e.stopPropagation()}>
+                      </div>
+                    )}
+                    
+                    {/* Theme Badge Overlay */}
+                    {saved.stories.story_themes?.name && (
+                      <div className="absolute top-4 left-4">
+                        <span className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-red-600/90 backdrop-blur-sm text-white text-sm font-semibold shadow-lg border border-white/20">
+                          {saved.stories.story_themes.emoji} {saved.stories.story_themes.name}
+                        </span>
+                      </div>
+                    )}
+
+                    {/* Action Buttons Overlay - Top Right */}
+                    <div className="absolute top-4 right-4 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                       <Button
-                        variant="magical"
-                        size="sm"
+                        variant="secondary"
+                        size="icon"
+                        className="rounded-full bg-black/60 backdrop-blur-sm border border-white/20 hover:bg-black/80"
                         onClick={(e) => {
                           e.stopPropagation();
-                          navigate(`/story/${saved.stories.id}`);
+                          handleShare(saved);
                         }}
-                        className="w-full gap-2"
                       >
-                        <BookOpen className="w-4 h-4" />
-                        View Story
+                        <Share2 className="h-4 w-4 text-white" />
                       </Button>
-                      <div className="flex gap-2">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleShare(saved);
-                          }}
-                          className="flex-1"
-                        >
-                          <Share2 className="mr-2 h-4 w-4" />
-                          Share
-                        </Button>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setStoryToRemove(saved);
-                            setDialogOpen(true);
-                          }}
-                          className="flex-1"
-                        >
-                          <Trash2 className="mr-2 h-4 w-4" />
-                          Delete
-                        </Button>
-                      </div>
+                      <Button
+                        variant="secondary"
+                        size="icon"
+                        className="rounded-full bg-black/60 backdrop-blur-sm border border-white/20 hover:bg-red-600/90"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setStoryToRemove(saved);
+                          setDialogOpen(true);
+                        }}
+                      >
+                        <Trash2 className="h-4 w-4 text-white" />
+                      </Button>
                     </div>
-                  </CardContent>
+                  </div>
+
+                  {/* Dark Text Section */}
+                  <div className="relative bg-gradient-to-t from-black/95 via-black/90 to-transparent p-6 space-y-3">
+                    <h3 className="text-2xl md:text-3xl font-bold text-amber-400 line-clamp-2 tracking-tight leading-tight">
+                      {saved.stories.title}
+                    </h3>
+                    
+                    <p className="text-white/90 text-sm md:text-base line-clamp-2 leading-relaxed">
+                      {saved.stories.content.substring(0, 120)}...
+                    </p>
+                    
+                    <Button
+                      variant="outline"
+                      className="w-full mt-4 rounded-full border-white/40 bg-transparent text-white hover:bg-white hover:text-black transition-all"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        navigate(`/story/${saved.stories.id}`);
+                      }}
+                    >
+                      <BookOpen className="mr-2 h-4 w-4" />
+                      Continue Reading
+                    </Button>
+                  </div>
                 </Card>
               ))}
             </div>

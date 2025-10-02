@@ -181,37 +181,53 @@ const Home = () => {
             {stories.map((story) => (
               <Card
                 key={story.id}
-                className="hover:shadow-[var(--shadow-card)] transition-all hover:scale-105 cursor-pointer border-2 overflow-hidden"
+                className="group relative overflow-hidden cursor-pointer hover:shadow-[var(--shadow-card)] transition-all hover:scale-[1.02] border-2"
                 onClick={() => handleReadStory(story.id)}
               >
-                <div className="h-40 bg-gradient-to-br from-primary/20 via-accent/20 to-secondary/20 flex items-center justify-center overflow-hidden">
+                {/* Hero Image Section */}
+                <div className="relative h-56 md:h-64 overflow-hidden">
                   {story.cover_image_url ? (
                     <img
                       src={story.cover_image_url}
                       alt={story.title}
-                      className="w-full h-full object-contain"
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                     />
                   ) : (
-                    <span className="text-6xl">
-                      {story.story_themes?.emoji || "📖"}
-                    </span>
+                    <div className="w-full h-full bg-gradient-to-br from-primary/30 via-accent/30 to-secondary/30 flex items-center justify-center">
+                      <span className="text-8xl group-hover:scale-110 transition-transform duration-300">
+                        {story.story_themes?.emoji || "📖"}
+                      </span>
+                    </div>
                   )}
-                </div>
-                <CardHeader>
-                  <CardTitle className="text-xl line-clamp-2">{story.title}</CardTitle>
-                  <CardDescription className="flex items-center gap-2">
-                    {story.story_themes?.name && (
-                      <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-primary/10 text-primary text-sm font-medium">
+                  
+                  {/* Theme Badge Overlay */}
+                  {story.story_themes?.name && (
+                    <div className="absolute top-4 left-4">
+                      <span className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-red-600/90 backdrop-blur-sm text-white text-sm font-semibold shadow-lg border border-white/20">
                         {story.story_themes.emoji} {story.story_themes.name}
                       </span>
-                    )}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-muted-foreground line-clamp-3">
-                    {story.content.substring(0, 150)}...
+                    </div>
+                  )}
+                </div>
+
+                {/* Dark Text Section */}
+                <div className="relative bg-gradient-to-t from-black/95 via-black/90 to-transparent p-6 space-y-3">
+                  <h3 className="text-2xl md:text-3xl font-bold text-amber-400 line-clamp-2 tracking-tight leading-tight">
+                    {story.title}
+                  </h3>
+                  
+                  <p className="text-white/90 text-sm md:text-base line-clamp-2 leading-relaxed">
+                    {story.content.substring(0, 120)}...
                   </p>
-                </CardContent>
+                  
+                  <Button
+                    variant="outline"
+                    className="w-full mt-4 rounded-full border-white/40 bg-transparent text-white hover:bg-white hover:text-black transition-all"
+                    onClick={() => handleReadStory(story.id)}
+                  >
+                    Begin This Adventure
+                  </Button>
+                </div>
               </Card>
             ))}
           </div>
