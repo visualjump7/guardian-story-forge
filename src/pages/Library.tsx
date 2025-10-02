@@ -7,6 +7,7 @@ import { BookOpen, Trash2, Share2, PlusCircle } from "lucide-react";
 import { toast } from "sonner";
 import { ShareDialog } from "@/components/ShareDialog";
 import { AppHeader } from "@/components/AppHeader";
+import { cn } from "@/lib/utils";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -35,6 +36,46 @@ interface SavedStory {
     } | null;
   };
 }
+
+const getThemeGradient = (themeName?: string) => {
+  if (!themeName) return "bg-gradient-to-br from-primary/20 via-accent/20 to-secondary/20";
+  
+  const theme = themeName.toLowerCase();
+  const gradientMap: Record<string, string> = {
+    adventure: "bg-gradient-to-br from-[hsl(var(--story-adventure))] to-[hsl(var(--story-adventure-light))]",
+    fantasy: "bg-gradient-to-br from-[hsl(var(--story-fantasy))] to-[hsl(var(--story-fantasy-light))]",
+    friendship: "bg-gradient-to-br from-[hsl(var(--story-friendship))] to-[hsl(var(--story-friendship-light))]",
+    magic: "bg-gradient-to-br from-[hsl(var(--story-magic))] to-[hsl(var(--story-magic-light))]",
+    nature: "bg-gradient-to-br from-[hsl(var(--story-nature))] to-[hsl(var(--story-nature-light))]",
+  };
+  
+  // Check if theme contains any of the keywords
+  for (const [key, gradient] of Object.entries(gradientMap)) {
+    if (theme.includes(key)) return gradient;
+  }
+  
+  return "bg-gradient-to-br from-primary/20 via-accent/20 to-secondary/20";
+};
+
+const getThemeBadgeStyle = (themeName?: string) => {
+  if (!themeName) return "bg-primary/20 text-primary border-primary/30";
+  
+  const theme = themeName.toLowerCase();
+  const styleMap: Record<string, string> = {
+    adventure: "bg-[hsl(var(--story-adventure))]/20 text-[hsl(var(--story-adventure-light))] border-[hsl(var(--story-adventure))]",
+    fantasy: "bg-[hsl(var(--story-fantasy))]/20 text-[hsl(var(--story-fantasy-light))] border-[hsl(var(--story-fantasy))]",
+    friendship: "bg-[hsl(var(--story-friendship))]/20 text-[hsl(var(--story-friendship-light))] border-[hsl(var(--story-friendship))]",
+    magic: "bg-[hsl(var(--story-magic))]/20 text-[hsl(var(--story-magic-light))] border-[hsl(var(--story-magic))]",
+    nature: "bg-[hsl(var(--story-nature))]/20 text-[hsl(var(--story-nature-light))] border-[hsl(var(--story-nature))]",
+  };
+  
+  // Check if theme contains any of the keywords
+  for (const [key, style] of Object.entries(styleMap)) {
+    if (theme.includes(key)) return style;
+  }
+  
+  return "bg-primary/20 text-primary border-primary/30";
+};
 
 const Library = () => {
   const navigate = useNavigate();
@@ -155,38 +196,44 @@ const Library = () => {
             <h2 className="text-3xl font-bold text-foreground">
               Your Saved Stories ({savedStories.length})
             </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {savedStories.map((saved) => (
                 <Card
                   key={saved.id}
-                  className="hover:shadow-[var(--shadow-card)] transition-all hover:scale-105 border-2 overflow-hidden"
+                  variant="storybook"
+                  className="group cursor-pointer"
+                  onClick={() => navigate(`/story/${saved.stories.id}`)}
                 >
                   <div
-                    className="h-40 bg-gradient-to-br from-primary/20 via-accent/20 to-secondary/20 flex items-center justify-center cursor-pointer overflow-hidden"
-                    onClick={() => navigate(`/story/${saved.stories.id}`)}
+                    className={cn(
+                      "h-48 flex items-center justify-center overflow-hidden relative",
+                      getThemeGradient(saved.stories.story_themes?.name)
+                    )}
                   >
                     {saved.stories.cover_image_url ? (
                       <img
                         src={saved.stories.cover_image_url}
                         alt={saved.stories.title}
-                        className="w-full h-full object-contain"
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                       />
                     ) : (
-                      <span className="text-6xl">
+                      <span className="text-7xl group-hover:scale-110 transition-transform duration-300">
                         {saved.stories.story_themes?.emoji || "📖"}
                       </span>
                     )}
                   </div>
-                  <CardHeader>
-                    <CardTitle
-                      className="text-xl line-clamp-2 cursor-pointer hover:text-primary"
-                      onClick={() => navigate(`/story/${saved.stories.id}`)}
-                    >
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-xl line-clamp-2 group-hover:text-primary transition-colors font-serif">
                       {saved.stories.title}
                     </CardTitle>
-                    <CardDescription className="flex items-center gap-2">
+                    <CardDescription className="flex items-center gap-2 mt-3">
                       {saved.stories.story_themes?.name && (
-                        <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-primary/10 text-primary text-sm font-medium">
+                        <span
+                          className={cn(
+                            "inline-flex items-center gap-1 px-3 py-1 rounded-full text-sm font-medium backdrop-blur-sm border",
+                            getThemeBadgeStyle(saved.stories.story_themes.name)
+                          )}
+                        >
                           {saved.stories.story_themes.emoji}{" "}
                           {saved.stories.story_themes.name}
                         </span>
@@ -194,14 +241,17 @@ const Library = () => {
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
-                    <p className="text-muted-foreground line-clamp-2 mb-4">
-                      {saved.stories.content.substring(0, 100)}...
+                    <p className="text-muted-foreground line-clamp-3 mb-4 italic text-sm leading-relaxed">
+                      {saved.stories.content.substring(0, 120)}...
                     </p>
-                    <div className="flex gap-2">
+                    <div className="flex gap-2" onClick={(e) => e.stopPropagation()}>
                       <Button
                         variant="outline"
                         size="sm"
-                        onClick={() => handleShare(saved)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleShare(saved);
+                        }}
                         className="flex-1 gap-2"
                       >
                         <Share2 className="w-4 h-4" />
@@ -212,7 +262,10 @@ const Library = () => {
                           <Button
                             variant="destructive"
                             size="sm"
-                            onClick={() => setStoryToRemove(saved)}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setStoryToRemove(saved);
+                            }}
                             className="flex-1 gap-2"
                           >
                             <Trash2 className="w-4 h-4" />

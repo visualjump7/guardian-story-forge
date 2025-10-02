@@ -43,6 +43,18 @@ All colors MUST be HSL.
 
     --radius: 1rem;
 
+    /* Storybook Theme Colors */
+    --story-adventure: 142 76% 36%;
+    --story-adventure-light: 142 71% 50%;
+    --story-fantasy: 262 52% 47%;
+    --story-fantasy-light: 262 52% 65%;
+    --story-friendship: 16 100% 60%;
+    --story-friendship-light: 340 82% 70%;
+    --story-magic: 45 100% 51%;
+    --story-magic-light: 280 80% 60%;
+    --story-nature: 142 71% 35%;
+    --story-nature-light: 142 71% 55%;
+
     /* Cinematic gradients with energy */
     --gradient-magical: linear-gradient(135deg, hsl(200 50% 10%) 0%, hsl(185 70% 15%) 50%, hsl(200 40% 8%) 100%);
     --gradient-warm: linear-gradient(135deg, hsl(35 100% 50%) 0%, hsl(25 95% 55%) 100%);
@@ -54,6 +66,7 @@ All colors MUST be HSL.
     --shadow-warm: 0 20px 60px -20px hsl(35 100% 50% / 0.5);
     --shadow-card: 0 8px 32px hsl(35 100% 50% / 0.15);
     --shadow-glow: 0 0 40px hsl(185 80% 55% / 0.4);
+    --shadow-book: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24), 8px 8px 0 -2px hsl(200 30% 18%), 8px 8px 0 0 hsl(200 30% 20%);
 
     /* Animations */
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -90,6 +103,18 @@ All colors MUST be HSL.
     --border: 200 35% 18%;
     --input: 200 35% 12%;
     --ring: 40 100% 60%;
+
+    /* Storybook Theme Colors - Dark Mode */
+    --story-adventure: 142 71% 45%;
+    --story-adventure-light: 142 71% 60%;
+    --story-fantasy: 262 52% 60%;
+    --story-fantasy-light: 262 52% 75%;
+    --story-friendship: 16 100% 70%;
+    --story-friendship-light: 340 82% 75%;
+    --story-magic: 45 100% 60%;
+    --story-magic-light: 280 80% 70%;
+    --story-nature: 142 71% 48%;
+    --story-nature-light: 142 71% 62%;
   }
 }
 
