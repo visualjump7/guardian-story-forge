@@ -240,11 +240,23 @@ const Library = () => {
                       )}
                     </CardDescription>
                   </CardHeader>
-                  <CardContent>
+                  <CardContent className="relative pb-6">
                     <p className="text-muted-foreground line-clamp-3 mb-4 italic text-sm leading-relaxed">
                       {saved.stories.content.substring(0, 120)}...
                     </p>
                     <div className="flex gap-2" onClick={(e) => e.stopPropagation()}>
+                      <Button
+                        variant="magical"
+                        size="sm"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          navigate(`/story/${saved.stories.id}`);
+                        }}
+                        className="flex-1 gap-2"
+                      >
+                        <BookOpen className="w-4 h-4" />
+                        View Story
+                      </Button>
                       <Button
                         variant="outline"
                         size="sm"
@@ -252,44 +264,23 @@ const Library = () => {
                           e.stopPropagation();
                           handleShare(saved);
                         }}
-                        className="flex-1 gap-2"
                       >
                         <Share2 className="w-4 h-4" />
-                        Share
                       </Button>
-                      <AlertDialog open={dialogOpen} onOpenChange={setDialogOpen}>
-                        <AlertDialogTrigger asChild>
-                          <Button
-                            variant="destructive"
-                            size="sm"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setStoryToRemove(saved);
-                            }}
-                            className="flex-1 gap-2"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                            Remove
-                          </Button>
-                        </AlertDialogTrigger>
-                        <AlertDialogContent>
-                          <AlertDialogHeader>
-                            <AlertDialogTitle>Remove Story from Library?</AlertDialogTitle>
-                            <AlertDialogDescription>
-                              Are you sure you want to remove "{saved.stories.title}" from your library? This action cannot be undone.
-                            </AlertDialogDescription>
-                          </AlertDialogHeader>
-                          <AlertDialogFooter>
-                            <AlertDialogCancel onClick={() => setStoryToRemove(null)}>
-                              Cancel
-                            </AlertDialogCancel>
-                            <AlertDialogAction onClick={handleRemove} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
-                              Remove
-                            </AlertDialogAction>
-                          </AlertDialogFooter>
-                        </AlertDialogContent>
-                      </AlertDialog>
                     </div>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setStoryToRemove(saved);
+                        setDialogOpen(true);
+                      }}
+                      className="absolute bottom-2 right-2 h-8 w-8 text-muted-foreground hover:text-destructive transition-colors"
+                      aria-label="Remove story from library"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
                   </CardContent>
                 </Card>
               ))}
@@ -307,6 +298,25 @@ const Library = () => {
           coverImageUrl={storyToShare.stories.cover_image_url}
         />
       )}
+
+      <AlertDialog open={dialogOpen} onOpenChange={setDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Remove Story from Library?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to remove "{storyToRemove?.stories.title}" from your library? This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setStoryToRemove(null)}>
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction onClick={handleRemove} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+              Remove
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };
