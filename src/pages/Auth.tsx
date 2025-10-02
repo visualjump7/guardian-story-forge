@@ -8,6 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { toast } from "sonner";
 import { Sparkles } from "lucide-react";
 import logo from "@/assets/guardian-kids-logo.png";
+import bgImage from "@/assets/BG-Sign_In.jpg";
 
 const Auth = () => {
   const navigate = useNavigate();
@@ -61,13 +62,16 @@ const Auth = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-primary via-primary-glow to-secondary">
-      <Card className="w-full max-w-md shadow-2xl border-0">
+    <div 
+      className="min-h-screen flex items-center justify-center p-4 bg-cover bg-center bg-no-repeat"
+      style={{ backgroundImage: `url(${bgImage})` }}
+    >
+      <Card className="w-full max-w-md shadow-2xl border-0 bg-black/80">
         <CardHeader className="text-center space-y-4">
-          <CardTitle className="text-3xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+          <CardTitle className="text-3xl font-bold text-white">
             {isLogin ? "Welcome Back!" : "Join Guardian Kids"}
           </CardTitle>
-          <CardDescription className="text-base">
+          <CardDescription className="text-base text-gray-300">
             {isLogin
               ? "Ready for more magical stories?"
               : "Start your storytelling adventure today"}
@@ -78,7 +82,7 @@ const Auth = () => {
             {!isLogin && (
               <>
                 <div className="space-y-2">
-                  <Label htmlFor="displayName">Your Name</Label>
+                  <Label htmlFor="displayName" className="text-gray-200">Your Name</Label>
                   <Input
                     id="displayName"
                     type="text"
@@ -89,7 +93,7 @@ const Auth = () => {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="authorName">Your Author Display Name</Label>
+                  <Label htmlFor="authorName" className="text-gray-200">Your Author Display Name</Label>
                   <Input
                     id="authorName"
                     type="text"
@@ -102,7 +106,7 @@ const Auth = () => {
               </>
             )}
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email" className="text-gray-200">Email</Label>
               <Input
                 id="email"
                 type="email"
@@ -114,7 +118,7 @@ const Auth = () => {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
+              <Label htmlFor="password" className="text-gray-200">Password</Label>
               <Input
                 id="password"
                 type="password"
@@ -146,7 +150,7 @@ const Auth = () => {
             <button
               type="button"
               onClick={() => setIsLogin(!isLogin)}
-              className="text-primary hover:underline font-medium"
+              className="text-gray-300 hover:text-white hover:underline font-medium"
             >
               {isLogin
                 ? "Don't have an account? Sign up"
@@ -159,7 +163,7 @@ const Auth = () => {
                 href="https://www.phantomservices.com"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-muted-foreground/60 hover:text-muted-foreground text-xs transition-colors"
+                className="text-gray-500 hover:text-gray-300 text-xs transition-colors"
               >
                 Powered by Phantom
               </a>
