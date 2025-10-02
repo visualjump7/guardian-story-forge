@@ -378,7 +378,7 @@ const StoryView = () => {
       { position: Math.floor(totalParagraphs * 0.95), index: 4, label: 'Ending' },
     ];
     
-    return paragraphs.map((paragraph, index) => (
+    const content = paragraphs.map((paragraph, index) => (
       <div key={index}>
         <p className="text-lg leading-relaxed mb-4">
           {paragraph}
@@ -401,6 +401,17 @@ const StoryView = () => {
         })}
       </div>
     ));
+
+    // Add "The End" at the end of the story
+    content.push(
+      <div key="the-end" className="mt-12 mb-8 text-center">
+        <p className="text-2xl font-serif italic text-muted-foreground">
+          ~ The End ~
+        </p>
+      </div>
+    );
+
+    return content;
   };
 
   if (loading) {
