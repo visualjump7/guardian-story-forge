@@ -100,7 +100,14 @@ serve(async (req) => {
       "overcoming-monster": "Introduce a challenge or 'monster' (literal or metaphorical), build tension, show the character's courage in overcoming it"
     };
 
-    let systemPrompt = `You are a creative children's story writer. Create engaging, age-appropriate stories that teach important life lessons.`;
+    let systemPrompt = `You are a creative children's story writer. Create engaging, age-appropriate stories that teach important life lessons.
+
+CRITICAL REQUIREMENT FOR TITLE:
+- Generate a unique, creative, and captivating title that reflects the specific story and theme
+- The title MUST be original and avoid generic patterns like "The Adventures of [name]"
+- Use imaginative language that captures the essence of the story's unique elements
+- Start your story with the title on the first line in markdown format: # Your Creative Title Here
+- Make the title memorable and age-appropriate`;
     
     // Add Guardian Ranch universe context if selected
     if (storyUniverse === 'guardian-ranch') {
@@ -182,11 +189,12 @@ Length: ${wordCounts[storyLength as keyof typeof wordCounts]}`;
       throw new Error("No story content generated");
     }
 
-    // Create a title from the first line or generate one
+    // Extract title from the first line - AI should always provide one now
     const titleMatch = storyContent.match(/^#\s*(.+)/m);
-    const title = titleMatch 
-      ? titleMatch[1].trim()
-      : `The Adventures of ${heroName}`;
+    if (!titleMatch) {
+      throw new Error("AI did not generate a story title. Please try again.");
+    }
+    const title = titleMatch[1].trim();
 
     // Remove title from content if it exists
     const cleanContent = storyContent.replace(/^#\s*.+\n\n/, "");

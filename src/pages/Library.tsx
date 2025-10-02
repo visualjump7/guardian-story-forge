@@ -269,14 +269,14 @@ const Library = () => {
                       </Button>
                     </div>
                     <Button
-                      variant="ghost"
+                      variant="outline"
                       size="icon"
                       onClick={(e) => {
                         e.stopPropagation();
                         setStoryToRemove(saved);
                         setDialogOpen(true);
                       }}
-                      className="absolute bottom-2 right-2 h-8 w-8 text-muted-foreground hover:text-destructive transition-colors"
+                      className="absolute bottom-4 right-4 h-8 w-8"
                       aria-label="Remove story from library"
                     >
                       <Trash2 className="h-4 w-4" />
