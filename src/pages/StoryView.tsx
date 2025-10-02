@@ -45,6 +45,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { ShareDialog } from "@/components/ShareDialog";
+import { AudioPlayer } from "@/components/AudioPlayer";
 import { AppHeader } from "@/components/AppHeader";
 import {
   Carousel,
@@ -102,8 +103,6 @@ const StoryView = () => {
   const [generatingImage, setGeneratingImage] = useState(false);
   const [isGeneratingAudio, setIsGeneratingAudio] = useState(false);
   const [selectedVoice, setSelectedVoice] = useState("alloy");
-  const [isPlaying, setIsPlaying] = useState(false);
-  const audioRef = useRef<HTMLAudioElement>(null);
   const [isShareDialogOpen, setIsShareDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [imageToDelete, setImageToDelete] = useState<string | null>(null);
@@ -352,17 +351,6 @@ const StoryView = () => {
     } finally {
       setIsGeneratingAudio(false);
     }
-  };
-
-  const togglePlayPause = () => {
-    if (!audioRef.current) return;
-
-    if (isPlaying) {
-      audioRef.current.pause();
-    } else {
-      audioRef.current.play();
-    }
-    setIsPlaying(!isPlaying);
   };
 
   const renderStoryWithImages = () => {
@@ -670,87 +658,150 @@ const StoryView = () => {
               </div>
             )}
 
-            {/* Compact Audio Player */}
-            <div className="px-4 py-3 rounded-lg bg-muted/30 border border-border/50">
-              <div className="flex items-center gap-3">
-                {/* Play/Pause Button */}
-                <Button
-                  onClick={story.audio_url ? togglePlayPause : handleGenerateAudio}
-                  size="sm"
-                  variant={story.audio_url ? "default" : "outline"}
-                  className="h-9 w-9 rounded-full p-0 flex-shrink-0"
-                  disabled={isGeneratingAudio}
-                >
-                  {isGeneratingAudio ? (
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                  ) : story.audio_url && isPlaying ? (
-                    <Pause className="h-4 w-4" />
-                  ) : (
-                    <Play className="h-4 w-4" />
-                  )}
-                </Button>
-
-                {/* Audio Progress or Generate Label */}
-                <div className="flex-1 min-w-0">
-                  {story.audio_url ? (
-                    <>
-                      <audio
-                        ref={audioRef}
-                        src={story.audio_url}
-                        onEnded={() => setIsPlaying(false)}
-                        onPlay={() => setIsPlaying(true)}
-                        onPause={() => setIsPlaying(false)}
-                        className="w-full h-1"
-                        style={{ accentColor: 'hsl(var(--primary))' }}
-                      />
-                      <p className="text-xs text-muted-foreground mt-1">Audio Narration</p>
-                    </>
-                  ) : (
-                    <div className="flex items-center gap-2">
-                      <p className="text-sm text-muted-foreground">Generate AI narration</p>
-                      <TooltipProvider>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <Info className="h-3.5 w-3.5 text-muted-foreground cursor-help" />
-                          </TooltipTrigger>
-                          <TooltipContent>
-                            <p>Generate AI narration with different voice options to bring your story to life</p>
-                          </TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
+            {/* Enhanced Audio Section */}
+            <div className="space-y-4">
+              {!story.audio_url ? (
+                /* Pre-Generation State */
+                <div className="p-8 rounded-xl bg-gradient-to-br from-primary/5 via-primary/10 to-primary/5 border-2 border-dashed border-primary/30 text-center space-y-4">
+                  <div className="flex justify-center">
+                    <div className="p-4 rounded-full bg-primary/10">
+                      <Volume2 className="h-8 w-8 text-primary" />
                     </div>
-                  )}
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-semibold mb-2">Generate Audio Narration</h3>
+                    <p className="text-sm text-muted-foreground max-w-md mx-auto">
+                      Bring your story to life with AI-powered narration. Choose a voice and let AI read your story aloud.
+                    </p>
+                  </div>
+                  
+                  <div className="flex items-center justify-center gap-3">
+                    <Select value={selectedVoice} onValueChange={setSelectedVoice}>
+                      <SelectTrigger className="w-40">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="alloy">Alloy (Neutral)</SelectItem>
+                        <SelectItem value="echo">Echo (Deep)</SelectItem>
+                        <SelectItem value="fable">Fable (Warm)</SelectItem>
+                        <SelectItem value="onyx">Onyx (Rich)</SelectItem>
+                        <SelectItem value="nova">Nova (Bright)</SelectItem>
+                        <SelectItem value="shimmer">Shimmer (Soft)</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    
+                    <Button
+                      onClick={handleGenerateAudio}
+                      disabled={isGeneratingAudio}
+                      size="lg"
+                      className="gap-2"
+                    >
+                      {isGeneratingAudio ? (
+                        <>
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                          Generating...
+                        </>
+                      ) : (
+                        <>
+                          <Play className="h-4 w-4" />
+                          Generate Narration
+                        </>
+                      )}
+                    </Button>
+                  </div>
                 </div>
+              ) : (
+                /* Audio Player State */
+                <div className="space-y-3">
+                  <AudioPlayer audioUrl={story.audio_url} title={story.title} />
+                  
+                  {/* Regenerate Option */}
+                  <div className="flex items-center justify-between px-4 py-2 rounded-lg bg-muted/20 border border-border/30">
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <RefreshCw className="h-4 w-4" />
+                      <span>Want a different voice?</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Select value={selectedVoice} onValueChange={setSelectedVoice}>
+                        <SelectTrigger className="w-32 h-8 text-xs">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="alloy">Alloy</SelectItem>
+                          <SelectItem value="echo">Echo</SelectItem>
+                          <SelectItem value="fable">Fable</SelectItem>
+                          <SelectItem value="onyx">Onyx</SelectItem>
+                          <SelectItem value="nova">Nova</SelectItem>
+                          <SelectItem value="shimmer">Shimmer</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={handleGenerateAudio}
+                        disabled={isGeneratingAudio}
+                        className="h-8"
+                      >
+                        {isGeneratingAudio ? (
+                          <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                        ) : (
+                          'Regenerate'
+                        )}
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              )}
 
-                {/* Voice Select */}
-                <Select value={selectedVoice} onValueChange={setSelectedVoice}>
-                  <SelectTrigger className="w-28 h-8 text-xs">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="alloy">Alloy</SelectItem>
-                    <SelectItem value="echo">Echo</SelectItem>
-                    <SelectItem value="fable">Fable</SelectItem>
-                    <SelectItem value="onyx">Onyx</SelectItem>
-                    <SelectItem value="nova">Nova</SelectItem>
-                    <SelectItem value="shimmer">Shimmer</SelectItem>
-                  </SelectContent>
-                </Select>
-
-                {/* Regenerate Button (only show if audio exists) */}
-                {story.audio_url && (
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={handleGenerateAudio}
-                    disabled={isGeneratingAudio}
-                    className="h-8 px-2"
-                    title="Regenerate with new voice"
-                  >
-                    <RefreshCw className="h-3.5 w-3.5" />
-                  </Button>
-                )}
-              </div>
+              {/* Multi-Stage Generation Progress */}
+              {isGeneratingAudio && (
+                <div className="p-6 rounded-xl bg-gradient-to-br from-primary/10 to-primary/5 border border-primary/20 space-y-4 animate-fade-in">
+                  <div className="flex items-center gap-3">
+                    <div className="relative">
+                      <Loader2 className="h-6 w-6 text-primary animate-spin" />
+                      <div className="absolute inset-0 blur-md bg-primary/30 animate-pulse" />
+                    </div>
+                    <div>
+                      <h4 className="font-semibold text-foreground">Generating Your Audio Narration</h4>
+                      <p className="text-sm text-muted-foreground">This may take a moment...</p>
+                    </div>
+                  </div>
+                  
+                  {/* Stage Indicators */}
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-3 p-3 rounded-lg bg-background/50 border border-border/50">
+                      <div className="flex-shrink-0 w-8 h-8 rounded-full bg-primary flex items-center justify-center text-primary-foreground font-semibold text-sm">
+                        1
+                      </div>
+                      <div className="flex-1">
+                        <p className="text-sm font-medium">Analyzing Story Content</p>
+                        <p className="text-xs text-muted-foreground">Processing text and preparing for narration</p>
+                      </div>
+                      <Loader2 className="h-4 w-4 text-primary animate-spin" />
+                    </div>
+                    
+                    <div className="flex items-center gap-3 p-3 rounded-lg bg-background/30 border border-border/30 opacity-60">
+                      <div className="flex-shrink-0 w-8 h-8 rounded-full bg-muted flex items-center justify-center text-muted-foreground font-semibold text-sm">
+                        2
+                      </div>
+                      <div className="flex-1">
+                        <p className="text-sm font-medium">Generating Audio</p>
+                        <p className="text-xs text-muted-foreground">Creating narration with selected voice</p>
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-center gap-3 p-3 rounded-lg bg-background/30 border border-border/30 opacity-40">
+                      <div className="flex-shrink-0 w-8 h-8 rounded-full bg-muted flex items-center justify-center text-muted-foreground font-semibold text-sm">
+                        3
+                      </div>
+                      <div className="flex-1">
+                        <p className="text-sm font-medium">Finalizing</p>
+                        <p className="text-xs text-muted-foreground">Converting and saving your audio file</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
 
             <CardTitle className="text-4xl font-bold text-center">
