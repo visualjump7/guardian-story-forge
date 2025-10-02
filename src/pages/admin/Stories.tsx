@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { supabase } from '@/integrations/supabase/client';
-import { Search, Star, Eye, EyeOff, Trash2 } from 'lucide-react';
+import { Search, Star, Eye, EyeOff, Trash2, Pencil } from 'lucide-react';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
 
@@ -180,7 +180,16 @@ export default function AdminStories() {
                           <Button
                             variant="outline"
                             size="sm"
+                            onClick={() => navigate(`/admin/stories/${story.id}/edit`)}
+                            title="Edit story"
+                          >
+                            <Pencil className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="sm"
                             onClick={() => handleToggleFeatured(story.id, story.is_featured)}
+                            title="Toggle featured"
                           >
                             <Star className={`h-4 w-4 ${story.is_featured ? 'fill-yellow-500' : ''}`} />
                           </Button>
@@ -188,6 +197,7 @@ export default function AdminStories() {
                             variant="outline"
                             size="sm"
                             onClick={() => handleTogglePublic(story.id, story.is_public)}
+                            title="Toggle public"
                           >
                             {story.is_public ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
                           </Button>
@@ -195,6 +205,7 @@ export default function AdminStories() {
                             variant="outline"
                             size="sm"
                             onClick={() => handleDeleteStory(story.id)}
+                            title="Delete story"
                           >
                             <Trash2 className="h-4 w-4" />
                           </Button>
