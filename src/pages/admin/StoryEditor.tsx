@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
 import { AdminLayout } from '@/components/AdminLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -7,8 +6,9 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { supabase } from '@/integrations/supabase/client';
+import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'sonner';
-import { Loader2, Upload, ArrowLeft } from 'lucide-react';
+import { Loader2, X } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 
 export default function StoryEditor() {
@@ -19,6 +19,7 @@ export default function StoryEditor() {
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [imageFile, setImageFile] = useState<File | null>(null);
   
   const [formData, setFormData] = useState({
     title: '',
@@ -26,8 +27,9 @@ export default function StoryEditor() {
     excerpt: '',
     hero_name: '',
     story_universe: '',
-    age_range: '8-10',
+    age_range: '',
     story_type: '',
+    cover_image_url: '',
   });
 
   useEffect(() => {
@@ -37,6 +39,8 @@ export default function StoryEditor() {
   }, [id]);
 
   const loadStory = async () => {
+    if (!id) return;
+    
     setLoading(true);
     const { data, error } = await supabase
       .from('stories')
@@ -56,8 +60,9 @@ export default function StoryEditor() {
       excerpt: data.excerpt || '',
       hero_name: data.hero_name || '',
       story_universe: data.story_universe || '',
-      age_range: data.age_range || '8-10',
+      age_range: data.age_range || '',
       story_type: data.story_type || '',
+      cover_image_url: data.cover_image_url || '',
     });
 
     if (data.cover_image_url) {
@@ -67,103 +72,98 @@ export default function StoryEditor() {
     setLoading(false);
   };
 
-  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    // Validate file size (max 5MB)
+    // Validate file size (5MB)
     if (file.size > 5 * 1024 * 1024) {
       toast.error('Image must be under 5MB');
       return;
     }
 
     // Validate file type
-    const allowedTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
-    if (!allowedTypes.includes(file.type)) {
-      toast.error('Only JPEG, PNG, WebP, and GIF images are allowed');
+    if (!file.type.startsWith('image/')) {
+      toast.error('Please select an image file');
       return;
     }
 
+    setImageFile(file);
+    
+    // Create preview
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setImagePreview(reader.result as string);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleImageUpload = async () => {
+    if (!imageFile || !id) return null;
+
     setUploading(true);
-
     try {
-      // Create filename
-      const fileExt = file.name.split('.').pop();
+      const fileExt = imageFile.name.split('.').pop();
       const fileName = `${id}-cover.${fileExt}`;
-
-      // Upload to Supabase Storage
+      
       const { error: uploadError } = await supabase.storage
         .from('featured-story-covers')
-        .upload(fileName, file, {
+        .upload(fileName, imageFile, {
           cacheControl: '3600',
-          upsert: true, // Replace existing cover
+          upsert: true
         });
 
       if (uploadError) throw uploadError;
 
-      // Get public URL
       const { data: { publicUrl } } = supabase.storage
         .from('featured-story-covers')
         .getPublicUrl(fileName);
 
-      // Update story record
-      const { error: updateError } = await supabase
-        .from('stories')
-        .update({ cover_image_url: publicUrl })
-        .eq('id', id);
-
-      if (updateError) throw updateError;
-
-      setImagePreview(publicUrl);
-      toast.success('Cover image uploaded successfully!');
-
-      // Log admin activity
-      await supabase.from('admin_activity_log').insert({
-        admin_id: user?.id,
-        action: 'upload_story_cover',
-        target_type: 'story',
-        target_id: id,
-        details: { fileName, publicUrl },
-      });
+      setUploading(false);
+      return publicUrl;
     } catch (error) {
       console.error('Upload error:', error);
       toast.error('Failed to upload image');
-    } finally {
       setUploading(false);
+      return null;
     }
   };
 
-  const handleSave = async () => {
-    // Basic validation
-    if (!formData.title.trim()) {
-      toast.error('Title is required');
-      return;
-    }
+  const handleRemoveImage = () => {
+    setImageFile(null);
+    setImagePreview(formData.cover_image_url || null);
+  };
 
-    if (!formData.content.trim()) {
-      toast.error('Content is required');
-      return;
-    }
+  const handleSave = async () => {
+    if (!id) return;
 
     setSaving(true);
-
     try {
+      let coverImageUrl = formData.cover_image_url;
+
+      // Upload new image if selected
+      if (imageFile) {
+        const uploadedUrl = await handleImageUpload();
+        if (uploadedUrl) {
+          coverImageUrl = uploadedUrl;
+        }
+      }
+
       const { error } = await supabase
         .from('stories')
         .update({
           title: formData.title,
           content: formData.content,
-          excerpt: formData.excerpt || null,
-          hero_name: formData.hero_name || null,
-          story_universe: formData.story_universe || null,
+          excerpt: formData.excerpt,
+          hero_name: formData.hero_name,
+          story_universe: formData.story_universe,
           age_range: formData.age_range,
-          story_type: formData.story_type || null,
+          story_type: formData.story_type,
+          cover_image_url: coverImageUrl,
         })
         .eq('id', id);
 
       if (error) throw error;
-
-      toast.success('Story updated successfully!');
 
       // Log admin activity
       await supabase.from('admin_activity_log').insert({
@@ -171,9 +171,10 @@ export default function StoryEditor() {
         action: 'update_story',
         target_type: 'story',
         target_id: id,
-        details: formData,
+        details: { updated_fields: Object.keys(formData) }
       });
 
+      toast.success('Story updated successfully');
       navigate('/admin/stories');
     } catch (error) {
       console.error('Save error:', error);
@@ -186,7 +187,7 @@ export default function StoryEditor() {
   if (loading) {
     return (
       <AdminLayout>
-        <div className="flex items-center justify-center min-h-[400px]">
+        <div className="flex items-center justify-center h-96">
           <Loader2 className="h-8 w-8 animate-spin text-primary" />
         </div>
       </AdminLayout>
@@ -196,61 +197,123 @@ export default function StoryEditor() {
   return (
     <AdminLayout>
       <div className="space-y-6">
-        <div className="flex items-center gap-4">
-          <Button variant="ghost" onClick={() => navigate('/admin/stories')}>
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Back to Stories
-          </Button>
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold">Edit Story</h1>
+            <p className="text-muted-foreground">Update story content and images</p>
+          </div>
+          <div className="flex gap-2">
+            <Button variant="outline" onClick={() => navigate('/admin/stories')}>
+              Cancel
+            </Button>
+            <Button onClick={handleSave} disabled={saving || uploading}>
+              {saving ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Saving...
+                </>
+              ) : (
+                'Save Changes'
+              )}
+            </Button>
+          </div>
         </div>
 
-        <div>
-          <h1 className="text-3xl font-bold">Edit Story</h1>
-          <p className="text-muted-foreground">Update story content and cover image</p>
-        </div>
+        <Card>
+          <CardHeader>
+            <CardTitle>Story Details</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            {/* Title */}
+            <div className="space-y-2">
+              <Label htmlFor="title">Title</Label>
+              <Input
+                id="title"
+                value={formData.title}
+                onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                placeholder="Story title"
+              />
+            </div>
 
-        <div className="grid gap-6 lg:grid-cols-3">
-          <Card className="lg:col-span-2">
-            <CardHeader>
-              <CardTitle>Story Details</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="title">Title *</Label>
-                <Input
-                  id="title"
-                  value={formData.title}
-                  onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                  placeholder="Story title"
-                />
+            {/* Hero Name */}
+            <div className="space-y-2">
+              <Label htmlFor="hero_name">Hero Name</Label>
+              <Input
+                id="hero_name"
+                value={formData.hero_name}
+                onChange={(e) => setFormData({ ...formData, hero_name: e.target.value })}
+                placeholder="Main character name"
+              />
+            </div>
+
+            {/* Cover Image Upload */}
+            <div className="space-y-2">
+              <Label>Cover Image</Label>
+              <div className="flex flex-col gap-4">
+                {imagePreview && (
+                  <div className="relative w-full max-w-md">
+                    <img
+                      src={imagePreview}
+                      alt="Cover preview"
+                      className="w-full h-48 object-cover rounded-lg border"
+                    />
+                    {imageFile && (
+                      <Button
+                        variant="destructive"
+                        size="icon"
+                        className="absolute top-2 right-2"
+                        onClick={handleRemoveImage}
+                      >
+                        <X className="h-4 w-4" />
+                      </Button>
+                    )}
+                  </div>
+                )}
+                <div className="flex items-center gap-2">
+                  <Input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageSelect}
+                    className="max-w-xs"
+                  />
+                  <span className="text-sm text-muted-foreground">Max 5MB</span>
+                </div>
               </div>
+            </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="hero_name">Hero Name</Label>
-                <Input
-                  id="hero_name"
-                  value={formData.hero_name}
-                  onChange={(e) => setFormData({ ...formData, hero_name: e.target.value })}
-                  placeholder="Main character name"
-                />
-              </div>
+            {/* Story Content */}
+            <div className="space-y-2">
+              <Label htmlFor="content">Story Content</Label>
+              <Textarea
+                id="content"
+                value={formData.content}
+                onChange={(e) => setFormData({ ...formData, content: e.target.value })}
+                placeholder="Write the full story here..."
+                className="min-h-[300px] font-serif"
+              />
+            </div>
 
+            {/* Excerpt */}
+            <div className="space-y-2">
+              <Label htmlFor="excerpt">Excerpt (Preview Text)</Label>
+              <Textarea
+                id="excerpt"
+                value={formData.excerpt}
+                onChange={(e) => setFormData({ ...formData, excerpt: e.target.value })}
+                placeholder="Short preview of the story..."
+                className="min-h-[100px]"
+              />
+            </div>
+
+            {/* Additional Fields */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="story_universe">Story Universe</Label>
+                <Label htmlFor="story_universe">Universe</Label>
                 <Input
                   id="story_universe"
                   value={formData.story_universe}
                   onChange={(e) => setFormData({ ...formData, story_universe: e.target.value })}
-                  placeholder="e.g., Guardian Kids Universe"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="story_type">Story Type</Label>
-                <Input
-                  id="story_type"
-                  value={formData.story_type}
-                  onChange={(e) => setFormData({ ...formData, story_type: e.target.value })}
-                  placeholder="e.g., Adventure, Fantasy"
+                  placeholder="e.g., Forest Kingdom"
                 />
               </div>
 
@@ -260,103 +323,22 @@ export default function StoryEditor() {
                   id="age_range"
                   value={formData.age_range}
                   onChange={(e) => setFormData({ ...formData, age_range: e.target.value })}
-                  placeholder="e.g., 8-10"
+                  placeholder="e.g., 6-8"
                 />
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="excerpt">Excerpt</Label>
-                <Textarea
-                  id="excerpt"
-                  value={formData.excerpt}
-                  onChange={(e) => setFormData({ ...formData, excerpt: e.target.value })}
-                  placeholder="Short description for preview..."
-                  rows={3}
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="content">Story Content *</Label>
-                <Textarea
-                  id="content"
-                  value={formData.content}
-                  onChange={(e) => setFormData({ ...formData, content: e.target.value })}
-                  placeholder="Write the full story here..."
-                  rows={15}
-                  className="font-serif"
-                />
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle>Cover Image</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {imagePreview && (
-                <div className="aspect-[3/4] rounded-lg overflow-hidden border">
-                  <img
-                    src={imagePreview}
-                    alt="Cover preview"
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-              )}
-
-              <div>
-                <Label
-                  htmlFor="cover-upload"
-                  className="cursor-pointer block w-full"
-                >
-                  <div className="border-2 border-dashed rounded-lg p-6 text-center hover:border-primary transition-colors">
-                    {uploading ? (
-                      <Loader2 className="h-8 w-8 animate-spin mx-auto text-primary" />
-                    ) : (
-                      <>
-                        <Upload className="h-8 w-8 mx-auto mb-2 text-muted-foreground" />
-                        <p className="text-sm text-muted-foreground">
-                          Click to upload cover image
-                        </p>
-                        <p className="text-xs text-muted-foreground mt-1">
-                          Max 5MB • JPEG, PNG, WebP, GIF
-                        </p>
-                      </>
-                    )}
-                  </div>
-                </Label>
+                <Label htmlFor="story_type">Story Type</Label>
                 <Input
-                  id="cover-upload"
-                  type="file"
-                  accept="image/jpeg,image/png,image/webp,image/gif"
-                  onChange={handleImageUpload}
-                  disabled={uploading}
-                  className="hidden"
+                  id="story_type"
+                  value={formData.story_type}
+                  onChange={(e) => setFormData({ ...formData, story_type: e.target.value })}
+                  placeholder="e.g., Adventure"
                 />
               </div>
-
-              <p className="text-xs text-muted-foreground">
-                Upload a custom cover image for this featured story. The image will be visible on the home page.
-              </p>
-            </CardContent>
-          </Card>
-        </div>
-
-        <div className="flex gap-3">
-          <Button onClick={handleSave} disabled={saving}>
-            {saving ? (
-              <>
-                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                Saving...
-              </>
-            ) : (
-              'Save Changes'
-            )}
-          </Button>
-          <Button variant="outline" onClick={() => navigate('/admin/stories')}>
-            Cancel
-          </Button>
-        </div>
+            </div>
+          </CardContent>
+        </Card>
       </div>
     </AdminLayout>
   );

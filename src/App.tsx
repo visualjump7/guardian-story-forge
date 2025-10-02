@@ -15,8 +15,8 @@ import NotFound from "./pages/NotFound";
 import AdminDashboard from "./pages/admin/Dashboard";
 import AdminUsers from "./pages/admin/Users";
 import AdminStories from "./pages/admin/Stories";
-import AdminSettings from "./pages/admin/Settings";
 import AdminStoryEditor from "./pages/admin/StoryEditor";
+import AdminSettings from "./pages/admin/Settings";
 
 const queryClient = new QueryClient();
 
