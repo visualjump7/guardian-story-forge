@@ -486,25 +486,49 @@ const StoryView = () => {
           <CardHeader className="space-y-4">
             {storyImages.length > 0 ? (
               <div className="space-y-4">
-                {/* Image Carousel */}
-                <Carousel className="w-full" opts={{ loop: true }}>
-                  <CarouselContent>
+                {/* Image Carousel with Peek Effect */}
+                <Carousel 
+                  opts={{
+                    align: "center",
+                    loop: true,
+                    containScroll: "trimSnaps",
+                  }}
+                  className="w-full relative"
+                >
+                  <CarouselContent className="-ml-2 md:-ml-4">
                     {storyImages.map((image, index) => (
-                      <CarouselItem key={image.id}>
-                        <div className="relative aspect-video w-full overflow-hidden rounded-lg bg-muted flex items-center justify-center">
+                      <CarouselItem key={image.id} className="pl-2 md:pl-4 basis-[85%] md:basis-[90%]">
+                        <div className="relative aspect-video w-full overflow-hidden rounded-xl bg-gradient-to-br from-muted/50 to-muted flex items-center justify-center shadow-2xl border border-border/50 transition-all duration-300 hover:shadow-3xl hover:scale-[1.02]">
                           <img
                             src={image.image_url}
                             alt={`${story.title} - Image ${index + 1}`}
                             className="h-full w-full object-contain"
                           />
+                          {storyImages.length > 1 && (
+                            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-1.5">
+                              {storyImages.map((_, dotIndex) => (
+                                <div
+                                  key={dotIndex}
+                                  className={`h-2 rounded-full transition-all duration-300 ${
+                                    dotIndex === index 
+                                      ? 'w-8 bg-primary' 
+                                      : 'w-2 bg-muted-foreground/30 hover:bg-muted-foreground/50'
+                                  }`}
+                                />
+                              ))}
+                            </div>
+                          )}
                         </div>
                       </CarouselItem>
                     ))}
                   </CarouselContent>
                   {storyImages.length > 1 && (
                     <>
-                      <CarouselPrevious className="left-2" />
-                      <CarouselNext className="right-2" />
+                      <div className="absolute top-4 right-4 bg-primary/90 backdrop-blur-sm px-4 py-2 rounded-full text-sm font-semibold text-primary-foreground shadow-lg border border-primary-foreground/20 z-10">
+                        {currentImageIndex + 1} / {storyImages.length}
+                      </div>
+                      <CarouselPrevious className="left-2 md:left-4 h-12 w-12 border-2 bg-background/95 hover:bg-background hover:scale-110 transition-all duration-200 shadow-xl" />
+                      <CarouselNext className="right-2 md:right-4 h-12 w-12 border-2 bg-background/95 hover:bg-background hover:scale-110 transition-all duration-200 shadow-xl" />
                     </>
                   )}
                 </Carousel>
