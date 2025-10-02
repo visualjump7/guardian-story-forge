@@ -3,12 +3,13 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { BookOpen, Sparkles, Library, User, PlusCircle, Wand2 } from "lucide-react";
+import { BookOpen, Sparkles, Library, User, PlusCircle, Wand2, Share2 } from "lucide-react";
 import { toast } from "sonner";
 import logo from "@/assets/logo.png";
 import VimeoPlayer from "@/components/VimeoPlayer";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { MobileNav } from "@/components/MobileNav";
+import { ShareDialog } from "@/components/ShareDialog";
 
 interface Story {
   id: string;
@@ -31,6 +32,8 @@ const Home = () => {
   const [profile, setProfile] = useState<any>(null);
   const [stories, setStories] = useState<Story[]>([]);
   const [loading, setLoading] = useState(true);
+  const [shareDialogOpen, setShareDialogOpen] = useState(false);
+  const [storyToShare, setStoryToShare] = useState<Story | null>(null);
 
   useEffect(() => {
     checkUser();
@@ -75,6 +78,12 @@ const Home = () => {
 
   const handleReadStory = (storyId: string) => {
     navigate(`/story/${storyId}`);
+  };
+
+  const handleShare = (e: React.MouseEvent, story: Story) => {
+    e.stopPropagation();
+    setStoryToShare(story);
+    setShareDialogOpen(true);
   };
 
   if (loading) {
@@ -200,14 +209,15 @@ const Home = () => {
                     </div>
                   )}
                   
-                  {/* Theme Badge Overlay */}
-                  {story.story_themes?.name && (
-                    <div className="absolute top-4 left-4">
-                      <span className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-red-600/90 backdrop-blur-sm text-white text-sm font-semibold shadow-lg border border-white/20">
-                        {story.story_themes.emoji} {story.story_themes.name}
-                      </span>
-                    </div>
-                  )}
+                  {/* Share Button */}
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="absolute top-4 right-4 bg-black/60 hover:bg-black/80 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                    onClick={(e) => handleShare(e, story)}
+                  >
+                    <Share2 className="w-5 h-5" />
+                  </Button>
                 </div>
 
                 {/* Dark Text Section */}
@@ -233,6 +243,16 @@ const Home = () => {
           </div>
         </section>
       </main>
+
+      {/* Share Dialog */}
+      {storyToShare && (
+        <ShareDialog
+          open={shareDialogOpen}
+          onOpenChange={setShareDialogOpen}
+          storyId={storyToShare.id}
+          storyTitle={storyToShare.title}
+        />
+      )}
     </div>
   );
 };
