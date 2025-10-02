@@ -197,8 +197,7 @@ serve(async (req) => {
         messages: [
           { role: "user", content: imagePrompt }
         ],
-        modalities: ["image", "text"],
-        size: "1792x1024"
+        modalities: ["image", "text"]
       }),
     });
 
@@ -206,7 +205,16 @@ serve(async (req) => {
     if (!aiResponse.ok) {
       const errorText = await aiResponse.text();
       console.error("AI API error response:", errorText);
-      throw new Error(`Failed to generate image with AI: ${errorText}`);
+      
+      // Handle specific error codes
+      if (aiResponse.status === 402) {
+        throw new Error("Insufficient Lovable AI credits. Please add credits to your workspace in Settings > Usage.");
+      }
+      if (aiResponse.status === 429) {
+        throw new Error("Rate limit exceeded. Please try again in a few moments.");
+      }
+      
+      throw new Error(`Failed to generate image: ${errorText}`);
     }
 
     const aiData = await aiResponse.json();
@@ -248,10 +256,19 @@ serve(async (req) => {
   } catch (error: any) {
     console.error("Error in generate-story-image function:", error);
     console.error("Error stack:", error.stack);
+    
+    // Determine appropriate status code
+    let statusCode = 500;
+    if (error.message.includes("Rate limit")) {
+      statusCode = 429;
+    } else if (error.message.includes("credits")) {
+      statusCode = 402;
+    }
+    
     return new Response(
       JSON.stringify({ error: error.message || "Internal server error" }),
       {
-        status: 500,
+        status: statusCode,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       }
     );

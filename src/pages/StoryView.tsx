@@ -238,19 +238,30 @@ const StoryView = () => {
     toast.loading("Creating your illustration...", { id: "generate-image" });
     
     try {
-      const { error } = await supabase.functions.invoke("generate-story-image", {
+      const { data, error } = await supabase.functions.invoke("generate-story-image", {
         body: { 
           storyId,
           customizations: customizations || undefined
         },
       });
 
-      if (error) throw error;
+      if (error) {
+        // Handle specific error types with user-friendly messages
+        if (error.message?.includes("credits")) {
+          toast.error("Insufficient AI credits. Please add credits in Settings > Usage.", { id: "generate-image" });
+        } else if (error.message?.includes("Rate limit")) {
+          toast.error("Too many requests. Please wait a moment and try again.", { id: "generate-image" });
+        } else {
+          toast.error(error.message || "Failed to generate image", { id: "generate-image" });
+        }
+        return;
+      }
 
       await loadStory();
       toast.success("New illustration generated!", { id: "generate-image" });
     } catch (error: any) {
-      toast.error(error.message || "Failed to generate image", { id: "generate-image" });
+      console.error("Image generation error:", error);
+      toast.error("Failed to generate image. Please try again.", { id: "generate-image" });
     } finally {
       setGeneratingImage(false);
     }
