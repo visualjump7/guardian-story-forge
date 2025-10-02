@@ -27,7 +27,8 @@ import {
   Star,
   Play,
   Pause,
-  MoreVertical
+  MoreVertical,
+  Info
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -52,6 +53,12 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 interface StoryImage {
   id: string;
@@ -463,7 +470,7 @@ const StoryView = () => {
         </AlertDialogContent>
       </AlertDialog>
 
-      <main className="container mx-auto px-4 py-12 max-w-4xl">
+      <main className="container mx-auto px-4 py-12 max-w-6xl">
         <Card className="shadow-2xl border-2">
           <CardHeader className="space-y-4">
             {storyImages.length > 0 ? (
@@ -495,19 +502,31 @@ const StoryView = () => {
                 <div className="flex items-center justify-between gap-3 px-4 py-2 bg-muted/30 rounded-lg border border-border/50">
                   {/* Left: Primary Actions */}
                   <div className="flex items-center gap-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={handleGenerateImage}
-                      disabled={generatingImage || storyImages.length >= 5}
-                      className="h-8"
-                    >
-                      {generatingImage ? (
-                        <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                      ) : (
-                        <Plus className="h-3.5 w-3.5" />
-                      )}
-                    </Button>
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={handleGenerateImage}
+                            disabled={generatingImage || storyImages.length >= 5}
+                            className="h-8 gap-1.5"
+                          >
+                            {generatingImage ? (
+                              <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                            ) : (
+                              <>
+                                <Plus className="h-3.5 w-3.5" />
+                                <span className="text-xs">Add Image</span>
+                              </>
+                            )}
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>Add up to 5 images to your story - they'll be placed throughout the narrative</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
                     <Button
                       variant="ghost"
                       size="sm"
@@ -578,24 +597,41 @@ const StoryView = () => {
                 <div className="text-7xl">
                   {story.story_themes?.emoji || "📖"}
                 </div>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={handleGenerateImage}
-                  disabled={generatingImage}
-                >
-                  {generatingImage ? (
-                    <>
-                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                      Generating...
-                    </>
-                  ) : (
-                    <>
-                      <Plus className="w-4 h-4 mr-2" />
-                      Generate Illustration
-                    </>
-                  )}
-                </Button>
+                <div className="flex items-center gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handleGenerateImage}
+                    disabled={generatingImage}
+                  >
+                    {generatingImage ? (
+                      <>
+                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                        Generating...
+                      </>
+                    ) : (
+                      <>
+                        <Plus className="w-4 h-4 mr-2" />
+                        Generate Illustration
+                      </>
+                    )}
+                  </Button>
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                          <Info className="h-4 w-4 text-muted-foreground" />
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>Add up to 5 images that will be placed throughout your story</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                </div>
+                <p className="text-sm text-muted-foreground text-center max-w-md">
+                  Generate beautiful illustrations that will be automatically placed throughout your story
+                </p>
               </div>
             )}
 
@@ -635,7 +671,19 @@ const StoryView = () => {
                       <p className="text-xs text-muted-foreground mt-1">Audio Narration</p>
                     </>
                   ) : (
-                    <p className="text-sm text-muted-foreground">Generate audio narration</p>
+                    <div className="flex items-center gap-2">
+                      <p className="text-sm text-muted-foreground">Generate AI narration</p>
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Info className="h-3.5 w-3.5 text-muted-foreground cursor-help" />
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>Generate AI narration with different voice options to bring your story to life</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    </div>
                   )}
                 </div>
 
@@ -706,7 +754,7 @@ const StoryView = () => {
               )}
             </div>
           </CardHeader>
-          <CardContent>
+          <CardContent className="px-[15%] sm:px-[12%] md:px-[15%]">
             {/* Story Content with Embedded Images */}
             <div className="prose prose-lg max-w-none">
               {renderStoryWithImages()}
