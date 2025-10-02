@@ -6,6 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { BookOpen, Sparkles, Library, User, PlusCircle, Wand2, Share2 } from "lucide-react";
 import { toast } from "sonner";
 import logo from "@/assets/logo.png";
+import heroImage from "@/assets/swiss-chocolate-story.jpg";
 import VimeoPlayer from "@/components/VimeoPlayer";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { MobileNav } from "@/components/MobileNav";
@@ -159,25 +160,40 @@ const Home = () => {
         </section>
 
         {/* Create Story CTA */}
-        <section className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-primary via-primary-glow to-accent p-8 md:p-12 text-primary-foreground shadow-[var(--shadow-magical)]">
-          <div className="relative z-10 max-w-2xl space-y-6">
-            <h2 className="text-4xl md:text-5xl font-bold">
-              Create Your Own Magical Story
-            </h2>
-            <p className="text-xl opacity-90">
-              Choose your hero, pick an adventure, and let AI weave a tale with an important lesson!
-            </p>
+        <section 
+          className="relative overflow-hidden rounded-3xl p-8 md:p-12 shadow-[var(--shadow-magical)] min-h-[400px] flex items-end"
+          style={{
+            backgroundImage: `url(${heroImage})`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+          }}
+        >
+          {/* Dark gradient overlay */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent" />
+          
+          {/* Content */}
+          <div className="relative z-10 w-full flex flex-col md:flex-row items-end justify-between gap-6">
+            {/* Text Content - Left Side */}
+            <div className="space-y-4 max-w-2xl">
+              <h2 className="text-4xl md:text-5xl font-bold text-amber-400">
+                Create Your Own Magical Story
+              </h2>
+              <p className="text-xl text-white/90">
+                Choose your hero, pick an adventure, and let AI weave a tale with an important lesson!
+              </p>
+            </div>
+            
+            {/* Button - Right Side */}
             <Button
-              variant="warm"
+              variant="outline"
               size="lg"
               onClick={() => navigate("/create")}
-              className="shadow-xl"
+              className="shadow-xl whitespace-nowrap border-white/30 text-white hover:bg-white/10 hover:text-white"
             >
               <PlusCircle className="w-6 h-6" />
-              Start Creating
+              Start Creating!
             </Button>
           </div>
-          <Sparkles className="absolute right-8 top-8 w-32 h-32 opacity-20 animate-pulse" />
         </section>
 
         {/* Featured Stories */}
