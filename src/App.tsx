@@ -37,6 +37,7 @@ const App = () => (
           <Route path="/admin/dashboard" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
           <Route path="/admin/users" element={<AdminRoute><AdminUsers /></AdminRoute>} />
           <Route path="/admin/stories" element={<AdminRoute><AdminStories /></AdminRoute>} />
+          <Route path="/admin/stories/new" element={<AdminRoute><AdminStoryEditor /></AdminRoute>} />
           <Route path="/admin/stories/:id/edit" element={<AdminRoute><AdminStoryEditor /></AdminRoute>} />
           <Route path="/admin/settings" element={<AdminRoute><AdminSettings /></AdminRoute>} />
           <Route path="*" element={<NotFound />} />

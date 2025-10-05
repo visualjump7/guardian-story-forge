@@ -30,11 +30,15 @@ export default function StoryEditor() {
     age_range: '',
     story_type: '',
     cover_image_url: '',
+    media_url: '',
+    content_type: 'text',
   });
 
   useEffect(() => {
     if (id) {
       loadStory();
+    } else {
+      setLoading(false);
     }
   }, [id]);
 
@@ -63,6 +67,8 @@ export default function StoryEditor() {
       age_range: data.age_range || '',
       story_type: data.story_type || '',
       cover_image_url: data.cover_image_url || '',
+      media_url: data.media_url || '',
+      content_type: data.content_type || 'text',
     });
 
     if (data.cover_image_url) {
@@ -98,13 +104,13 @@ export default function StoryEditor() {
     reader.readAsDataURL(file);
   };
 
-  const handleImageUpload = async () => {
-    if (!imageFile || !id) return null;
+  const handleImageUpload = async (storyId: string) => {
+    if (!imageFile) return null;
 
     setUploading(true);
     try {
       const fileExt = imageFile.name.split('.').pop();
-      const fileName = `${id}-cover.${fileExt}`;
+      const fileName = `${storyId}-cover.${fileExt}`;
       
       const { error: uploadError } = await supabase.storage
         .from('featured-story-covers')
@@ -135,46 +141,97 @@ export default function StoryEditor() {
   };
 
   const handleSave = async () => {
-    if (!id) return;
-
     setSaving(true);
     try {
+      let storyId = id;
       let coverImageUrl = formData.cover_image_url;
 
-      // Upload new image if selected
-      if (imageFile) {
-        const uploadedUrl = await handleImageUpload();
-        if (uploadedUrl) {
-          coverImageUrl = uploadedUrl;
+      // Create mode: insert new story
+      if (!id) {
+        const { data: newStory, error: insertError } = await supabase
+          .from('stories')
+          .insert({
+            title: formData.title,
+            content: formData.content,
+            excerpt: formData.excerpt,
+            hero_name: formData.hero_name,
+            story_universe: formData.story_universe,
+            age_range: formData.age_range,
+            story_type: formData.story_type,
+            media_url: formData.media_url,
+            content_type: formData.content_type,
+            is_featured: true,
+            created_by: null,
+          })
+          .select()
+          .single();
+
+        if (insertError) throw insertError;
+        storyId = newStory.id;
+
+        // Upload image if selected
+        if (imageFile) {
+          const uploadedUrl = await handleImageUpload(storyId);
+          if (uploadedUrl) {
+            coverImageUrl = uploadedUrl;
+            // Update the story with the cover image
+            await supabase
+              .from('stories')
+              .update({ cover_image_url: coverImageUrl })
+              .eq('id', storyId);
+          }
         }
+
+        // Log admin activity
+        await supabase.from('admin_activity_log').insert({
+          admin_id: user?.id,
+          action: 'create_story',
+          target_type: 'story',
+          target_id: storyId,
+          details: { created_featured_story: true }
+        });
+
+        toast.success('Story created successfully');
+      } else {
+        // Edit mode: update existing story
+        // Upload new image if selected
+        if (imageFile) {
+          const uploadedUrl = await handleImageUpload(storyId);
+          if (uploadedUrl) {
+            coverImageUrl = uploadedUrl;
+          }
+        }
+
+        const { error } = await supabase
+          .from('stories')
+          .update({
+            title: formData.title,
+            content: formData.content,
+            excerpt: formData.excerpt,
+            hero_name: formData.hero_name,
+            story_universe: formData.story_universe,
+            age_range: formData.age_range,
+            story_type: formData.story_type,
+            cover_image_url: coverImageUrl,
+            media_url: formData.media_url,
+            content_type: formData.content_type,
+          })
+          .eq('id', storyId);
+
+        if (error) throw error;
+
+        // Log admin activity
+        await supabase.from('admin_activity_log').insert({
+          admin_id: user?.id,
+          action: 'update_story',
+          target_type: 'story',
+          target_id: storyId,
+          details: { updated_fields: Object.keys(formData) }
+        });
+
+        toast.success('Story updated successfully');
       }
-
-      const { error } = await supabase
-        .from('stories')
-        .update({
-          title: formData.title,
-          content: formData.content,
-          excerpt: formData.excerpt,
-          hero_name: formData.hero_name,
-          story_universe: formData.story_universe,
-          age_range: formData.age_range,
-          story_type: formData.story_type,
-          cover_image_url: coverImageUrl,
-        })
-        .eq('id', id);
-
-      if (error) throw error;
-
-      // Log admin activity
-      await supabase.from('admin_activity_log').insert({
-        admin_id: user?.id,
-        action: 'update_story',
-        target_type: 'story',
-        target_id: id,
-        details: { updated_fields: Object.keys(formData) }
-      });
-
-      toast.success('Story updated successfully');
+      
       navigate('/admin/stories');
     } catch (error) {
       console.error('Save error:', error);
@@ -199,8 +256,10 @@ export default function StoryEditor() {
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold">Edit Story</h1>
-            <p className="text-muted-foreground">Update story content and images</p>
+            <h1 className="text-3xl font-bold">{id ? 'Edit Story' : 'Create New Story'}</h1>
+            <p className="text-muted-foreground">
+              {id ? 'Update story content and media' : 'Create a new featured story for the Guardian collection'}
+            </p>
           </div>
           <div className="flex gap-2">
             <Button variant="outline" onClick={() => navigate('/admin/stories')}>
@@ -210,10 +269,10 @@ export default function StoryEditor() {
               {saving ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Saving...
+                  {id ? 'Saving...' : 'Creating...'}
                 </>
               ) : (
-                'Save Changes'
+                id ? 'Save Changes' : 'Create Story'
               )}
             </Button>
           </div>
@@ -303,6 +362,50 @@ export default function StoryEditor() {
                 placeholder="Short preview of the story..."
                 className="min-h-[100px]"
               />
+            </div>
+
+            {/* Video Embedding */}
+            <div className="space-y-4">
+              <div className="flex items-center gap-2">
+                <Label htmlFor="content_type">Content Type</Label>
+              </div>
+              <div className="flex gap-4">
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="radio"
+                    name="content_type"
+                    value="text"
+                    checked={formData.content_type === 'text'}
+                    onChange={(e) => setFormData({ ...formData, content_type: e.target.value })}
+                  />
+                  <span>Text Story</span>
+                </label>
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="radio"
+                    name="content_type"
+                    value="video"
+                    checked={formData.content_type === 'video'}
+                    onChange={(e) => setFormData({ ...formData, content_type: e.target.value })}
+                  />
+                  <span>Video Story</span>
+                </label>
+              </div>
+
+              {formData.content_type === 'video' && (
+                <div className="space-y-2">
+                  <Label htmlFor="media_url">Vimeo Video ID</Label>
+                  <Input
+                    id="media_url"
+                    value={formData.media_url}
+                    onChange={(e) => setFormData({ ...formData, media_url: e.target.value })}
+                    placeholder="e.g., 123456789"
+                  />
+                  <p className="text-sm text-muted-foreground">
+                    Enter the Vimeo video ID (the numbers from the video URL)
+                  </p>
+                </div>
+              )}
             </div>
 
             {/* Additional Fields */}

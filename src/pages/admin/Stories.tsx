@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { supabase } from '@/integrations/supabase/client';
-import { Search, Star, Eye, EyeOff, Trash2, Pencil } from 'lucide-react';
+import { Search, Star, Eye, EyeOff, Trash2, Pencil, PlusCircle } from 'lucide-react';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
 
@@ -38,6 +38,7 @@ export default function AdminStories() {
     const { data: storiesData, error } = await supabase
       .from('stories')
       .select('*')
+      .eq('is_featured', true)
       .order('created_at', { ascending: false });
 
     if (error) {
@@ -116,9 +117,15 @@ export default function AdminStories() {
   return (
     <AdminLayout>
       <div className="space-y-6">
-        <div>
-          <h1 className="text-3xl font-bold">Story Management</h1>
-          <p className="text-muted-foreground">Manage and moderate all stories</p>
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold">Featured Stories Management</h1>
+            <p className="text-muted-foreground">Create and manage Guardian team stories</p>
+          </div>
+          <Button onClick={() => navigate('/admin/stories/new')}>
+            <PlusCircle className="w-4 h-4" />
+            Create New Story
+          </Button>
         </div>
 
         <Card>
