@@ -119,7 +119,7 @@ const CreateStory = () => {
   ];
 
   const artStyles = [
-    { value: "pixar-3d", label: "3D Animation", description: "Vibrant 3D animation style" },
+    { value: "pixar-3d", label: "3D Animation", description: "Cinematic toy-3D style with warm lighting and handcrafted feel" },
     { value: "ghibli-2d", label: "2D Animation/Cartoon", description: "Classic 2D illustrated style" },
   ];
 

@@ -150,7 +150,26 @@ serve(async (req) => {
 
     // Map art style to prompt description
     const artStylePrompts: Record<string, string> = {
-      'pixar-3d': 'vibrant 3D animated illustration in Pixar/DreamWorks style with rich colors and cinematic lighting',
+      'pixar-3d': `CINEMATIC TOY-3D ANIMATION STYLE:
+Render in stylized 3D animation (Pixar-meets-stop-motion aesthetic) with:
+- Materials: semi-plastic, soft textures, subtle subsurface scattering, faint surface imperfections
+- Lighting: cinematic warm key light and soft rim light with golden-hour tones
+- Camera: shallow depth of field, creamy bokeh, warm bloom around highlights, eye-level or slight low-angle framing
+- Detail: medium-high detail; cinematic but not photorealistic
+- Color Grade: warm rustic amber for indoor scenes, golden meadow tones for outdoor scenes
+- Atmosphere: cozy, handcrafted, warmly cinematic with soft dust motes or floating particles
+- Composition: strong parallax with clear foreground, midground, and background layering
+- Mood: cozy • cinematic • golden • handcrafted • whimsical
+
+NEGATIVE ELEMENTS TO AVOID:
+- No photoreal humans or faces
+- No harsh overhead or direct lighting
+- No tilted or disorienting camera angles
+- No extreme shadows or contrast
+- No noisy or grainy surfaces
+- No horror, gritty, or uncanny realism
+- No overexposed whites or clipped highlights
+- No washed-out or cold blue tones`,
       'ghibli-2d': 'soft watercolor 2D illustration in Studio Ghibli style with gentle brushstrokes and dreamy atmosphere',
       'watercolor': 'gentle watercolor children\'s book illustration with soft edges and delicate color blending',
       'classic-disney': 'traditional hand-drawn 2D animation in classic Disney style with expressive characters and detailed backgrounds',
@@ -161,20 +180,33 @@ serve(async (req) => {
 
     const styleDescription = artStylePrompts[story.art_style || 'pixar-3d'] || artStylePrompts['pixar-3d'];
 
+    // Add environment preset guidance for 3D animation style
+    let environmentGuidance = '';
+    if (story.art_style === 'pixar-3d' || !story.art_style) {
+      // Determine if scene is indoor or outdoor based on content keywords
+      const isIndoor = /\b(house|home|room|kitchen|table|barn|cabin|building|inside|indoor)\b/i.test(contentForImage);
+      
+      if (isIndoor) {
+        environmentGuidance = `\n\nENVIRONMENT: RUSTIC FARMHOUSE TABLE setting with wooden tabletop (visible grain and slight wear), background fairy lights or kitchen bokeh, warm tungsten key light with soft window rim, props such as jars, boxes, napkins, utensils (blurred for depth). Atmosphere: cozy, nostalgic, inviting.`;
+      } else {
+        environmentGuidance = `\n\nENVIRONMENT: MEADOW PICNIC SETTING with golden-hour sunlight, soft grassy field and distant mountain blur, wildflowers and gently swaying grass, picnic elements like a blanket, basket, and jars with subtle highlights. Atmosphere: joyful, pastoral, and cinematic.`;
+      }
+    }
+
     // Always generate the core prompt based on image type
     console.log("Generating core prompt for type:", imageType);
     let corePrompt = '';
     
     if (imageType === 'cover') {
-      corePrompt = `Create a child-friendly cover illustration in ${styleDescription}. Feature ${story.hero_name} as the main character in a ${story.story_type} setting. Scene: ${contentForImage.substring(0, 200)}. Art style: colorful, family-friendly, high-quality with expressive characters and magical atmosphere.`;
+      corePrompt = `Create a child-friendly cover illustration in ${styleDescription}. Feature ${story.hero_name} as the main character in a ${story.story_type} setting. Scene: ${contentForImage.substring(0, 200)}. Art style: colorful, family-friendly, high-quality with expressive characters and magical atmosphere.${environmentGuidance}`;
     } else if (imageType === 'early-scene') {
-      corePrompt = `Create an early adventure scene illustration in ${styleDescription} for the children's story. Feature ${story.hero_name} in this moment: ${contentForImage}. Show the beginning of the journey with excitement and anticipation. Child-friendly, colorful, high-quality illustration suitable for ages 8-10.`;
+      corePrompt = `Create an early adventure scene illustration in ${styleDescription} for the children's story. Feature ${story.hero_name} in this moment: ${contentForImage}. Show the beginning of the journey with excitement and anticipation. Child-friendly, colorful, high-quality illustration suitable for ages 8-10.${environmentGuidance}`;
     } else if (imageType === 'mid-scene') {
-      corePrompt = `Create a mid-story scene illustration in ${styleDescription} for the children's story. Feature ${story.hero_name} in this key moment: ${contentForImage}. Show the action and emotion of this pivotal scene. Child-friendly, colorful, high-quality illustration suitable for ages 8-10.`;
+      corePrompt = `Create a mid-story scene illustration in ${styleDescription} for the children's story. Feature ${story.hero_name} in this key moment: ${contentForImage}. Show the action and emotion of this pivotal scene. Child-friendly, colorful, high-quality illustration suitable for ages 8-10.${environmentGuidance}`;
     } else if (imageType === 'climax') {
-      corePrompt = `Create a climactic scene illustration in ${styleDescription} for the children's story. Feature ${story.hero_name} at the story's peak moment: ${contentForImage}. Show the tension, excitement, or emotional high point with dramatic visuals. Child-friendly, colorful, high-quality illustration suitable for ages 8-10.`;
+      corePrompt = `Create a climactic scene illustration in ${styleDescription} for the children's story. Feature ${story.hero_name} at the story's peak moment: ${contentForImage}. Show the tension, excitement, or emotional high point with dramatic visuals. Child-friendly, colorful, high-quality illustration suitable for ages 8-10.${environmentGuidance}`;
     } else {
-      corePrompt = `Create a resolution ending illustration in ${styleDescription} for the children's story. Feature ${story.hero_name} in the conclusion: ${contentForImage}. Capture the emotional resolution and sense of completion with warmth and satisfaction. Child-friendly, colorful, high-quality illustration suitable for ages 8-10.`;
+      corePrompt = `Create a resolution ending illustration in ${styleDescription} for the children's story. Feature ${story.hero_name} in the conclusion: ${contentForImage}. Capture the emotional resolution and sense of completion with warmth and satisfaction. Child-friendly, colorful, high-quality illustration suitable for ages 8-10.${environmentGuidance}`;
     }
 
     // Append customizations if provided
