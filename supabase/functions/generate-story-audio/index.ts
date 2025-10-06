@@ -99,9 +99,8 @@ serve(async (req) => {
     // OpenAI TTS has a 4096 character limit, so truncate if needed
     const MAX_TTS_LENGTH = 4000; // Leave some buffer
     
-    // Build the audio content with narrative style instructions
-    let audioIntro = config.style; // Add narrative style at the beginning
-    audioIntro += story.title;
+    // Build the audio content without style prompts
+    let audioIntro = story.title;
     if (story.excerpt) {
       audioIntro += `. ${story.excerpt}`;
     }
