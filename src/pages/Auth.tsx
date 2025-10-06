@@ -9,6 +9,23 @@ import { toast } from "sonner";
 import { Sparkles } from "lucide-react";
 import logo from "@/assets/guardian-kids-logo.png";
 import bgImage from "@/assets/BG-Sign_In.jpg";
+import { z } from "zod";
+
+// Input validation schemas
+const loginSchema = z.object({
+  email: z.string().email('Invalid email format').max(255, 'Email too long'),
+  password: z.string().min(1, 'Password is required'),
+});
+
+const signupSchema = z.object({
+  email: z.string().email('Invalid email format').max(255, 'Email too long'),
+  password: z.string()
+    .min(8, 'Password must be at least 8 characters')
+    .regex(/[A-Z]/, 'Password must contain an uppercase letter')
+    .regex(/[0-9]/, 'Password must contain a number'),
+  displayName: z.string().trim().min(1, 'Display name is required').max(50, 'Display name too long'),
+  authorName: z.string().trim().max(50, 'Author name too long').optional(),
+});
 
 const Auth = () => {
   const navigate = useNavigate();
@@ -30,23 +47,46 @@ const Auth = () => {
     setLoading(true);
 
     try {
+      // Validate inputs before submission
       if (isLogin) {
+        const validation = loginSchema.safeParse({ email, password });
+        if (!validation.success) {
+          const firstError = validation.error.errors[0];
+          toast.error(firstError.message);
+          setLoading(false);
+          return;
+        }
+
         const { error } = await supabase.auth.signInWithPassword({
-          email,
-          password,
+          email: validation.data.email,
+          password: validation.data.password,
         });
         if (error) throw error;
         toast.success("Welcome back to Guardian Kids!");
         navigate("/home");
       } else {
+        const validation = signupSchema.safeParse({ 
+          email, 
+          password, 
+          displayName, 
+          authorName: authorName || undefined 
+        });
+        
+        if (!validation.success) {
+          const firstError = validation.error.errors[0];
+          toast.error(firstError.message);
+          setLoading(false);
+          return;
+        }
+
         const { error } = await supabase.auth.signUp({
-          email,
-          password,
+          email: validation.data.email,
+          password: validation.data.password,
           options: {
             emailRedirectTo: `${window.location.origin}/home`,
             data: {
-              display_name: displayName || "Guardian",
-              author_name: authorName || null,
+              display_name: validation.data.displayName,
+              author_name: validation.data.authorName || null,
             },
           },
         });

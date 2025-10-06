@@ -47,15 +47,37 @@ serve(async (req) => {
 
     const supabase = createClient(supabaseUrl, supabaseKey);
 
+    // Get the user from the JWT token
+    const authHeader = req.headers.get('authorization');
+    if (!authHeader) {
+      throw new Error('No authorization header');
+    }
+    
+    const { data: { user }, error: userError } = await supabase.auth.getUser(
+      authHeader.replace('Bearer ', '')
+    );
+
+    if (userError || !user) {
+      throw new Error('Unauthorized');
+    }
+
     // Fetch the story with excerpt and creator info
     const { data: story, error: fetchError } = await supabase
       .from('stories')
-      .select('content, title, excerpt, created_by')
+      .select('content, title, excerpt, created_by, is_public, is_featured')
       .eq('id', storyId)
       .single();
 
     if (fetchError || !story) {
       throw new Error("Story not found");
+    }
+
+    // Security: Verify user has access to this story
+    const isOwner = story.created_by === user.id;
+    const isPublicOrFeatured = story.is_public || story.is_featured;
+    
+    if (!isOwner && !isPublicOrFeatured) {
+      throw new Error('Not authorized to generate audio for this story');
     }
 
     // Fetch creator profile info
