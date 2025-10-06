@@ -20,7 +20,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import {
+import { 
   BookmarkPlus, 
   BookmarkCheck, 
   ChevronLeft, 
@@ -37,9 +37,7 @@ import {
   MoreVertical,
   Info,
   Palette,
-  Library,
-  Settings,
-  Image as ImageIcon
+  Library
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -456,11 +454,11 @@ const StoryView = () => {
           <>
             <Button variant="outline" size="sm" onClick={() => navigate("/library")}>
               <Library className="w-4 h-4" />
-              {!isMobile && "My Library"}
+              My Library
             </Button>
             <Button variant="outline" size="sm" onClick={handleShare}>
               <Share2 className="w-4 h-4" />
-              {!isMobile && "Share"}
+              Share
             </Button>
             <Button
               variant={isSaved ? "default" : "outline"}
@@ -470,104 +468,15 @@ const StoryView = () => {
               {isSaved ? (
                 <>
                   <BookmarkCheck className="w-4 h-4" />
-                  {!isMobile && "Saved"}
+                  Saved
                 </>
               ) : (
                 <>
                   <BookmarkPlus className="w-4 h-4" />
-                  {!isMobile && "Save"}
+                  Save
                 </>
               )}
             </Button>
-
-            {/* Edit My Story Dropdown */}
-            {userId === story?.created_by && (
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="default" size="sm" className="gap-2">
-                    <Settings className="w-4 h-4" />
-                    {!isMobile && "Edit Story"}
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-56">
-                  {/* Illustrations Section */}
-                  {storyImages.length > 0 && (
-                    <>
-                      <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground">
-                        🎨 Illustrations
-                      </div>
-                      <DropdownMenuItem onClick={handleOpenImageDialog} disabled={generatingImage || storyImages.length >= 5}>
-                        <ImageIcon className="h-4 w-4 mr-2" />
-                        Create New Illustration
-                      </DropdownMenuItem>
-                      <DropdownMenuItem onClick={handleRecreateImage} disabled={generatingImage}>
-                        <RefreshCw className="h-4 w-4 mr-2" />
-                        Recreate Current
-                      </DropdownMenuItem>
-                      <DropdownMenuItem 
-                        onClick={() => handleSelectImage(storyImages[currentImageIndex].id)}
-                        disabled={storyImages[currentImageIndex]?.is_selected}
-                      >
-                        <Star className={`h-4 w-4 mr-2 ${storyImages[currentImageIndex]?.is_selected ? 'fill-current' : ''}`} />
-                        Set as Cover
-                      </DropdownMenuItem>
-                      <DropdownMenuItem 
-                        onClick={() => handleDeleteImage(storyImages[currentImageIndex].id)}
-                        className="text-destructive focus:text-destructive"
-                      >
-                        <Trash2 className="h-4 w-4 mr-2" />
-                        Delete Current Image
-                      </DropdownMenuItem>
-                      <div className="my-1 h-px bg-border" />
-                    </>
-                  )}
-                  
-                  {/* Audio Section */}
-                  <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground">
-                    🎙️ Audio Narration
-                  </div>
-                  {!story?.audio_url ? (
-                    <>
-                      <div className="px-2 py-2">
-                        <Select value={selectedVoiceType} onValueChange={setSelectedVoiceType}>
-                          <SelectTrigger className="w-full h-8">
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="whimsical">Whimsical</SelectItem>
-                            <SelectItem value="adventure">Adventure</SelectItem>
-                            <SelectItem value="ranch">Ranch Narrator</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                      <DropdownMenuItem onClick={handleGenerateAudio} disabled={isGeneratingAudio}>
-                        <Play className="h-4 w-4 mr-2" />
-                        Generate Narration
-                      </DropdownMenuItem>
-                    </>
-                  ) : (
-                    <>
-                      <div className="px-2 py-2">
-                        <Select value={selectedVoiceType} onValueChange={setSelectedVoiceType}>
-                          <SelectTrigger className="w-full h-8">
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="whimsical">Whimsical</SelectItem>
-                            <SelectItem value="adventure">Adventure</SelectItem>
-                            <SelectItem value="ranch">Ranch Narrator</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                      <DropdownMenuItem onClick={handleGenerateAudio} disabled={isGeneratingAudio}>
-                        <RefreshCw className="h-4 w-4 mr-2" />
-                        Regenerate Audio
-                      </DropdownMenuItem>
-                    </>
-                  )}
-                </DropdownMenuContent>
-              </DropdownMenu>
-            )}
           </>
         }
       />
@@ -651,6 +560,162 @@ const StoryView = () => {
                   )}
                 </Carousel>
 
+                {/* Compact Control Bar with Dots */}
+                {isMobile ? (
+                  <Accordion type="single" collapsible defaultValue="illustrations" className="w-full">
+                    <AccordionItem value="illustrations" className="border rounded-lg bg-muted/30">
+                      <AccordionTrigger className="px-4 py-3 hover:no-underline">
+                        <div className="flex items-center gap-2">
+                          <Palette className="h-4 w-4 text-primary" />
+                          <span className="font-semibold">Illustrations</span>
+                        </div>
+                      </AccordionTrigger>
+                      <AccordionContent className="px-4 pb-4 space-y-2">
+                        <Button
+                          variant="default"
+                          size="sm"
+                          onClick={handleOpenImageDialog}
+                          disabled={generatingImage || storyImages.length >= 5}
+                          className="w-full gap-2"
+                        >
+                          {generatingImage ? (
+                            <>
+                              <Loader2 className="h-4 w-4 animate-spin" />
+                              Creating...
+                            </>
+                          ) : (
+                            <>
+                              <Palette className="h-4 w-4" />
+                              New Illustration
+                            </>
+                          )}
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={handleRecreateImage}
+                          disabled={generatingImage}
+                          className="w-full gap-2"
+                        >
+                          <RefreshCw className="h-4 w-4" />
+                          Recreate Current
+                        </Button>
+                        <Button
+                          variant={storyImages[currentImageIndex].is_selected ? "default" : "outline"}
+                          size="sm"
+                          onClick={() => handleSelectImage(storyImages[currentImageIndex].id)}
+                          disabled={storyImages[currentImageIndex].is_selected}
+                          className="w-full gap-2"
+                        >
+                          <Star className={`h-4 w-4 ${storyImages[currentImageIndex].is_selected ? 'fill-current' : ''}`} />
+                          {storyImages[currentImageIndex].is_selected ? 'Cover Image' : 'Set as Cover'}
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleDeleteImage(storyImages[currentImageIndex].id)}
+                          className="w-full gap-2 text-destructive hover:text-destructive"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                          Delete Image
+                        </Button>
+                      </AccordionContent>
+                    </AccordionItem>
+                  </Accordion>
+                ) : (
+                  <div className="flex items-center justify-between gap-3 px-4 py-2 bg-muted/30 rounded-lg border border-border/50">
+                    {/* Left: Primary Actions */}
+                    <div className="flex items-center gap-2">
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button
+                              variant="default"
+                              size="sm"
+                              onClick={handleOpenImageDialog}
+                              disabled={generatingImage || storyImages.length >= 5}
+                              className="h-8 gap-1.5"
+                            >
+                              {generatingImage ? (
+                                <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                              ) : (
+                                <>
+                                  <Palette className="h-3.5 w-3.5" />
+                                  <span className="text-xs font-medium">Create New Illustration</span>
+                                </>
+                              )}
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>Create custom illustrations for your story - up to 5 images total</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={handleRecreateImage}
+                        disabled={generatingImage}
+                        className="h-8"
+                      >
+                        <RefreshCw className="h-3.5 w-3.5" />
+                      </Button>
+                    </div>
+
+                    {/* Center: Dots + Counter */}
+                    <div className="flex items-center gap-3">
+                      {storyImages.length > 1 && (
+                        <div className="flex gap-1.5">
+                          {storyImages.map((image, index) => (
+                            <button
+                              key={image.id}
+                              onClick={() => setCurrentImageIndex(index)}
+                              className={`h-1.5 rounded-full transition-all ${
+                                index === currentImageIndex 
+                                  ? 'w-6 bg-primary' 
+                                  : 'w-1.5 bg-muted-foreground/30'
+                              }`}
+                              aria-label={`Go to image ${index + 1}`}
+                            />
+                          ))}
+                        </div>
+                      )}
+                      <span className="text-xs font-medium text-muted-foreground">
+                        {currentImageIndex + 1}/{storyImages.length}
+                      </span>
+                    </div>
+
+                    {/* Right: Secondary Actions */}
+                    <div className="flex items-center gap-2">
+                      <Button
+                        variant={storyImages[currentImageIndex].is_selected ? "default" : "ghost"}
+                        size="sm"
+                        onClick={() => handleSelectImage(storyImages[currentImageIndex].id)}
+                        disabled={storyImages[currentImageIndex].is_selected}
+                        className="h-8"
+                        title="Set as cover"
+                      >
+                        <Star className={`h-3.5 w-3.5 ${storyImages[currentImageIndex].is_selected ? 'fill-current' : ''}`} />
+                      </Button>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                            <MoreVertical className="h-3.5 w-3.5" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuItem 
+                            onClick={() => handleDeleteImage(storyImages[currentImageIndex].id)}
+                            className="text-destructive focus:text-destructive"
+                          >
+                            <Trash2 className="h-4 w-4 mr-2" />
+                            Delete Image
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </div>
+                  </div>
+                )}
               </div>
             ) : (
               <div className="flex flex-col items-center justify-center gap-6 py-12 px-4">
@@ -688,10 +753,281 @@ const StoryView = () => {
               </div>
             )}
 
-            {/* Audio Player - Always Visible When Available */}
-            {story.audio_url && (
-              <div className="mt-6">
-                <AudioPlayer audioUrl={story.audio_url} title={story.title} />
+            {/* Enhanced Audio Section */}
+            {isMobile ? (
+              <Accordion type="single" collapsible defaultValue="audio" className="w-full">
+                <AccordionItem value="audio" className="border rounded-lg bg-muted/30">
+                  <AccordionTrigger className="px-4 py-3 hover:no-underline">
+                    <div className="flex items-center gap-2">
+                      <Volume2 className="h-4 w-4 text-primary" />
+                      <span className="font-semibold">Audio Narration</span>
+                    </div>
+                  </AccordionTrigger>
+                  <AccordionContent className="px-4 pb-4 space-y-4">
+                    {!story.audio_url ? (
+                      /* Pre-Generation State - Mobile */
+                      <div className="space-y-4">
+                        <div className="text-center">
+                          <p className="text-sm text-muted-foreground">
+                            Generate AI-powered narration for your story
+                          </p>
+                        </div>
+                        
+                        <div className="space-y-3">
+                          <Select value={selectedVoiceType} onValueChange={setSelectedVoiceType}>
+                            <SelectTrigger className="w-full">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="whimsical">
+                                <div className="flex flex-col">
+                                  <span className="font-medium">Whimsical</span>
+                                  <span className="text-xs text-muted-foreground">Magical & light-hearted</span>
+                                </div>
+                              </SelectItem>
+                              <SelectItem value="adventure">
+                                <div className="flex flex-col">
+                                  <span className="font-medium">Adventure</span>
+                                  <span className="text-xs text-muted-foreground">Energetic & dynamic</span>
+                                </div>
+                              </SelectItem>
+                              <SelectItem value="ranch">
+                                <div className="flex flex-col">
+                                  <span className="font-medium">Ranch Narrator</span>
+                                  <span className="text-xs text-muted-foreground">Southern drawl & cinematic</span>
+                                </div>
+                              </SelectItem>
+                            </SelectContent>
+                          </Select>
+                          
+                          <Button
+                            onClick={handleGenerateAudio}
+                            disabled={isGeneratingAudio}
+                            size="default"
+                            className="w-full gap-2"
+                          >
+                            {isGeneratingAudio ? (
+                              <>
+                                <Loader2 className="h-4 w-4 animate-spin" />
+                                Generating...
+                              </>
+                            ) : (
+                              <>
+                                <Play className="h-4 w-4" />
+                                Generate Narration
+                              </>
+                            )}
+                          </Button>
+                        </div>
+                      </div>
+                    ) : (
+                      /* Audio Player State - Mobile */
+                      <div className="space-y-3">
+                        <AudioPlayer audioUrl={story.audio_url} title={story.title} />
+                        
+                        <div className="space-y-2">
+                          <p className="text-sm text-muted-foreground">Want a different voice?</p>
+                          <Select value={selectedVoiceType} onValueChange={setSelectedVoiceType}>
+                            <SelectTrigger className="w-full">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="whimsical">Whimsical</SelectItem>
+                              <SelectItem value="adventure">Adventure</SelectItem>
+                              <SelectItem value="ranch">Ranch Narrator</SelectItem>
+                            </SelectContent>
+                          </Select>
+                          <Button
+                            variant="outline"
+                            size="default"
+                            onClick={handleGenerateAudio}
+                            disabled={isGeneratingAudio}
+                            className="w-full gap-2"
+                          >
+                            {isGeneratingAudio ? (
+                              <>
+                                <Loader2 className="h-4 w-4 animate-spin" />
+                                Regenerating...
+                              </>
+                            ) : (
+                              <>
+                                <RefreshCw className="h-4 w-4" />
+                                Regenerate
+                              </>
+                            )}
+                          </Button>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Multi-Stage Generation Progress - Mobile */}
+                    {isGeneratingAudio && (
+                      <div className="p-4 rounded-xl bg-gradient-to-br from-primary/10 to-primary/5 border border-primary/20 space-y-3 animate-fade-in">
+                        <div className="flex items-center gap-3">
+                          <Loader2 className="h-5 w-5 text-primary animate-spin" />
+                          <div>
+                            <h4 className="font-semibold text-sm">Generating Audio</h4>
+                            <p className="text-xs text-muted-foreground">Please wait...</p>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </AccordionContent>
+                </AccordionItem>
+              </Accordion>
+            ) : (
+              <div className="space-y-4">
+                {!story.audio_url ? (
+                  /* Pre-Generation State - Desktop */
+                  <div className="p-8 rounded-xl bg-gradient-to-br from-primary/5 via-primary/10 to-primary/5 border-2 border-dashed border-primary/30 text-center space-y-4">
+                    <div className="flex justify-center">
+                      <div className="p-4 rounded-full bg-primary/10">
+                        <Volume2 className="h-8 w-8 text-primary" />
+                      </div>
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-semibold mb-2">Generate Audio Narration</h3>
+                      <p className="text-sm text-muted-foreground max-w-md mx-auto">
+                        Bring your story to life with AI-powered narration. Choose a voice and let AI read your story aloud.
+                      </p>
+                    </div>
+                    
+                    <div className="flex items-center justify-center gap-3">
+                      <Select value={selectedVoiceType} onValueChange={setSelectedVoiceType}>
+                        <SelectTrigger className="w-48">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="whimsical">
+                            <div className="flex flex-col">
+                              <span className="font-medium">Whimsical</span>
+                              <span className="text-xs text-muted-foreground">Magical & light-hearted</span>
+                            </div>
+                          </SelectItem>
+                          <SelectItem value="adventure">
+                            <div className="flex flex-col">
+                              <span className="font-medium">Adventure</span>
+                              <span className="text-xs text-muted-foreground">Energetic & dynamic</span>
+                            </div>
+                          </SelectItem>
+                          <SelectItem value="ranch">
+                            <div className="flex flex-col">
+                              <span className="font-medium">Ranch Narrator</span>
+                              <span className="text-xs text-muted-foreground">Southern drawl & cinematic</span>
+                            </div>
+                          </SelectItem>
+                        </SelectContent>
+                      </Select>
+                      
+                      <Button
+                        onClick={handleGenerateAudio}
+                        disabled={isGeneratingAudio}
+                        size="lg"
+                        className="gap-2"
+                      >
+                        {isGeneratingAudio ? (
+                          <>
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                            Generating...
+                          </>
+                        ) : (
+                          <>
+                            <Play className="h-4 w-4" />
+                            Generate Narration
+                          </>
+                        )}
+                      </Button>
+                    </div>
+                  </div>
+                ) : (
+                  /* Audio Player State - Desktop */
+                  <div className="space-y-3">
+                    <AudioPlayer audioUrl={story.audio_url} title={story.title} />
+                    
+                    {/* Regenerate Option */}
+                    <div className="flex items-center justify-between px-4 py-2 rounded-lg bg-muted/20 border border-border/30">
+                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                        <RefreshCw className="h-4 w-4" />
+                        <span>Want a different voice?</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Select value={selectedVoiceType} onValueChange={setSelectedVoiceType}>
+                          <SelectTrigger className="w-40 h-8 text-xs">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="whimsical">Whimsical</SelectItem>
+                            <SelectItem value="adventure">Adventure</SelectItem>
+                            <SelectItem value="ranch">Ranch Narrator</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={handleGenerateAudio}
+                          disabled={isGeneratingAudio}
+                          className="h-8"
+                        >
+                          {isGeneratingAudio ? (
+                            <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                          ) : (
+                            'Regenerate'
+                          )}
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Multi-Stage Generation Progress - Desktop */}
+                {isGeneratingAudio && (
+                  <div className="p-6 rounded-xl bg-gradient-to-br from-primary/10 to-primary/5 border border-primary/20 space-y-4 animate-fade-in">
+                    <div className="flex items-center gap-3">
+                      <div className="relative">
+                        <Loader2 className="h-6 w-6 text-primary animate-spin" />
+                        <div className="absolute inset-0 blur-md bg-primary/30 animate-pulse" />
+                      </div>
+                      <div>
+                        <h4 className="font-semibold text-foreground">Generating Your Audio Narration</h4>
+                        <p className="text-sm text-muted-foreground">This may take a moment...</p>
+                      </div>
+                    </div>
+                    
+                    {/* Stage Indicators */}
+                    <div className="space-y-3">
+                      <div className="flex items-center gap-3 p-3 rounded-lg bg-background/50 border border-border/50">
+                        <div className="flex-shrink-0 w-8 h-8 rounded-full bg-primary flex items-center justify-center text-primary-foreground font-semibold text-sm">
+                          1
+                        </div>
+                        <div className="flex-1">
+                          <p className="text-sm font-medium">Analyzing Story Content</p>
+                          <p className="text-xs text-muted-foreground">Processing text and preparing for narration</p>
+                        </div>
+                        <Loader2 className="h-4 w-4 text-primary animate-spin" />
+                      </div>
+                      
+                      <div className="flex items-center gap-3 p-3 rounded-lg bg-background/30 border border-border/30 opacity-60">
+                        <div className="flex-shrink-0 w-8 h-8 rounded-full bg-muted flex items-center justify-center text-muted-foreground font-semibold text-sm">
+                          2
+                        </div>
+                        <div className="flex-1">
+                          <p className="text-sm font-medium">Generating Audio</p>
+                          <p className="text-xs text-muted-foreground">Creating narration with selected voice</p>
+                        </div>
+                      </div>
+                      
+                      <div className="flex items-center gap-3 p-3 rounded-lg bg-background/30 border border-border/30 opacity-40">
+                        <div className="flex-shrink-0 w-8 h-8 rounded-full bg-muted flex items-center justify-center text-muted-foreground font-semibold text-sm">
+                          3
+                        </div>
+                        <div className="flex-1">
+                          <p className="text-sm font-medium">Finalizing</p>
+                          <p className="text-xs text-muted-foreground">Converting and saving your audio file</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
             )}
 
