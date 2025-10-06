@@ -107,49 +107,17 @@ export function AudioPlayer({ audioUrl, title }: AudioPlayerProps) {
   };
 
   return (
-    <div className="w-full space-y-4 p-6 rounded-xl bg-gradient-to-br from-muted/30 via-muted/20 to-muted/30 border border-border/50 backdrop-blur-sm">
+    <div className="w-full p-4 rounded-xl bg-gradient-to-br from-muted/30 via-muted/20 to-muted/30 border border-border/50 backdrop-blur-sm">
       <audio ref={audioRef} src={audioUrl} />
-      
-      {/* Title */}
-      {title && (
-        <div className="text-center">
-          <h3 className="font-semibold text-foreground">Audio Narration</h3>
-          <p className="text-sm text-muted-foreground">{title}</p>
-        </div>
-      )}
 
-      {/* Progress Bar */}
-      <div className="space-y-2">
-        <Slider
-          value={[currentTime]}
-          max={duration || 100}
-          step={0.1}
-          onValueChange={handleSeek}
-          className="w-full cursor-pointer"
-        />
-        <div className="flex justify-between text-xs text-muted-foreground">
-          <span>{formatTime(currentTime)}</span>
-          <span>{formatTime(duration)}</span>
-        </div>
-      </div>
-
-      {/* Controls */}
-      <div className="flex items-center justify-between gap-4">
-        {/* Playback Controls */}
+      {/* Main Controls Row */}
+      <div className="flex items-center gap-3 mb-3">
+        {/* LEFT: Play Button + Volume */}
         <div className="flex items-center gap-2">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => skip(-10)}
-            className="h-9 w-9 hover:bg-muted"
-          >
-            <SkipBack className="h-4 w-4" />
-          </Button>
-          
           <Button
             onClick={togglePlayPause}
             size="icon"
-            className="h-12 w-12 rounded-full shadow-lg hover:scale-105 transition-transform"
+            className="h-12 w-12 rounded-full shadow-lg hover:scale-105 transition-transform flex-shrink-0"
           >
             {isPlaying ? (
               <Pause className="h-5 w-5" />
@@ -158,42 +126,47 @@ export function AudioPlayer({ audioUrl, title }: AudioPlayerProps) {
             )}
           </Button>
 
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => skip(10)}
-            className="h-9 w-9 hover:bg-muted"
-          >
-            <SkipForward className="h-4 w-4" />
-          </Button>
+          {/* Volume Control */}
+          <div className="hidden md:flex items-center gap-2 w-32">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={toggleMute}
+              className="h-8 w-8 flex-shrink-0"
+            >
+              {isMuted || volume === 0 ? (
+                <VolumeX className="h-4 w-4" />
+              ) : (
+                <Volume2 className="h-4 w-4" />
+              )}
+            </Button>
+            <Slider
+              value={[isMuted ? 0 : volume]}
+              max={1}
+              step={0.01}
+              onValueChange={handleVolumeChange}
+              className="flex-1"
+            />
+          </div>
         </div>
 
-        {/* Volume Control */}
-        <div className="hidden md:flex items-center gap-2 flex-1 max-w-32">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={toggleMute}
-            className="h-8 w-8 flex-shrink-0"
-          >
-            {isMuted || volume === 0 ? (
-              <VolumeX className="h-4 w-4" />
-            ) : (
-              <Volume2 className="h-4 w-4" />
-            )}
-          </Button>
+        {/* CENTER: Progress Bar */}
+        <div className="flex-1 space-y-1">
           <Slider
-            value={[isMuted ? 0 : volume]}
-            max={1}
-            step={0.01}
-            onValueChange={handleVolumeChange}
-            className="flex-1"
+            value={[currentTime]}
+            max={duration || 100}
+            step={0.1}
+            onValueChange={handleSeek}
+            className="w-full cursor-pointer"
           />
+          <div className="flex justify-between text-xs text-muted-foreground px-1">
+            <span>{formatTime(currentTime)}</span>
+            <span>{formatTime(duration)}</span>
+          </div>
         </div>
 
-        {/* Right Controls */}
+        {/* RIGHT: Speed + Download */}
         <div className="flex items-center gap-2">
-          {/* Playback Speed */}
           <Select
             value={playbackRate.toString()}
             onValueChange={(value) => setPlaybackRate(parseFloat(value))}
@@ -210,7 +183,6 @@ export function AudioPlayer({ audioUrl, title }: AudioPlayerProps) {
             </SelectContent>
           </Select>
 
-          {/* Download Button */}
           <Button
             variant="ghost"
             size="icon"
@@ -223,9 +195,9 @@ export function AudioPlayer({ audioUrl, title }: AudioPlayerProps) {
         </div>
       </div>
 
-      {/* Waveform visualization placeholder */}
+      {/* Waveform visualization */}
       {isPlaying && (
-        <div className="flex items-center justify-center gap-1 h-12">
+        <div className="flex items-center justify-center gap-1 h-8">
           {Array.from({ length: 30 }).map((_, i) => (
             <div
               key={i}
