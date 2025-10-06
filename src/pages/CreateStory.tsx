@@ -177,7 +177,7 @@ const CreateStory = () => {
           {/* Story Universe Section */}
           <Card className="shadow-lg hover:shadow-xl transition-shadow duration-300 border-2">
             <CardHeader>
-              <CardTitle className="text-2xl font-poppins">Choose Your Universe</CardTitle>
+              <CardTitle className="text-2xl font-poppins font-bold">Choose Your Universe</CardTitle>
               <CardDescription>Select where your story takes place</CardDescription>
             </CardHeader>
             <CardContent>
@@ -210,7 +210,7 @@ const CreateStory = () => {
           {/* Hero Details Section */}
           <Card className="shadow-lg hover:shadow-xl transition-shadow duration-300 border-2">
             <CardHeader>
-              <CardTitle className="text-2xl font-poppins">Your Hero</CardTitle>
+              <CardTitle className="text-2xl font-poppins font-bold">Your Hero</CardTitle>
               <CardDescription>Tell us about the main character</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -249,7 +249,7 @@ const CreateStory = () => {
           {/* Story Type & Structure Section */}
           <Card className="shadow-lg hover:shadow-xl transition-shadow duration-300 border-2">
             <CardHeader>
-              <CardTitle className="text-2xl font-poppins">Story Details</CardTitle>
+              <CardTitle className="text-2xl font-poppins font-bold">Story Details</CardTitle>
               <CardDescription>Choose the type and structure of your story</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -341,7 +341,7 @@ const CreateStory = () => {
           {/* Art Style Section */}
           <Card className="shadow-lg hover:shadow-xl transition-shadow duration-300 border-2">
             <CardHeader>
-              <CardTitle className="text-2xl font-poppins">Art Style</CardTitle>
+              <CardTitle className="text-2xl font-poppins font-bold">Art Style</CardTitle>
               <CardDescription>Choose how your story will look</CardDescription>
             </CardHeader>
             <CardContent>

@@ -256,7 +256,7 @@ export default function StoryEditor() {
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold">{id ? 'Edit Story' : 'Create New Story'}</h1>
+            <h1 className="text-3xl font-poppins font-bold">{id ? 'Edit Story' : 'Create New Story'}</h1>
             <p className="text-muted-foreground">
               {id ? 'Update story content and media' : 'Create a new featured story for the Guardian collection'}
             </p>

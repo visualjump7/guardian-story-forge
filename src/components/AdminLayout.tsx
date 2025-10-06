@@ -34,7 +34,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
       {/* Sidebar */}
       <aside className="w-64 border-r bg-card">
         <div className="p-6">
-          <h1 className="text-2xl font-bold text-primary">Admin Panel</h1>
+          <h1 className="text-2xl font-poppins font-bold text-primary">Admin Panel</h1>
         </div>
         <nav className="space-y-1 px-3">
           {navItems.map((item) => {

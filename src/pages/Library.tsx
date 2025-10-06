@@ -191,7 +191,7 @@ const Library = () => {
         {savedStories.length === 0 ? (
           <div className="text-center py-20 space-y-4">
             <BookOpen className="w-24 h-24 text-muted-foreground mx-auto" />
-            <h2 className="text-3xl font-bold text-foreground">Your library is empty</h2>
+            <h2 className="text-3xl font-poppins font-bold text-foreground">Your library is empty</h2>
             <p className="text-xl text-muted-foreground">
               Start creating magical stories!
             </p>
@@ -207,7 +207,7 @@ const Library = () => {
           </div>
         ) : (
           <div className="space-y-6">
-            <h2 className="text-3xl font-bold text-foreground">
+            <h2 className="text-3xl font-poppins font-bold text-foreground">
               Your Saved Stories ({savedStories.length})
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -269,7 +269,7 @@ const Library = () => {
 
                   {/* Dark Text Section */}
                   <div className="relative bg-gradient-to-t from-black/95 via-black/90 to-transparent p-6 space-y-3">
-                    <h3 className="text-2xl md:text-3xl font-bold text-amber-400 line-clamp-2 tracking-tight leading-tight">
+                    <h3 className="text-2xl md:text-3xl font-poppins font-bold text-amber-400 line-clamp-2 tracking-tight leading-tight">
                       {saved.stories.title}
                     </h3>
                     

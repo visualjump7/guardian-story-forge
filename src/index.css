@@ -124,8 +124,13 @@ All colors MUST be HSL.
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-inter;
     position: relative;
+  }
+
+  /* Typography - Poppins Bold for all headers */
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-poppins font-bold;
   }
 
   /* Enhanced colorful floating particles on pure black */

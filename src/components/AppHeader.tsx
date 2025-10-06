@@ -38,7 +38,7 @@ export const AppHeader = ({
           {title && !isMobile && (
             <div className="flex items-center gap-2">
               <img src={logo} alt="Guardian Kids" className="w-8 h-8" />
-              <h1 className="text-xl font-bold text-primary">{title}</h1>
+              <h1 className="text-xl font-poppins font-bold text-primary">{title}</h1>
             </div>
           )}
         </div>
