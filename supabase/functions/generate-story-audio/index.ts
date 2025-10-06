@@ -19,19 +19,16 @@ serve(async (req) => {
       throw new Error("Story ID is required");
     }
 
-    // Map voice types to OpenAI voices and narrative styles
+    // Map voice types to ElevenLabs voice IDs
     const voiceConfig = {
       whimsical: {
-        voice: "shimmer",
-        style: "Read this story with a magical, light-hearted tone. Use varied pacing with gentle emphasis on wonder and imagination. ",
+        voiceId: "pFZP5JQG7iQjIQuC4Bku", // Lily - sweet, gentle voice
       },
       adventure: {
-        voice: "onyx",
-        style: "Read this story with an energetic, dynamic tone. Build excitement with dramatic emphasis and confident delivery. ",
+        voiceId: "CwhRBWXzGAHq8TQ4Fs17", // Roger - warm, confident narrator
       },
       ranch: {
-        voice: "echo",
-        style: "Read this story with a slow, southern drawl. Take your time with each word, using a warm Texas ranch accent with cinematic pauses and a relaxed, storytelling cadence. ",
+        voiceId: "pqHfZKP75CvOlQylNhV4", // Bill - friendly storytelling voice
       },
     };
 
@@ -39,10 +36,10 @@ serve(async (req) => {
 
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
-    const openaiApiKey = Deno.env.get('OPENAI_API_KEY');
+    const elevenLabsApiKey = Deno.env.get('ELEVENLABS_API_KEY');
 
-    if (!openaiApiKey) {
-      throw new Error("OpenAI API key not configured");
+    if (!elevenLabsApiKey) {
+      throw new Error("ElevenLabs API key not configured");
     }
 
     const supabase = createClient(supabaseUrl, supabaseKey);
@@ -96,10 +93,7 @@ serve(async (req) => {
 
     console.log(`Generating audio for story: ${story.title}`);
 
-    // OpenAI TTS has a 4096 character limit, so truncate if needed
-    const MAX_TTS_LENGTH = 4000; // Leave some buffer
-    
-    // Build the audio content without style prompts
+    // Build the audio content with title, excerpt, and creator
     let audioIntro = story.title;
     if (story.excerpt) {
       audioIntro += `. ${story.excerpt}`;
@@ -109,36 +103,25 @@ serve(async (req) => {
     }
     audioIntro += " ";
     
-    let audioContent = audioIntro + story.content;
-    
-    if (audioContent.length > MAX_TTS_LENGTH) {
-      // Truncate at the last complete sentence before the limit
-      const truncated = audioContent.substring(0, MAX_TTS_LENGTH);
-      const lastPeriod = truncated.lastIndexOf('.');
-      const lastExclamation = truncated.lastIndexOf('!');
-      const lastQuestion = truncated.lastIndexOf('?');
-      const lastSentenceEnd = Math.max(lastPeriod, lastExclamation, lastQuestion);
-      
-      if (lastSentenceEnd > 0) {
-        audioContent = truncated.substring(0, lastSentenceEnd + 1);
-      } else {
-        audioContent = truncated;
-      }
-      console.log(`Story truncated from ${story.content.length} to ${audioContent.length} characters for audio generation`);
-    }
+    const audioContent = audioIntro + story.content;
+    console.log(`Generating audio for ${audioContent.length} characters`);
 
-    // Generate audio using OpenAI TTS
-    const ttsResponse = await fetch('https://api.openai.com/v1/audio/speech', {
+    // Generate audio using ElevenLabs TTS
+    const ttsResponse = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${config.voiceId}`, {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${openaiApiKey}`,
+        'xi-api-key': elevenLabsApiKey,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'tts-1',
-        input: audioContent,
-        voice: config.voice,
-        response_format: 'mp3',
+        text: audioContent,
+        model_id: 'eleven_multilingual_v2',
+        voice_settings: {
+          stability: 0.5,
+          similarity_boost: 0.75,
+          style: 0.5,
+          use_speaker_boost: true,
+        },
       }),
     });
 
