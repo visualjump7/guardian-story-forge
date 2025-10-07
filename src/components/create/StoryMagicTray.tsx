@@ -35,8 +35,8 @@ export const StoryMagicTray = ({ slot1, slot2, slot3, slot4 }: StoryMagicTrayPro
                 ? 'bg-card border-2 border-story-magic-active'
                 : 'bg-card/50 border-2 border-dashed border-story-magic-empty'
             }
-            ${slot.active ? 'ring-2 ring-story-magic-active ring-offset-2 ring-offset-background' : ''}
-            ${isWandSlot && slot.active ? 'bg-story-magic-active/20' : ''}
+            ${slot.active && slot.filled ? 'ring-2 ring-story-magic-active ring-offset-2 ring-offset-background' : ''}
+            ${isWandSlot && slot.active && slot.filled ? 'bg-story-magic-active/20' : ''}
           `}
         >
           {slot.filled && slot.imageSrc ? (
@@ -67,11 +67,17 @@ export const StoryMagicTray = ({ slot1, slot2, slot3, slot4 }: StoryMagicTrayPro
       <h3 className="text-lg font-semibold text-primary mb-4 text-center">
         Your Story Magic
       </h3>
-      <div className="flex justify-center items-start gap-4 flex-wrap">
-        {renderSlot(slot1, 1)}
-        {renderSlot(slot2, 2)}
-        {renderSlot(slot3, 3)}
-        {slot4 && renderSlot(slot4, 4)}
+      <div className="flex justify-center items-start flex-wrap">
+        <div className="flex gap-4">
+          {renderSlot(slot1, 1)}
+          {renderSlot(slot2, 2)}
+          {renderSlot(slot3, 3)}
+        </div>
+        {slot4 && (
+          <div className="ml-12">
+            {renderSlot(slot4, 4)}
+          </div>
+        )}
       </div>
     </div>
   );

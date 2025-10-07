@@ -70,8 +70,9 @@ export const CreateStep2 = () => {
           label: selectedType,
           active: true,
         }}
-        slot2={{ filled: false }}
-        slot3={{ filled: false }}
+        slot2={{ filled: false, active: false }}
+        slot3={{ filled: false, active: false }}
+        slot4={{ filled: false, active: false }}
       />
 
       <div className="mb-6">
