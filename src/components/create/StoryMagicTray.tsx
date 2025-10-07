@@ -5,6 +5,7 @@ interface TraySlot {
   imageSrc?: string;
   label?: string;
   active?: boolean;
+  onClick?: () => void;
 }
 
 interface StoryMagicTrayProps {
@@ -17,6 +18,7 @@ interface StoryMagicTrayProps {
 export const StoryMagicTray = ({ slot1, slot2, slot3, slot4 }: StoryMagicTrayProps) => {
   const renderSlot = (slot: TraySlot, index: number) => {
     const isWandSlot = index === 4;
+    const isClickable = slot.onClick && slot.filled && slot.active;
 
     return (
       <div
@@ -27,9 +29,11 @@ export const StoryMagicTray = ({ slot1, slot2, slot3, slot4 }: StoryMagicTrayPro
         `}
       >
         <div
+          onClick={isClickable ? slot.onClick : undefined}
           className={`
             w-20 h-20 rounded-xl flex items-center justify-center
             transition-all duration-300
+            ${isClickable ? 'cursor-pointer hover:opacity-75' : ''}
             ${
               slot.filled
                 ? 'bg-card border-2 border-story-magic-active'

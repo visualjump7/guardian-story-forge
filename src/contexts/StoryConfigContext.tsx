@@ -22,6 +22,9 @@ interface StoryConfigContextType {
   setCharacterType: (type: CharacterType, icon: string) => void;
   setStoryType: (type: StoryType, icon: string) => void;
   setMission: (mission: Mission, icon: string) => void;
+  clearCharacterType: () => void;
+  clearStoryType: () => void;
+  clearMission: () => void;
   resetConfig: () => void;
   isStep1Complete: () => boolean;
   isStep2Complete: () => boolean;
@@ -81,6 +84,30 @@ export const StoryConfigProvider = ({ children }: { children: ReactNode }) => {
     }));
   };
 
+  const clearCharacterType = () => {
+    setStoryConfig(prev => ({
+      ...prev,
+      characterType: null,
+      assets: { ...prev.assets, characterTypeIcon: null },
+    }));
+  };
+
+  const clearStoryType = () => {
+    setStoryConfig(prev => ({
+      ...prev,
+      storyType: null,
+      assets: { ...prev.assets, storyTypeIcon: null },
+    }));
+  };
+
+  const clearMission = () => {
+    setStoryConfig(prev => ({
+      ...prev,
+      mission: null,
+      assets: { ...prev.assets, missionIcon: null },
+    }));
+  };
+
   const resetConfig = () => {
     setStoryConfig(defaultConfig);
     localStorage.removeItem('storyConfig');
@@ -110,6 +137,9 @@ export const StoryConfigProvider = ({ children }: { children: ReactNode }) => {
         setCharacterType,
         setStoryType,
         setMission,
+        clearCharacterType,
+        clearStoryType,
+        clearMission,
         resetConfig,
         isStep1Complete,
         isStep2Complete,

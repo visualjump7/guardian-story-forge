@@ -24,7 +24,7 @@ const CHARACTER_TYPES = [
 
 export const CreateStep2 = () => {
   const navigate = useNavigate();
-  const { storyConfig, setCharacterType } = useStoryConfig();
+  const { storyConfig, setCharacterType, clearCharacterType } = useStoryConfig();
   const [selectedType, setSelectedType] = useState<string>(storyConfig.characterType || '');
 
   useEffect(() => {
@@ -51,6 +51,11 @@ export const CreateStep2 = () => {
     setCharacterType(finalType, finalImage);
   };
 
+  const handleSlotClick = () => {
+    setSelectedType('');
+    clearCharacterType();
+  };
+
   const handleContinue = () => {
     navigate('/create/03');
   };
@@ -69,6 +74,7 @@ export const CreateStep2 = () => {
           imageSrc: storyConfig.assets.characterTypeIcon || undefined,
           label: selectedType,
           active: true,
+          onClick: handleSlotClick,
         }}
         slot2={{ filled: false, active: false }}
         slot3={{ filled: false, active: false }}
