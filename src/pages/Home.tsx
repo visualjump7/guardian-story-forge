@@ -3,14 +3,12 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { BookOpen, Sparkles, Library, User, PlusCircle, Wand2, Share2 } from "lucide-react";
+import { BookOpen, Sparkles, Library, PlusCircle, Wand2, Share2 } from "lucide-react";
 import { toast } from "sonner";
-import logo from "@/assets/logo.png";
 import heroImage from "@/assets/swiss-chocolate-story.jpg";
 import VimeoPlayer from "@/components/VimeoPlayer";
-import { useIsMobile } from "@/hooks/use-mobile";
-import { MobileNav } from "@/components/MobileNav";
 import { ShareDialog } from "@/components/ShareDialog";
+import { AppHeader } from "@/components/AppHeader";
 import { useAuth } from "@/hooks/useAuth";
 
 interface Story {
@@ -29,7 +27,6 @@ interface Story {
 
 const Home = () => {
   const navigate = useNavigate();
-  const isMobile = useIsMobile();
   const { isAdmin } = useAuth();
   const [user, setUser] = useState<any>(null);
   const [profile, setProfile] = useState<any>(null);
@@ -102,50 +99,22 @@ const Home = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-muted to-background">
-      {/* Header */}
-      <header className="border-b bg-card/50 backdrop-blur-sm sticky top-0 z-50 shadow-md">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <img src={logo} alt="Guardian Kids" className="w-12 h-12" />
-            {!isMobile && (
-              <div>
-                <h1 className="text-2xl font-poppins font-bold text-primary">Guardian Kids</h1>
-                <p className="text-sm text-muted-foreground">
-                  Welcome back, {profile?.display_name || "Guardian"}!
-                </p>
-              </div>
-            )}
-          </div>
-
-          {isMobile ? (
-            <div className="flex items-center gap-2">
-              <Button
-                variant="default"
-                size="icon"
-                onClick={() => navigate("/create/01")}
-                className="rounded-full shadow-lg"
-              >
-                <Wand2 className="w-5 h-5" />
-              </Button>
-              <MobileNav profile={profile} isAdmin={isAdmin} />
-            </div>
-          ) : (
-            <nav className="flex items-center gap-2">
-              <Button variant="default" size="sm" onClick={() => navigate("/create/01")}>
-                <Wand2 className="w-4 h-4 mr-2" />
-                Create A Story
-              </Button>
-              <Button variant="outline" size="sm" onClick={() => navigate("/library")}>
-                <Library className="w-4 h-4 mr-2" />
-                My Library
-              </Button>
-              <Button variant="ghost" size="icon" onClick={() => navigate("/profile")}>
-                <User className="w-5 h-5" />
-              </Button>
-            </nav>
-          )}
-        </div>
-      </header>
+      <AppHeader 
+        profile={profile}
+        isAdmin={isAdmin}
+        rightContent={
+          <>
+            <Button variant="outline" size="sm" onClick={() => navigate("/create/01")} className="text-white border-white/30 hover:bg-white/10">
+              <Wand2 className="w-4 h-4 mr-2" />
+              Create A Story
+            </Button>
+            <Button variant="outline" size="sm" onClick={() => navigate("/library")} className="text-white border-white/30 hover:bg-white/10">
+              <Library className="w-4 h-4 mr-2" />
+              My Library
+            </Button>
+          </>
+        }
+      />
 
       {/* Main Content */}
       <main className="container mx-auto px-4 py-8 space-y-12">

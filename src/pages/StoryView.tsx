@@ -57,6 +57,7 @@ import { ShareDialog } from "@/components/ShareDialog";
 import { AudioPlayer } from "@/components/AudioPlayer";
 import { AppHeader } from "@/components/AppHeader";
 import { ImagePromptDialog } from "@/components/ImagePromptDialog";
+import { useAuth } from "@/hooks/useAuth";
 import {
   Carousel,
   CarouselContent,
@@ -105,12 +106,14 @@ const StoryView = () => {
   const { storyId } = useParams();
   const navigate = useNavigate();
   const isMobile = useIsMobile();
+  const { isAdmin } = useAuth();
   const [story, setStory] = useState<Story | null>(null);
   const [storyImages, setStoryImages] = useState<StoryImage[]>([]);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isSaved, setIsSaved] = useState(false);
   const [loading, setLoading] = useState(true);
   const [userId, setUserId] = useState<string | null>(null);
+  const [profile, setProfile] = useState<any>(null);
   const [generatingImage, setGeneratingImage] = useState(false);
   const [isGeneratingAudio, setIsGeneratingAudio] = useState(false);
   const [selectedVoiceType, setSelectedVoiceType] = useState("whimsical");
@@ -132,6 +135,15 @@ const StoryView = () => {
     }
 
     setUserId(session.user.id);
+
+    // Load current user profile
+    const { data: currentUserProfile } = await supabase
+      .from("profiles")
+      .select("*")
+      .eq("id", session.user.id)
+      .single();
+    
+    setProfile(currentUserProfile);
 
     // Load story
     const { data: storyData, error } = await supabase
@@ -450,13 +462,15 @@ const StoryView = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-muted to-background">
       <AppHeader 
+        profile={profile}
+        isAdmin={isAdmin}
         rightContent={
           <>
-            <Button variant="outline" size="sm" onClick={() => navigate("/library")}>
+            <Button variant="outline" size="sm" onClick={() => navigate("/library")} className="text-white border-white/30 hover:bg-white/10">
               <Library className="w-4 h-4" />
               My Library
             </Button>
-            <Button variant="outline" size="sm" onClick={handleShare}>
+            <Button variant="outline" size="sm" onClick={handleShare} className="text-white border-white/30 hover:bg-white/10">
               <Share2 className="w-4 h-4" />
               Share
             </Button>
@@ -464,6 +478,7 @@ const StoryView = () => {
               variant={isSaved ? "default" : "outline"}
               size="sm"
               onClick={handleSaveToggle}
+              className={isSaved ? "" : "text-white border-white/30 hover:bg-white/10"}
             >
               {isSaved ? (
                 <>

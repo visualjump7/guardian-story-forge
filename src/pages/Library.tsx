@@ -171,7 +171,6 @@ const Library = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-muted to-background">
       <AppHeader 
-        title="My Library"
         profile={profile}
         isAdmin={isAdmin}
         rightContent={

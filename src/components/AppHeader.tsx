@@ -1,7 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, User, Wand2 } from "lucide-react";
-import logo from "@/assets/guardian-kids-logo.png";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { MobileNav } from "@/components/MobileNav";
 
@@ -26,19 +25,28 @@ export const AppHeader = ({
   const isMobile = useIsMobile();
 
   return (
-    <header className="border-b bg-card/50 backdrop-blur-sm sticky top-0 z-50 shadow-md">
+    <header className="border-b border-white/10 bg-black sticky top-0 z-50 shadow-lg">
       <div className="container mx-auto px-4 py-4 flex items-center justify-between">
         <div className="flex items-center gap-4">
           {showBackButton && !isMobile && (
-            <Button variant="ghost" onClick={() => navigate(backPath)}>
+            <Button variant="ghost" onClick={() => navigate(backPath)} className="text-white hover:bg-white/10">
               <ArrowLeft className="w-5 h-5 mr-2" />
               Back
             </Button>
           )}
-          {title && !isMobile && (
-            <div className="flex items-center gap-2">
-              <img src={logo} alt="Guardian Kids" className="w-8 h-8" />
-              <h1 className="text-xl font-poppins font-bold text-primary">{title}</h1>
+          {!isMobile ? (
+            <div>
+              <h1 className="text-2xl font-poppins font-bold text-white">Guardian Kids</h1>
+              <p className="text-sm text-white/70">
+                Welcome back, {profile?.display_name || "Guardian"}!
+              </p>
+            </div>
+          ) : (
+            <div>
+              <h1 className="text-xl font-poppins font-bold text-white">Guardian Kids</h1>
+              <p className="text-xs text-white/70">
+                {profile?.display_name || "Guardian"}
+              </p>
             </div>
           )}
         </div>
@@ -63,7 +71,7 @@ export const AppHeader = ({
                 variant="ghost"
                 size="icon"
                 onClick={() => navigate("/profile")}
-                className="rounded-full"
+                className="rounded-full text-white hover:bg-white/10"
               >
                 <User className="w-5 h-5" />
               </Button>
