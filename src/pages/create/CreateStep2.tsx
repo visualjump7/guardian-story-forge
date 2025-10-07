@@ -91,7 +91,7 @@ export const CreateStep2 = () => {
             id={type.id}
             label={type.label}
             imageSrc={type.image}
-            selected={selectedType === type.id || (type.id === 'Surprise' && selectedType !== '' && selectedType !== 'Surprise')}
+            selected={selectedType === type.id}
             onSelect={() => handleSelect(type.id, type.image)}
           />
         ))}
