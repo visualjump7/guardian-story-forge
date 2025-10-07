@@ -62,6 +62,11 @@ export default {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
+        "story-magic-active": "hsl(var(--story-magic-active))",
+        "story-magic-empty": "hsl(var(--story-magic-empty))",
+        "story-choice-default": "hsl(var(--story-choice-default))",
+        "story-choice-hover": "hsl(var(--story-choice-hover))",
+        "story-choice-selected": "hsl(var(--story-choice-selected))",
       },
       borderRadius: {
         lg: "var(--radius)",

@@ -71,6 +71,15 @@ All colors MUST be HSL.
     /* Animations */
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     --transition-bounce: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+
+    /* Story Magic Tray */
+    --story-magic-active: 45 93% 58%;
+    --story-magic-empty: 45 93% 58%;
+
+    /* Story Choice Cards */
+    --story-choice-default: 240 5.9% 20%;
+    --story-choice-hover: 45 93% 58%;
+    --story-choice-selected: 45 93% 58%;
   }
 
   .dark {
