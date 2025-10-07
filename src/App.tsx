@@ -19,6 +19,7 @@ import AdminStoryEditor from "./pages/admin/StoryEditor";
 import AdminSettings from "./pages/admin/Settings";
 import { CreateLayout } from "./pages/create/CreateLayout";
 import CreateStep1 from "./pages/create/CreateStep1";
+import { CreateStep2 } from "./pages/create/CreateStep2";
 
 const queryClient = new QueryClient();
 
@@ -35,6 +36,7 @@ const App = () => (
           <Route path="/create" element={<CreateStory />} />
           <Route path="/create/*" element={<CreateLayout />}>
             <Route path="01" element={<CreateStep1 />} />
+            <Route path="02" element={<CreateStep2 />} />
           </Route>
           <Route path="/story/:storyId" element={<StoryView />} />
           <Route path="/library" element={<Library />} />
