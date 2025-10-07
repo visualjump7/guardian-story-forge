@@ -1,10 +1,17 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
+
+// Input validation schema
+const imageRequestSchema = z.object({
+  storyId: z.string().uuid("Invalid story ID format"),
+  customizations: z.string().max(500, "Customizations must be less than 500 characters").optional()
+});
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -13,13 +20,26 @@ serve(async (req) => {
 
   try {
     console.log("Image generation started");
-    const { storyId, customizations } = await req.json();
+    const requestBody = await req.json();
+    
+    // Validate input
+    const validation = imageRequestSchema.safeParse(requestBody);
+    if (!validation.success) {
+      return new Response(
+        JSON.stringify({ 
+          error: "Invalid input", 
+          details: validation.error.errors.map(e => ({ field: e.path.join('.'), message: e.message }))
+        }),
+        { 
+          status: 400, 
+          headers: { ...corsHeaders, "Content-Type": "application/json" } 
+        }
+      );
+    }
+
+    const { storyId, customizations } = validation.data;
     console.log("Story ID received:", storyId);
     console.log("Customizations provided:", !!customizations);
-
-    if (!storyId) {
-      throw new Error("Missing storyId");
-    }
 
     // Initialize Supabase client
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
@@ -42,18 +62,25 @@ serve(async (req) => {
       throw new Error("Unauthorized");
     }
 
-    // Get story details (without theme join to avoid ambiguity)
+    // Get story details with access validation
     console.log("Fetching story details for ID:", storyId, "User:", user.id);
     const { data: story, error: storyError } = await supabase
       .from("stories")
-      .select("id, title, content, hero_name, story_type, art_style, created_by")
+      .select("id, title, content, hero_name, story_type, art_style, created_by, is_public, is_featured")
       .eq("id", storyId)
-      .eq("created_by", user.id)
       .single();
 
     console.log("Story fetched:", !!story, "Error:", storyError?.message);
     if (storyError || !story) {
-      throw new Error("Story not found or you don't own this story");
+      throw new Error("Story not found");
+    }
+
+    // Verify user has access to generate images for this story
+    const isOwner = story.created_by === user.id;
+    const isPublicOrFeatured = story.is_public || story.is_featured;
+    
+    if (!isOwner && !isPublicOrFeatured) {
+      throw new Error("Not authorized to generate images for this story");
     }
 
     // Check existing images and determine type for new image

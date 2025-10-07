@@ -1,10 +1,16 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
+
+// Input validation schema
+const pdfRequestSchema = z.object({
+  storyId: z.string().uuid("Invalid story ID format")
+});
 
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
@@ -12,11 +18,24 @@ serve(async (req) => {
   }
 
   try {
-    const { storyId } = await req.json();
-
-    if (!storyId) {
-      throw new Error("Missing storyId");
+    const requestBody = await req.json();
+    
+    // Validate input
+    const validation = pdfRequestSchema.safeParse(requestBody);
+    if (!validation.success) {
+      return new Response(
+        JSON.stringify({ 
+          error: "Invalid input", 
+          details: validation.error.errors.map(e => ({ field: e.path.join('.'), message: e.message }))
+        }),
+        { 
+          status: 400, 
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+        }
+      );
     }
+
+    const { storyId } = validation.data;
 
     // Initialize Supabase client
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;

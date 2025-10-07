@@ -1,10 +1,28 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
+
+// Input validation schema
+const storyRequestSchema = z.object({
+  heroName: z.string().trim().min(1, "Hero name is required").max(50, "Hero name must be less than 50 characters"),
+  excerpt: z.string().trim().max(500, "Excerpt must be less than 500 characters").optional(),
+  storyType: z.string().min(1, "Story type is required").max(50),
+  themeId: z.string().uuid("Invalid theme ID"),
+  secondaryThemeId: z.string().uuid("Invalid secondary theme ID").optional(),
+  narrativeStructure: z.enum(["heros-journey", "problem-solution", "rags-to-riches", "voyage-return", "quest", "overcoming-monster"], {
+    errorMap: () => ({ message: "Invalid narrative structure" })
+  }),
+  storyLength: z.enum(["short", "medium", "long"]).default("medium"),
+  ageRange: z.enum(["5-7", "8-10", "11-12"]).default("8-10"),
+  setting: z.string().max(100, "Setting must be less than 100 characters").optional(),
+  artStyle: z.enum(["pixar-3d", "ghibli-2d", "watercolor", "classic-disney", "modern-cartoon", "anime", "comic-book"]).default("pixar-3d"),
+  storyUniverse: z.string().max(50, "Story universe must be less than 50 characters").optional()
+});
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -12,23 +30,36 @@ serve(async (req) => {
   }
 
   try {
+    const requestBody = await req.json();
+    
+    // Validate input
+    const validation = storyRequestSchema.safeParse(requestBody);
+    if (!validation.success) {
+      return new Response(
+        JSON.stringify({ 
+          error: "Invalid input", 
+          details: validation.error.errors.map(e => ({ field: e.path.join('.'), message: e.message }))
+        }),
+        { 
+          status: 400, 
+          headers: { ...corsHeaders, "Content-Type": "application/json" } 
+        }
+      );
+    }
+
     const { 
       heroName, 
       excerpt,
       storyType, 
       themeId, 
       narrativeStructure,
-      storyLength = "medium",
-      ageRange = "8-10",
+      storyLength,
+      ageRange,
       setting,
       secondaryThemeId,
-      artStyle = "pixar-3d",
+      artStyle,
       storyUniverse
-    } = await req.json();
-
-    if (!heroName || !storyType || !themeId || !narrativeStructure) {
-      throw new Error("Missing required fields");
-    }
+    } = validation.data;
 
     // Initialize Supabase client
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;

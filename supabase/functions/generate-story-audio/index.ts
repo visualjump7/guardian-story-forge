@@ -1,11 +1,18 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
+
+// Input validation schema
+const audioRequestSchema = z.object({
+  storyId: z.string().uuid("Invalid story ID format"),
+  voiceType: z.enum(["whimsical", "adventure", "ranch"]).default("whimsical")
+});
 
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
@@ -13,11 +20,24 @@ serve(async (req) => {
   }
 
   try {
-    const { storyId, voiceType = "whimsical" } = await req.json();
-
-    if (!storyId) {
-      throw new Error("Story ID is required");
+    const requestBody = await req.json();
+    
+    // Validate input
+    const validation = audioRequestSchema.safeParse(requestBody);
+    if (!validation.success) {
+      return new Response(
+        JSON.stringify({ 
+          error: "Invalid input", 
+          details: validation.error.errors.map(e => ({ field: e.path.join('.'), message: e.message }))
+        }),
+        { 
+          status: 400, 
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+        }
+      );
     }
+
+    const { storyId, voiceType } = validation.data;
 
     // Map voice types to ElevenLabs voice IDs
     const voiceConfig = {

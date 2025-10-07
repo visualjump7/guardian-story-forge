@@ -103,8 +103,19 @@ const Profile = () => {
       return;
     }
 
-    if (newPassword.length < 6) {
-      toast.error("Password must be at least 6 characters");
+    // Strong password validation (aligned with Auth.tsx)
+    if (newPassword.length < 8) {
+      toast.error("Password must be at least 8 characters");
+      return;
+    }
+
+    if (!/[A-Z]/.test(newPassword)) {
+      toast.error("Password must contain at least one uppercase letter");
+      return;
+    }
+
+    if (!/[0-9]/.test(newPassword)) {
+      toast.error("Password must contain at least one number");
       return;
     }
 
