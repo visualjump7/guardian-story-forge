@@ -122,7 +122,7 @@ const Home = () => {
               <Button
                 variant="default"
                 size="icon"
-                onClick={() => navigate("/create")}
+                onClick={() => navigate("/create/01")}
                 className="rounded-full shadow-lg"
               >
                 <Wand2 className="w-5 h-5" />
@@ -131,7 +131,7 @@ const Home = () => {
             </div>
           ) : (
             <nav className="flex items-center gap-2">
-              <Button variant="default" size="sm" onClick={() => navigate("/create")}>
+              <Button variant="default" size="sm" onClick={() => navigate("/create/01")}>
                 <Wand2 className="w-4 h-4 mr-2" />
                 Create A Story
               </Button>
@@ -187,7 +187,7 @@ const Home = () => {
             <Button
               variant="outline"
               size="lg"
-              onClick={() => navigate("/create")}
+              onClick={() => navigate("/create/01")}
               className="shadow-xl whitespace-nowrap border-white/30 text-white hover:bg-white/10 hover:text-white"
             >
               <PlusCircle className="w-6 h-6" />

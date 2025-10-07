@@ -49,7 +49,7 @@ export const AppHeader = ({
               <Button
                 variant="default"
                 size="icon"
-                onClick={() => navigate("/create")}
+                onClick={() => navigate("/create/01")}
                 className="rounded-full shadow-lg"
               >
                 <Wand2 className="w-5 h-5" />

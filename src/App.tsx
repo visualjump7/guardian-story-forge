@@ -7,7 +7,6 @@ import { AdminRoute } from "@/components/AdminRoute";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import Home from "./pages/Home";
-import CreateStory from "./pages/CreateStory";
 import StoryView from "./pages/StoryView";
 import Library from "./pages/Library";
 import Profile from "./pages/Profile";
@@ -36,7 +35,6 @@ const App = () => (
           <Route path="/" element={<Index />} />
           <Route path="/auth" element={<Auth />} />
           <Route path="/home" element={<Home />} />
-          <Route path="/create" element={<CreateStory />} />
           <Route path="/create/*" element={<CreateLayout />}>
             <Route path="01" element={<CreateStep1 />} />
             <Route path="02" element={<CreateStep2 />} />

@@ -176,7 +176,7 @@ const Library = () => {
         isAdmin={isAdmin}
         rightContent={
           <Button
-            onClick={() => navigate("/create")}
+            onClick={() => navigate("/create/01")}
             variant="magical"
             size="sm"
             className="gap-2"
@@ -196,7 +196,7 @@ const Library = () => {
               Start creating magical stories!
             </p>
             <div className="flex gap-4 justify-center">
-              <Button variant="magical" size="lg" onClick={() => navigate("/create")} className="gap-2">
+              <Button variant="magical" size="lg" onClick={() => navigate("/create/01")} className="gap-2">
                 <PlusCircle className="w-5 h-5" />
                 Create Your First Story
               </Button>
