@@ -48,6 +48,10 @@ export const CreateStep3 = () => {
     setStoryType(finalType, finalImage);
   };
 
+  const handleSlot1Click = () => {
+    navigate('/create/02');
+  };
+
   const handleSlotClick = () => {
     setSelectedType('');
     clearStoryType();
@@ -71,6 +75,7 @@ export const CreateStep3 = () => {
           imageSrc: storyConfig.assets.characterTypeIcon || undefined,
           label: storyConfig.characterType || undefined,
           active: false,
+          onClick: handleSlot1Click,
         }}
         slot2={{
           filled: !!selectedType,

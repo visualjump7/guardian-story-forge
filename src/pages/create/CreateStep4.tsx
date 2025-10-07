@@ -48,6 +48,14 @@ export const CreateStep4 = () => {
     setMission(finalMission, finalImage);
   };
 
+  const handleSlot1Click = () => {
+    navigate('/create/02');
+  };
+
+  const handleSlot2Click = () => {
+    navigate('/create/03');
+  };
+
   const handleSlotClick = () => {
     setSelectedMission('');
     clearMission();
@@ -71,12 +79,14 @@ export const CreateStep4 = () => {
           imageSrc: storyConfig.assets.characterTypeIcon || undefined,
           label: storyConfig.characterType || undefined,
           active: false,
+          onClick: handleSlot1Click,
         }}
         slot2={{
           filled: !!storyConfig.storyType,
           imageSrc: storyConfig.assets.storyTypeIcon || undefined,
           label: storyConfig.storyType || undefined,
           active: false,
+          onClick: handleSlot2Click,
         }}
         slot3={{
           filled: !!selectedMission,

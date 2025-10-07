@@ -18,7 +18,7 @@ interface StoryMagicTrayProps {
 export const StoryMagicTray = ({ slot1, slot2, slot3, slot4 }: StoryMagicTrayProps) => {
   const renderSlot = (slot: TraySlot, index: number) => {
     const isWandSlot = index === 4;
-    const isClickable = slot.onClick && slot.filled && slot.active;
+    const isClickable = slot.onClick && slot.filled;
 
     return (
       <div
