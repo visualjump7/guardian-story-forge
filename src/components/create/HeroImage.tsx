@@ -6,7 +6,7 @@ export const HeroImage = () => {
       <img
         src={heroImage}
         alt="Magic cauldron with swirling colors"
-        className="w-full h-48 md:h-64 object-cover"
+        className="w-full max-h-[300px] md:max-h-[400px] object-contain object-center"
       />
     </div>
   );
