@@ -42,12 +42,12 @@ export const CreateStep2 = () => {
       const randomIndex = Math.floor(Math.random() * 5);
       const randomChoice = CHARACTER_TYPES[randomIndex];
       finalType = randomChoice.id as CharacterType;
-      finalImage = randomChoice.image;
+      finalImage = surpriseImg; // Keep surprise image for the tray
     } else {
       finalType = typeId as CharacterType;
     }
 
-    setSelectedType(finalType);
+    setSelectedType(typeId === 'Surprise' ? 'Surprise' : finalType);
     setCharacterType(finalType, finalImage);
   };
 
