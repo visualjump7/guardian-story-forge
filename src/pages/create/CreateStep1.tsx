@@ -60,7 +60,6 @@ export default function CreateStep1() {
         slot1={{ filled: false, active: false }}
         slot2={{ filled: false, active: false }}
         slot3={{ filled: false, active: false }}
-        slot4={{ filled: false, active: false }}
       />
 
       <div className="max-w-2xl mx-auto">

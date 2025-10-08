@@ -1,4 +1,4 @@
-import { Sparkles, Wand2 } from 'lucide-react';
+import { Sparkles } from 'lucide-react';
 
 interface TraySlot {
   filled: boolean;
@@ -12,12 +12,10 @@ interface StoryMagicTrayProps {
   slot1: TraySlot;
   slot2: TraySlot;
   slot3: TraySlot;
-  slot4?: TraySlot;
 }
 
-export const StoryMagicTray = ({ slot1, slot2, slot3, slot4 }: StoryMagicTrayProps) => {
+export const StoryMagicTray = ({ slot1, slot2, slot3 }: StoryMagicTrayProps) => {
   const renderSlot = (slot: TraySlot, index: number) => {
-    const isWandSlot = index === 4;
     const isClickable = slot.onClick && slot.filled;
 
     return (
@@ -40,7 +38,6 @@ export const StoryMagicTray = ({ slot1, slot2, slot3, slot4 }: StoryMagicTrayPro
                 : 'bg-card/50 border-2 border-dashed border-story-magic-empty'
             }
             ${slot.active && slot.filled ? 'ring-2 ring-story-magic-active ring-offset-2 ring-offset-background' : ''}
-            ${isWandSlot && slot.active && slot.filled ? 'bg-story-magic-active/20' : ''}
           `}
         >
           {slot.filled && slot.imageSrc ? (
@@ -48,10 +45,6 @@ export const StoryMagicTray = ({ slot1, slot2, slot3, slot4 }: StoryMagicTrayPro
               src={slot.imageSrc}
               alt={slot.label || 'Story element'}
               className="w-full h-full object-cover rounded-lg"
-            />
-          ) : isWandSlot ? (
-            <Wand2
-              className={`w-10 h-10 ${slot.active ? 'text-story-magic-active animate-pulse' : 'text-muted-foreground/30'}`}
             />
           ) : (
             <Sparkles className="w-8 h-8 text-muted-foreground/30" />
@@ -71,17 +64,12 @@ export const StoryMagicTray = ({ slot1, slot2, slot3, slot4 }: StoryMagicTrayPro
       <h3 className="text-lg font-semibold text-primary mb-4 text-center">
         Your Story Magic
       </h3>
-      <div className="flex justify-center items-start flex-wrap">
+      <div className="flex justify-center items-start">
         <div className="flex gap-4">
           {renderSlot(slot1, 1)}
           {renderSlot(slot2, 2)}
           {renderSlot(slot3, 3)}
         </div>
-        {slot4 && (
-          <div className="ml-12">
-            {renderSlot(slot4, 4)}
-          </div>
-        )}
       </div>
     </div>
   );

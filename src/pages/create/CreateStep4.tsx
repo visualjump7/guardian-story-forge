@@ -95,7 +95,6 @@ export const CreateStep4 = () => {
           active: true,
           onClick: handleSlotClick,
         }}
-        slot4={{ filled: false, active: false }}
       />
 
       <div className="text-center mb-8">

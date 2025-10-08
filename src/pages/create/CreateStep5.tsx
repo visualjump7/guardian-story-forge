@@ -115,11 +115,6 @@ export const CreateStep5 = () => {
           active: false,
           onClick: handleSlot3Click,
         }}
-        slot4={{
-          filled: true,
-          label: 'Magic Wand',
-          active: true,
-        }}
       />
 
       <div className="flex-1 flex flex-col items-center justify-center text-center px-4 py-12">
