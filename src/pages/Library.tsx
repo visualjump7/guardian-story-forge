@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { BookOpen, Trash2, Share2, PlusCircle } from "lucide-react";
+import { BookOpen, Trash2, Share2, PlusCircle, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 import { ShareDialog } from "@/components/ShareDialog";
 import { AppHeader } from "@/components/AppHeader";
@@ -162,14 +162,17 @@ const Library = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background to-muted">
-        <p className="text-xl font-bold text-primary">Loading your library...</p>
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary/5 via-secondary/5 to-accent/5">
+        <div className="text-center space-y-4">
+          <Sparkles className="w-16 h-16 text-primary animate-spin mx-auto" />
+          <p className="text-xl font-poppins font-bold text-primary">Loading your magical library...</p>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-muted to-background">
+    <div className="min-h-screen bg-gradient-to-br from-primary/5 via-secondary/5 to-accent/5">
       <AppHeader 
         profile={profile}
         isAdmin={isAdmin}
@@ -186,30 +189,53 @@ const Library = () => {
         }
       />
 
-      <main className="container mx-auto px-4 py-12">
+      <main className="container max-w-6xl mx-auto px-4 py-8 md:py-12">
         {savedStories.length === 0 ? (
-          <div className="text-center py-20 space-y-4">
-            <BookOpen className="w-24 h-24 text-muted-foreground mx-auto" />
-            <h2 className="text-3xl font-poppins font-bold text-foreground">Your library is empty</h2>
-            <p className="text-xl text-muted-foreground">
-              Start creating magical stories!
-            </p>
-            <div className="flex gap-4 justify-center">
-              <Button variant="magical" size="lg" onClick={() => navigate("/create/01")} className="gap-2">
+          <div className="text-center py-20 space-y-6 max-w-2xl mx-auto">
+            <div className="flex justify-center">
+              <div className="w-24 h-24 rounded-full bg-primary/10 flex items-center justify-center">
+                <BookOpen className="w-12 h-12 text-primary" />
+              </div>
+            </div>
+            <div className="space-y-2">
+              <h2 className="text-3xl md:text-4xl font-poppins font-bold text-primary">
+                Your Library is Empty
+              </h2>
+              <p className="text-lg text-muted-foreground">
+                Start creating magical stories and they'll appear here!
+              </p>
+            </div>
+            <div className="flex gap-4 justify-center pt-4">
+              <Button 
+                size="lg" 
+                onClick={() => navigate("/create/01")} 
+                className="gap-2 bg-primary hover:bg-primary/90 text-primary-foreground"
+              >
                 <PlusCircle className="w-5 h-5" />
                 Create Your First Story
               </Button>
-              <Button variant="outline" size="lg" onClick={() => navigate("/home")}>
+              <Button 
+                variant="outline" 
+                size="lg" 
+                onClick={() => navigate("/home")}
+                className="gap-2"
+              >
                 Explore Stories
               </Button>
             </div>
           </div>
         ) : (
-          <div className="space-y-6">
-            <h2 className="text-3xl font-poppins font-bold text-foreground">
-              Your Saved Stories ({savedStories.length})
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="space-y-8">
+            <div className="space-y-4">
+              <h2 className="text-4xl md:text-5xl font-poppins font-bold text-primary">
+                Your Saved Stories
+              </h2>
+              <p className="text-lg text-muted-foreground">
+                You have {savedStories.length} {savedStories.length === 1 ? 'story' : 'stories'} in your collection
+              </p>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {savedStories.map((saved) => (
                 <Card
                   key={saved.id}
