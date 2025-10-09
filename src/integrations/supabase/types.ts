@@ -44,6 +44,33 @@ export type Database = {
         }
         Relationships: []
       }
+      admin_notes: {
+        Row: {
+          admin_id: string
+          created_at: string | null
+          id: string
+          note: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          admin_id: string
+          created_at?: string | null
+          id?: string
+          note: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          admin_id?: string
+          created_at?: string | null
+          id?: string
+          note?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           author_name: string | null

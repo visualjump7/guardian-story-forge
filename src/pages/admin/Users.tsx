@@ -6,10 +6,13 @@ import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { supabase } from '@/integrations/supabase/client';
-import { Search, UserCog, Ban, CheckCircle, KeyRound, Trash2, X, Filter } from 'lucide-react';
+import { Search, UserCog, Ban, CheckCircle, KeyRound, Trash2, X, Filter, FileText, History, Mail } from 'lucide-react';
 import { toast } from 'sonner';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Textarea } from '@/components/ui/textarea';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import {
   Select,
   SelectContent,
@@ -39,6 +42,25 @@ interface Profile {
   email?: string;
   story_count?: number;
   author_name?: string;
+  email_confirmed_at?: string;
+}
+
+interface AdminNote {
+  id: string;
+  user_id: string;
+  admin_id: string;
+  note: string;
+  created_at: string;
+  admin_name?: string;
+}
+
+interface ActivityLog {
+  id: string;
+  action: string;
+  target_type: string;
+  details: any;
+  created_at: string;
+  admin_name?: string;
 }
 
 export default function AdminUsers() {
@@ -53,6 +75,9 @@ export default function AdminUsers() {
   const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
   const [detailsDialogOpen, setDetailsDialogOpen] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
+  const [userNotes, setUserNotes] = useState<AdminNote[]>([]);
+  const [userActivity, setUserActivity] = useState<ActivityLog[]>([]);
+  const [newNote, setNewNote] = useState('');
 
   useEffect(() => {
     loadProfiles();
@@ -99,12 +124,74 @@ export default function AdminUsers() {
           role: roleData?.role || 'user',
           story_count: storyCount || 0,
           email: authUser?.email || '',
+          email_confirmed_at: authUser?.email_confirmed_at || undefined,
         };
       })
     );
 
     setProfiles(profilesWithRoles);
     setLoading(false);
+  };
+
+  const loadUserDetails = async (userId: string) => {
+    // Load admin notes
+    const { data: notesData } = await supabase
+      .from('admin_notes')
+      .select('*, profiles!admin_notes_admin_id_fkey(display_name)')
+      .eq('user_id', userId)
+      .order('created_at', { ascending: false });
+
+    setUserNotes(notesData?.map(note => ({
+      ...note,
+      admin_name: (note as any).profiles?.display_name || 'Unknown Admin'
+    })) || []);
+
+    // Load activity logs for this user
+    const { data: activityData } = await supabase
+      .from('admin_activity_log')
+      .select('*, profiles!admin_activity_log_admin_id_fkey(display_name)')
+      .eq('target_id', userId)
+      .order('created_at', { ascending: false })
+      .limit(20);
+
+    setUserActivity(activityData?.map(log => ({
+      ...log,
+      admin_name: (log as any).profiles?.display_name || 'System'
+    })) || []);
+  };
+
+  const handleAddNote = async () => {
+    if (!selectedUser || !newNote.trim()) return;
+
+    const { error } = await supabase
+      .from('admin_notes')
+      .insert({
+        user_id: selectedUser.id,
+        admin_id: (await supabase.auth.getUser()).data.user?.id,
+        note: newNote.trim()
+      });
+
+    if (error) {
+      toast.error('Failed to add note');
+    } else {
+      toast.success('Note added');
+      setNewNote('');
+      loadUserDetails(selectedUser.id);
+    }
+  };
+
+  const handleDeleteNote = async (noteId: string) => {
+    const { error } = await supabase
+      .from('admin_notes')
+      .delete()
+      .eq('id', noteId);
+
+    if (error) {
+      toast.error('Failed to delete note');
+    } else {
+      toast.success('Note deleted');
+      if (selectedUser) loadUserDetails(selectedUser.id);
+    }
   };
 
   const handleSuspendUser = async (userId: string, suspended: boolean) => {
@@ -392,6 +479,7 @@ export default function AdminUsers() {
                       onClick={(e) => {
                         if ((e.target as HTMLElement).closest('button, input, [role="combobox"]')) return;
                         setSelectedUser(profile);
+                        loadUserDetails(profile.id);
                         setDetailsDialogOpen(true);
                       }}
                     >
@@ -493,96 +581,204 @@ export default function AdminUsers() {
 
       {/* User Details Dialog */}
       <Dialog open={detailsDialogOpen} onOpenChange={setDetailsDialogOpen}>
-        <DialogContent className="max-w-2xl">
+        <DialogContent className="max-w-4xl max-h-[80vh]">
           <DialogHeader>
-            <DialogTitle>User Details</DialogTitle>
+            <DialogTitle>User Details - {selectedUser?.display_name}</DialogTitle>
           </DialogHeader>
           {selectedUser && (
-            <div className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="text-sm font-medium text-muted-foreground">Name</label>
-                  <p className="text-lg font-semibold">{selectedUser.display_name}</p>
+            <Tabs defaultValue="overview" className="w-full">
+              <TabsList className="grid w-full grid-cols-3">
+                <TabsTrigger value="overview">Overview</TabsTrigger>
+                <TabsTrigger value="notes">
+                  <FileText className="mr-2 h-4 w-4" />
+                  Notes ({userNotes.length})
+                </TabsTrigger>
+                <TabsTrigger value="activity">
+                  <History className="mr-2 h-4 w-4" />
+                  Activity
+                </TabsTrigger>
+              </TabsList>
+
+              <TabsContent value="overview" className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-sm font-medium text-muted-foreground">Name</label>
+                    <p className="text-lg font-semibold">{selectedUser.display_name}</p>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium text-muted-foreground">Email</label>
+                    <div className="flex items-center gap-2">
+                      <p className="text-lg">{selectedUser.email}</p>
+                      {selectedUser.email_confirmed_at ? (
+                        <Badge variant="default" className="text-xs">
+                          <Mail className="mr-1 h-3 w-3" />
+                          Verified
+                        </Badge>
+                      ) : (
+                        <Badge variant="secondary" className="text-xs">
+                          Not Verified
+                        </Badge>
+                      )}
+                    </div>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium text-muted-foreground">Role</label>
+                    <Badge variant="outline" className="mt-1">{selectedUser.role}</Badge>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium text-muted-foreground">Status</label>
+                    <div className="mt-1">
+                      {selectedUser.suspended_at ? (
+                        <Badge variant="destructive">Suspended</Badge>
+                      ) : (
+                        <Badge variant="default">Active</Badge>
+                      )}
+                    </div>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium text-muted-foreground">Stories Created</label>
+                    <p className="text-lg font-semibold">{selectedUser.story_count}</p>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium text-muted-foreground">Account Created</label>
+                    <p className="text-lg">{new Date(selectedUser.created_at).toLocaleDateString()}</p>
+                  </div>
+                  {selectedUser.last_login && (
+                    <div>
+                      <label className="text-sm font-medium text-muted-foreground">Last Login</label>
+                      <p className="text-lg">{new Date(selectedUser.last_login).toLocaleDateString()}</p>
+                    </div>
+                  )}
+                  {selectedUser.author_name && (
+                    <div>
+                      <label className="text-sm font-medium text-muted-foreground">Author Name</label>
+                      <p className="text-lg">{selectedUser.author_name}</p>
+                    </div>
+                  )}
                 </div>
-                <div>
-                  <label className="text-sm font-medium text-muted-foreground">Email</label>
-                  <p className="text-lg">{selectedUser.email}</p>
-                </div>
-                <div>
-                  <label className="text-sm font-medium text-muted-foreground">Role</label>
-                  <Badge variant="outline" className="mt-1">{selectedUser.role}</Badge>
-                </div>
-                <div>
-                  <label className="text-sm font-medium text-muted-foreground">Status</label>
-                  <div className="mt-1">
+                
+                <div className="pt-4 border-t flex gap-2">
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      setDetailsDialogOpen(false);
+                      setResetPasswordDialogOpen(true);
+                    }}
+                  >
+                    <KeyRound className="mr-2 h-4 w-4" />
+                    Reset Password
+                  </Button>
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      handleSuspendUser(selectedUser.id, !selectedUser.suspended_at);
+                      setDetailsDialogOpen(false);
+                    }}
+                  >
                     {selectedUser.suspended_at ? (
-                      <Badge variant="destructive">Suspended</Badge>
+                      <>
+                        <CheckCircle className="mr-2 h-4 w-4" />
+                        Activate User
+                      </>
                     ) : (
-                      <Badge variant="default">Active</Badge>
+                      <>
+                        <Ban className="mr-2 h-4 w-4" />
+                        Suspend User
+                      </>
+                    )}
+                  </Button>
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      setDetailsDialogOpen(false);
+                      setDeleteDialogOpen(true);
+                    }}
+                  >
+                    <Trash2 className="mr-2 h-4 w-4" />
+                    Delete User
+                  </Button>
+                </div>
+              </TabsContent>
+
+              <TabsContent value="notes" className="space-y-4">
+                <div className="space-y-2">
+                  <Textarea
+                    placeholder="Add a note about this user..."
+                    value={newNote}
+                    onChange={(e) => setNewNote(e.target.value)}
+                    rows={3}
+                  />
+                  <Button onClick={handleAddNote} disabled={!newNote.trim()}>
+                    <FileText className="mr-2 h-4 w-4" />
+                    Add Note
+                  </Button>
+                </div>
+
+                <ScrollArea className="h-[300px] pr-4">
+                  <div className="space-y-3">
+                    {userNotes.length === 0 ? (
+                      <p className="text-muted-foreground text-center py-8">No notes yet</p>
+                    ) : (
+                      userNotes.map((note) => (
+                        <Card key={note.id}>
+                          <CardContent className="pt-4">
+                            <div className="flex justify-between items-start mb-2">
+                              <div>
+                                <p className="text-sm font-medium">{note.admin_name}</p>
+                                <p className="text-xs text-muted-foreground">
+                                  {new Date(note.created_at).toLocaleString()}
+                                </p>
+                              </div>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => handleDeleteNote(note.id)}
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </div>
+                            <p className="text-sm whitespace-pre-wrap">{note.note}</p>
+                          </CardContent>
+                        </Card>
+                      ))
                     )}
                   </div>
-                </div>
-                <div>
-                  <label className="text-sm font-medium text-muted-foreground">Stories Created</label>
-                  <p className="text-lg font-semibold">{selectedUser.story_count}</p>
-                </div>
-                <div>
-                  <label className="text-sm font-medium text-muted-foreground">Account Created</label>
-                  <p className="text-lg">{new Date(selectedUser.created_at).toLocaleDateString()}</p>
-                </div>
-                {selectedUser.last_login && (
-                  <div>
-                    <label className="text-sm font-medium text-muted-foreground">Last Login</label>
-                    <p className="text-lg">{new Date(selectedUser.last_login).toLocaleDateString()}</p>
+                </ScrollArea>
+              </TabsContent>
+
+              <TabsContent value="activity" className="space-y-4">
+                <ScrollArea className="h-[400px] pr-4">
+                  <div className="space-y-2">
+                    {userActivity.length === 0 ? (
+                      <p className="text-muted-foreground text-center py-8">No activity logs</p>
+                    ) : (
+                      userActivity.map((log) => (
+                        <Card key={log.id}>
+                          <CardContent className="pt-4">
+                            <div className="flex justify-between items-start">
+                              <div className="space-y-1">
+                                <div className="flex items-center gap-2">
+                                  <Badge variant="outline">{log.action}</Badge>
+                                  <span className="text-sm text-muted-foreground">{log.target_type}</span>
+                                </div>
+                                <p className="text-xs text-muted-foreground">
+                                  {new Date(log.created_at).toLocaleString()} by {log.admin_name}
+                                </p>
+                                {log.details && (
+                                  <pre className="text-xs bg-muted p-2 rounded mt-2 overflow-auto">
+                                    {JSON.stringify(log.details, null, 2)}
+                                  </pre>
+                                )}
+                              </div>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      ))
+                    )}
                   </div>
-                )}
-                {selectedUser.author_name && (
-                  <div>
-                    <label className="text-sm font-medium text-muted-foreground">Author Name</label>
-                    <p className="text-lg">{selectedUser.author_name}</p>
-                  </div>
-                )}
-              </div>
-              
-              <div className="pt-4 border-t flex gap-2">
-                <Button
-                  variant="outline"
-                  onClick={() => {
-                    setDetailsDialogOpen(false);
-                    setResetPasswordDialogOpen(true);
-                  }}
-                >
-                  <KeyRound className="mr-2 h-4 w-4" />
-                  Reset Password
-                </Button>
-                <Button
-                  variant="outline"
-                  onClick={() => handleSuspendUser(selectedUser.id, !selectedUser.suspended_at)}
-                >
-                  {selectedUser.suspended_at ? (
-                    <>
-                      <CheckCircle className="mr-2 h-4 w-4" />
-                      Activate User
-                    </>
-                  ) : (
-                    <>
-                      <Ban className="mr-2 h-4 w-4" />
-                      Suspend User
-                    </>
-                  )}
-                </Button>
-                <Button
-                  variant="outline"
-                  onClick={() => {
-                    setDetailsDialogOpen(false);
-                    setDeleteDialogOpen(true);
-                  }}
-                >
-                  <Trash2 className="mr-2 h-4 w-4" />
-                  Delete User
-                </Button>
-              </div>
-            </div>
+                </ScrollArea>
+              </TabsContent>
+            </Tabs>
           )}
         </DialogContent>
       </Dialog>
