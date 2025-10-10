@@ -35,11 +35,12 @@ export const CreateStep5 = () => {
   const handleSlot1Click = () => navigate('/create/02');
   const handleSlot2Click = () => navigate('/create/03');
   const handleSlot3Click = () => navigate('/create/04');
+  const handleSlot4Click = () => navigate('/create/04_5');
 
-  const handleBack = () => navigate('/create/04');
+  const handleBack = () => navigate('/create/04_5');
 
   const handleGenerateStory = async () => {
-    if (!storyConfig.characterName || !storyConfig.storyType || !storyConfig.mission) {
+    if (!storyConfig.characterName || !storyConfig.storyType || !storyConfig.mission || !storyConfig.writingStyle) {
       toast({
         title: "Incomplete Story Magic",
         description: "Please complete all steps before generating your story.",
@@ -61,6 +62,7 @@ export const CreateStep5 = () => {
           storyType: storyConfig.storyType,
           themeId: themeId,
           narrativeStructure: narrativeStructure,
+          writingStyle: storyConfig.writingStyle,
           storyLength: 'medium',
           ageRange: '8-10',
           artStyle: 'pixar-3d',

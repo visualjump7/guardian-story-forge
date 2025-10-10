@@ -18,6 +18,15 @@ const storyRequestSchema = z.object({
   narrativeStructure: z.enum(["heros-journey", "problem-solution", "rags-to-riches", "voyage-return", "quest", "overcoming-monster"], {
     errorMap: () => ({ message: "Invalid narrative structure" })
   }),
+  writingStyle: z.enum([
+    "interactive-playful",
+    "rhyming-rhythmic", 
+    "conversational-casual",
+    "descriptive-immersive",
+    "action-packed",
+    "gentle-reassuring",
+    "Surprise"
+  ]).default("conversational-casual"),
   storyLength: z.enum(["short", "medium", "long"]).default("medium"),
   ageRange: z.enum(["5-7", "8-10", "11-12"]).default("8-10"),
   setting: z.string().max(100, "Setting must be less than 100 characters").optional(),
@@ -55,6 +64,7 @@ serve(async (req) => {
       storyType, 
       themeId, 
       narrativeStructure,
+      writingStyle,
       storyLength,
       ageRange,
       setting,
@@ -75,6 +85,18 @@ serve(async (req) => {
       const storyOptions = ['Adventure', 'Mystery', 'Magical', 'Epic', 'Space'];
       storyType = storyOptions[Math.floor(Math.random() * storyOptions.length)] as typeof storyType;
       console.log(`Surprise story type selected: ${storyType}`);
+    }
+
+    // Handle "Surprise Me" for writing style - randomize based on age
+    if (writingStyle === 'Surprise') {
+      const styleRecommendations: Record<string, string[]> = {
+        "5-7": ["interactive-playful", "rhyming-rhythmic", "gentle-reassuring"],
+        "8-10": ["conversational-casual", "action-packed", "descriptive-immersive"],
+        "11-12": ["descriptive-immersive", "action-packed", "conversational-casual"]
+      };
+      const recommendedStyles = styleRecommendations[ageRange] || ["conversational-casual"];
+      writingStyle = recommendedStyles[Math.floor(Math.random() * recommendedStyles.length)] as typeof writingStyle;
+      console.log(`Surprise writing style selected: ${writingStyle}`);
     }
 
     // Initialize Supabase client
@@ -147,7 +169,89 @@ serve(async (req) => {
       "overcoming-monster": "Introduce a challenge or 'monster' (literal or metaphorical), build tension, show the character's courage in overcoming it"
     };
 
+    // Writing style guidelines
+    const writingStyleGuidelines: Record<string, { name: string; prompt: string }> = {
+      "interactive-playful": {
+        name: "Interactive & Playful",
+        prompt: `Use an INTERACTIVE AND PLAYFUL writing style:
+- Address the reader directly with "you" and rhetorical questions
+- Include sound effects (WHOOSH! SPLASH! BOOM!)
+- Use exclamation points for excitement
+- Add playful asides like "Can you believe it?"
+- Break the fourth wall occasionally
+- Include moments that encourage imagination: "Imagine if YOU could..."
+- Use onomatopoeia and expressive language
+Example tone: "Guess what happened next? CRASH! The door flew open and there stood... can you guess? A GIANT talking bear wearing a top hat!"`
+      },
+      "rhyming-rhythmic": {
+        name: "Rhyming & Rhythmic",
+        prompt: `Use a RHYMING AND RHYTHMIC writing style:
+- Create rhyming couplets or verses throughout the story
+- Maintain consistent rhythm and meter
+- Use repetitive phrases for memorability
+- Include alliteration and consonance
+- Make it flow like a song when read aloud
+- Use simple, clear rhyme schemes (AABB, ABAB)
+- Include a catchy repeated refrain
+Example: "Through the forest dark and deep, where the shadows creep and creep, ${heroName} walked with courage bright, turning darkness into light."`
+      },
+      "conversational-casual": {
+        name: "Conversational & Casual",
+        prompt: `Use a CONVERSATIONAL AND CASUAL writing style:
+- Write like you're telling the story to a friend
+- Use contractions (didn't, won't, it's)
+- Include casual phrases: "you know," "anyway," "so"
+- Make it feel spontaneous and natural
+- Use simple, everyday language
+- Add relatable observations and humor
+- Keep sentences varied but not overly formal
+Example tone: "So there was ${heroName}, right? Just minding their own business when suddenly—and I mean SUDDENLY—everything changed."`
+      },
+      "descriptive-immersive": {
+        name: "Descriptive & Immersive",
+        prompt: `Use a DESCRIPTIVE AND IMMERSIVE writing style:
+- Use all five senses in descriptions (sight, sound, smell, touch, taste)
+- "Show don't tell" - describe actions and reactions
+- Paint vivid word pictures with specific details
+- Use strong, precise verbs and adjectives
+- Create atmosphere through environmental details
+- Help readers visualize every scene clearly
+- Use metaphors and similes age-appropriately
+Example: "The golden sunlight filtered through emerald leaves, dappling the forest floor with dancing shadows. ${heroName} could smell the sweet pine needles and hear the gentle whisper of wind through branches."`
+      },
+      "action-packed": {
+        name: "Action-Packed & Fast-Paced",
+        prompt: `Use an ACTION-PACKED AND FAST-PACED writing style:
+- Use short, punchy sentences during action scenes
+- Create urgency with active verbs
+- Include cliffhangers and dramatic moments
+- Maintain quick pacing with rapid scene changes
+- Use sentence fragments for effect: "No time. Had to move. NOW."
+- Build tension and release it strategically
+- Include exciting action verbs: raced, soared, crashed, leaped
+Example: "${heroName} ran. Faster. Faster! The ground shook. Something was coming. Something BIG. There was no time to think. Only time to act."`
+      },
+      "gentle-reassuring": {
+        name: "Gentle & Reassuring",
+        prompt: `Use a GENTLE AND REASSURING writing style:
+- Use soft, calming language
+- Maintain steady, peaceful pacing
+- Include comforting phrases and positive affirmations
+- Show emotions being processed healthily
+- Create emotional safety while still having conflict
+- Use warm, nurturing tone throughout
+- Emphasize kindness, understanding, and hope
+- Avoid harsh or scary language
+Example: "${heroName} took a deep breath and felt a little better. It was okay to feel worried sometimes. That's what made the next step—taking one small, brave step forward—even more special."`
+      }
+    };
+
+    const selectedStyle = writingStyleGuidelines[writingStyle as keyof typeof writingStyleGuidelines];
+
     let systemPrompt = `You are a creative children's story writer. Create engaging, age-appropriate stories that teach important life lessons.
+
+WRITING STYLE REQUIREMENT:
+${selectedStyle.prompt}
 
 CRITICAL REQUIREMENT FOR TITLE:
 - Generate a unique, creative, and captivating title that reflects the specific story and theme
