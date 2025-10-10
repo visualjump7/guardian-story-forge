@@ -37,7 +37,8 @@ import {
   MoreVertical,
   Info,
   Palette,
-  Library
+  Library,
+  Sparkles
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -121,6 +122,8 @@ const StoryView = () => {
   const [imageToDelete, setImageToDelete] = useState<string | null>(null);
   const [creatorProfile, setCreatorProfile] = useState<CreatorProfile | null>(null);
   const [isImagePromptDialogOpen, setIsImagePromptDialogOpen] = useState(false);
+  const [regenerateDialogOpen, setRegenerateDialogOpen] = useState(false);
+  const [imageToRegenerate, setImageToRegenerate] = useState<{ id: string; index: number } | null>(null);
 
   useEffect(() => {
     loadStory();
@@ -399,6 +402,27 @@ const StoryView = () => {
     }
   };
 
+  const handleOpenRegenerateDialog = (imageId: string, index: number) => {
+    setImageToRegenerate({ id: imageId, index });
+    setRegenerateDialogOpen(true);
+  };
+
+  const confirmRegenerateImage = async () => {
+    if (!imageToRegenerate) return;
+    
+    setRegenerateDialogOpen(false);
+    
+    // Navigate carousel to the image being regenerated
+    setCurrentImageIndex(imageToRegenerate.index);
+    
+    // Trigger regeneration after state update
+    setTimeout(() => {
+      handleRecreateImage();
+    }, 0);
+    
+    setImageToRegenerate(null);
+  };
+
   const renderStoryWithImages = () => {
     const paragraphs = story.content.split("\n\n");
     const totalParagraphs = paragraphs.length;
@@ -522,6 +546,31 @@ const StoryView = () => {
         </AlertDialogContent>
       </AlertDialog>
 
+      {/* Regenerate Confirmation Dialog */}
+      <AlertDialog open={regenerateDialogOpen} onOpenChange={setRegenerateDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center gap-2">
+              <Sparkles className="h-5 w-5 text-primary" />
+              Create New Image?
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              This will generate a fresh illustration for this scene. The current image will be replaced with a new AI-generated version.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={confirmRegenerateImage}
+              className="bg-primary text-primary-foreground hover:bg-primary/90"
+            >
+              <Sparkles className="h-4 w-4 mr-2" />
+              Create New Image
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
       <main className="container mx-auto px-4 py-12 max-w-6xl">
         <Card className="shadow-2xl border-2">
           <CardHeader className="space-y-4">
@@ -539,27 +588,40 @@ const StoryView = () => {
                   <CarouselContent className="-ml-2 md:-ml-4">
                     {storyImages.map((image, index) => (
                       <CarouselItem key={image.id} className="pl-2 md:pl-4 basis-[85%] md:basis-[90%]">
-                        <div className="relative aspect-video w-full overflow-hidden rounded-xl bg-gradient-to-br from-muted/50 to-muted flex items-center justify-center shadow-2xl border border-border/50 transition-all duration-300 hover:shadow-3xl hover:scale-[1.02]">
-                          <img
-                            src={image.image_url}
-                            alt={`${story.title} - Image ${index + 1}`}
-                            className="h-full w-full object-contain"
+                  <div className="relative aspect-video w-full overflow-hidden rounded-xl bg-gradient-to-br from-muted/50 to-muted flex items-center justify-center shadow-2xl border border-border/50 transition-all duration-300 hover:shadow-3xl hover:scale-[1.02] group">
+                    <img
+                      src={image.image_url}
+                      alt={`${story.title} - Image ${index + 1}`}
+                      className="h-full w-full object-contain"
+                    />
+                    
+                    {/* Magical Regenerate Icon */}
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleOpenRegenerateDialog(image.id, index);
+                      }}
+                      className="absolute top-3 right-3 h-10 w-10 rounded-full bg-primary/90 backdrop-blur-sm flex items-center justify-center shadow-lg border-2 border-primary-foreground/20 hover:bg-primary hover:scale-110 transition-all duration-200 z-20 group-hover:scale-110"
+                      aria-label="Regenerate this image"
+                    >
+                      <Sparkles className="h-5 w-5 text-primary-foreground" />
+                    </button>
+                    
+                    {storyImages.length > 1 && (
+                      <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-1.5">
+                        {storyImages.map((_, dotIndex) => (
+                          <div
+                            key={dotIndex}
+                            className={`h-2 rounded-full transition-all duration-300 ${
+                              dotIndex === index 
+                                ? 'w-8 bg-primary' 
+                                : 'w-2 bg-muted-foreground/30 hover:bg-muted-foreground/50'
+                            }`}
                           />
-                          {storyImages.length > 1 && (
-                            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-1.5">
-                              {storyImages.map((_, dotIndex) => (
-                                <div
-                                  key={dotIndex}
-                                  className={`h-2 rounded-full transition-all duration-300 ${
-                                    dotIndex === index 
-                                      ? 'w-8 bg-primary' 
-                                      : 'w-2 bg-muted-foreground/30 hover:bg-muted-foreground/50'
-                                  }`}
-                                />
-                              ))}
-                            </div>
-                          )}
-                        </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
                       </CarouselItem>
                     ))}
                   </CarouselContent>
