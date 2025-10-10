@@ -154,29 +154,31 @@ export const CreateStep5 = () => {
         </div>
       </div>
 
-      <StoryMagicTray
-        slot1={{
-          filled: true,
-          imageSrc: storyConfig.assets.characterTypeIcon || undefined,
-          label: storyConfig.characterType || undefined,
-          active: false,
-          onClick: handleSlot1Click,
-        }}
-        slot2={{
-          filled: true,
-          imageSrc: storyConfig.assets.storyTypeIcon || undefined,
-          label: storyConfig.storyType || undefined,
-          active: false,
-          onClick: handleSlot2Click,
-        }}
-        slot3={{
-          filled: true,
-          imageSrc: storyConfig.assets.missionIcon || undefined,
-          label: storyConfig.mission || undefined,
-          active: false,
-          onClick: handleSlot3Click,
-        }}
-      />
+      <div className="mt-[30px]">
+        <StoryMagicTray
+          slot1={{
+            filled: true,
+            imageSrc: storyConfig.assets.characterTypeIcon || undefined,
+            label: storyConfig.characterType || undefined,
+            active: false,
+            onClick: handleSlot1Click,
+          }}
+          slot2={{
+            filled: true,
+            imageSrc: storyConfig.assets.storyTypeIcon || undefined,
+            label: storyConfig.storyType || undefined,
+            active: false,
+            onClick: handleSlot2Click,
+          }}
+          slot3={{
+            filled: true,
+            imageSrc: storyConfig.assets.missionIcon || undefined,
+            label: storyConfig.mission || undefined,
+            active: false,
+            onClick: handleSlot3Click,
+          }}
+        />
+      </div>
 
       <LibraryLimitDialog
         open={showLibraryFullDialog}
