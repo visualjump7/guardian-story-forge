@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { HeroImage } from '@/components/create/HeroImage';
 import { StoryMagicTray } from '@/components/create/StoryMagicTray';
 import { CreateNavBar } from '@/components/create/CreateNavBar';
 import { Input } from '@/components/ui/input';
@@ -54,15 +53,7 @@ export default function CreateStep1() {
 
   return (
     <div>
-      <HeroImage />
-
-      <StoryMagicTray
-        slot1={{ filled: false, active: false }}
-        slot2={{ filled: false, active: false }}
-        slot3={{ filled: false, active: false }}
-      />
-
-      <div className="max-w-2xl mx-auto">
+      <div className="max-w-2xl mx-auto mb-12">
         <h1 className="text-4xl md:text-5xl font-bold text-center mb-6 text-primary leading-tight">
           Let's Craft Story Magic…
         </h1>
@@ -93,6 +84,12 @@ export default function CreateStep1() {
           continueDisabled={!isValid && (!localName || validateName(localName) !== '')}
         />
       </div>
+
+      <StoryMagicTray
+        slot1={{ filled: false, active: false }}
+        slot2={{ filled: false, active: false }}
+        slot3={{ filled: false, active: false }}
+      />
     </div>
   );
 }
