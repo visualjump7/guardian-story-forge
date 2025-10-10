@@ -140,7 +140,7 @@ export const ShareDialog = ({ open, onOpenChange, storyId, storyTitle, coverImag
                 className="justify-start"
               >
                 <Twitter className="h-4 w-4 mr-2" />
-                X (Twitter)
+                X
               </Button>
               <Button 
                 onClick={handleShareInstagram}

@@ -38,8 +38,8 @@ serve(async (req) => {
 
     const { storyId } = validation.data;
 
-    // Use Aria voice (expressive, engaging narrator perfect for storytelling)
-    const voiceId = "9BWtsMINqrJLrRacOk9x";
+    // Use George voice (warm, character-driven male storyteller voice)
+    const voiceId = "JBFqnCBsd6RMkjVDRZzb";
 
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
