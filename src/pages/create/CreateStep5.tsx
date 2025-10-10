@@ -130,7 +130,7 @@ export const CreateStep5 = () => {
             disabled={isGenerating}
             className="text-lg px-8"
           >
-            &lt; Not Yet
+            Not Yet
           </Button>
 
           <Button
@@ -145,7 +145,7 @@ export const CreateStep5 = () => {
                 Creating your story...
               </>
             ) : (
-              'Yes &gt;'
+              'Yes, let\'s go!'
             )}
           </Button>
         </div>
