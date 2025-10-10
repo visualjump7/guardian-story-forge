@@ -62,7 +62,7 @@ export const CreateStep4 = () => {
   };
 
   const handleContinue = () => {
-    navigate('/create/04_5');
+    navigate('/create/05');
   };
 
   const handleBack = () => {

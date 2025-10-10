@@ -87,17 +87,15 @@ serve(async (req) => {
       console.log(`Surprise story type selected: ${storyType}`);
     }
 
-    // Handle "Surprise Me" for writing style - randomize based on age
-    if (writingStyle === 'Surprise') {
-      const styleRecommendations: Record<string, string[]> = {
-        "5-7": ["interactive-playful", "rhyming-rhythmic", "gentle-reassuring"],
-        "8-10": ["conversational-casual", "action-packed", "descriptive-immersive"],
-        "11-12": ["descriptive-immersive", "action-packed", "conversational-casual"]
-      };
-      const recommendedStyles = styleRecommendations[ageRange] || ["conversational-casual"];
-      writingStyle = recommendedStyles[Math.floor(Math.random() * recommendedStyles.length)] as typeof writingStyle;
-      console.log(`Surprise writing style selected: ${writingStyle}`);
-    }
+    // Always auto-select writing style based on age range
+    const styleRecommendations: Record<string, string[]> = {
+      "5-7": ["interactive-playful", "rhyming-rhythmic", "gentle-reassuring"],
+      "8-10": ["conversational-casual", "action-packed", "descriptive-immersive"],
+      "11-12": ["descriptive-immersive", "action-packed", "conversational-casual"]
+    };
+    const recommendedStyles = styleRecommendations[ageRange] || ["conversational-casual"];
+    writingStyle = recommendedStyles[Math.floor(Math.random() * recommendedStyles.length)] as typeof writingStyle;
+    console.log(`Auto-selected writing style: ${writingStyle}`);
 
     // Initialize Supabase client
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
