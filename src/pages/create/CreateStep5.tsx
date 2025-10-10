@@ -117,8 +117,8 @@ export const CreateStep5 = () => {
         }}
       />
 
-      <div className="flex-1 flex flex-col items-center justify-center text-center px-4 py-12">
-        <h1 className="text-4xl md:text-5xl font-bold text-story-heading mb-12">
+      <div className="flex flex-col items-center text-center px-4 mt-8">
+        <h1 className="text-4xl md:text-5xl font-bold text-story-heading mb-8">
           Ready to build your story?
         </h1>
 
