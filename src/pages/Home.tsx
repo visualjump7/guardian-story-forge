@@ -144,39 +144,40 @@ const Home = () => {
 
         {/* Create Story CTA */}
         <section 
-          className="relative overflow-hidden rounded-3xl p-8 md:p-12 shadow-[var(--shadow-magical)] min-h-[400px] flex items-end"
-          style={{
-            backgroundImage: `url(${heroImage})`,
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-          }}
+          className="relative overflow-hidden rounded-3xl p-8 md:p-12 shadow-[var(--shadow-magical)] bg-gradient-to-br from-primary/10 to-accent/10"
         >
-          {/* Dark gradient overlay */}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent" />
-          
-          {/* Content */}
-          <div className="relative z-10 w-full flex flex-col md:flex-row items-end justify-between gap-6">
-            {/* Text Content - Left Side */}
-            <div className="space-y-4 max-w-2xl">
-              <h2 className="text-4xl md:text-5xl font-poppins font-bold text-amber-400">
-                Create Your Own Magical Story
-              </h2>
-              <p className="text-xl text-white/90">
-                Choose your hero, pick an adventure, and let AI weave a tale with an important lesson!
-              </p>
-            </div>
+          {/* Centered Content */}
+          <div className="relative z-10 w-full flex flex-col items-center text-center gap-6 max-w-3xl mx-auto">
+            {/* Title */}
+            <h2 className="text-4xl md:text-5xl font-poppins font-bold text-foreground">
+              Create Your Own Magical Story
+            </h2>
             
-            {/* Button - Right Side */}
+            {/* Description */}
+            <p className="text-xl text-muted-foreground">
+              Choose your hero, pick an adventure, and let AI weave a tale with an important lesson!
+            </p>
+            
+            {/* Button */}
             <Button
-              variant="outline"
+              variant="default"
               size="lg"
               onClick={handleCreateStoryClick}
-              className="shadow-xl whitespace-nowrap border-white/30 text-white hover:bg-white/10 hover:text-white"
+              className="shadow-xl"
             >
               <PlusCircle className="w-6 h-6" />
               Start Creating!
             </Button>
           </div>
+        </section>
+
+        {/* Hero Image Section */}
+        <section className="w-full rounded-3xl overflow-hidden shadow-[var(--shadow-magical)]">
+          <img
+            src={heroImage}
+            alt="Magical story creation"
+            className="w-full h-auto object-cover max-h-[500px]"
+          />
         </section>
 
         {/* Featured Stories */}
