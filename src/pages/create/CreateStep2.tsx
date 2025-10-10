@@ -51,6 +51,14 @@ export const CreateStep2 = () => {
     clearCharacterType();
   };
 
+  const handleSlot2Click = () => {
+    navigate('/create/03');
+  };
+
+  const handleSlot3Click = () => {
+    navigate('/create/04');
+  };
+
   const handleContinue = () => {
     navigate('/create/03');
   };
@@ -77,8 +85,8 @@ export const CreateStep2 = () => {
           active: true,
           onClick: handleSlotClick,
         }}
-        slot2={{ filled: false, active: false }}
-        slot3={{ filled: false, active: false }}
+        slot2={{ filled: false, active: false, onClick: handleSlot2Click }}
+        slot3={{ filled: false, active: false, onClick: handleSlot3Click }}
       />
 
       <div className="mb-6">

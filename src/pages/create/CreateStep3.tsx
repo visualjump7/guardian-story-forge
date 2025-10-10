@@ -53,6 +53,10 @@ export const CreateStep3 = () => {
     clearStoryType();
   };
 
+  const handleSlot3Click = () => {
+    navigate('/create/04');
+  };
+
   const handleContinue = () => {
     navigate('/create/04');
   };
@@ -86,7 +90,7 @@ export const CreateStep3 = () => {
           active: true,
           onClick: handleSlotClick,
         }}
-        slot3={{ filled: false, active: false }}
+        slot3={{ filled: false, active: false, onClick: handleSlot3Click }}
       />
 
       <div className="text-center mb-8">
