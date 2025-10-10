@@ -73,6 +73,12 @@ export const CreateStep4 = () => {
     <div className="w-full max-w-4xl mx-auto">
       <HeroImage />
 
+      <CreateNavBar
+        onBack={handleBack}
+        onContinue={handleContinue}
+        continueDisabled={!selectedMission}
+      />
+
       <StoryMagicTray
         slot1={{
           filled: !!storyConfig.characterType,
@@ -118,12 +124,6 @@ export const CreateStep4 = () => {
           />
         ))}
       </div>
-
-      <CreateNavBar
-        onBack={handleBack}
-        onContinue={handleContinue}
-        continueDisabled={!selectedMission}
-      />
     </div>
   );
 };

@@ -19,24 +19,24 @@ export const CreateNavBar = ({
   showBack = true,
 }: CreateNavBarProps) => {
   return (
-    <div className="flex justify-between items-center gap-4 mt-8 pt-6 border-t border-border">
+    <div className="flex flex-col md:flex-row justify-between items-stretch md:items-center gap-3 md:gap-4 mb-6 md:mb-8">
       {showBack && onBack ? (
         <Button
           variant="outline"
           onClick={onBack}
-          className="gap-2"
+          className="gap-2 w-full md:w-auto text-base md:text-lg py-6 md:py-3"
         >
-          <ChevronLeft className="w-4 h-4" />
+          <ChevronLeft className="w-4 h-4 md:w-5 md:h-5" />
           {backLabel}
         </Button>
       ) : (
-        <div />
+        <div className="hidden md:block" />
       )}
       {onContinue && (
         <Button
           onClick={onContinue}
           disabled={continueDisabled}
-          className="gap-2"
+          className="gap-2 w-full md:w-auto text-base md:text-lg py-6 md:py-3"
         >
           {continueLabel}
         </Button>

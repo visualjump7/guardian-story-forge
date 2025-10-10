@@ -68,6 +68,12 @@ export const CreateStep2 = () => {
     <div className="w-full">
       <HeroImage />
 
+      <CreateNavBar
+        onBack={handleBack}
+        onContinue={handleContinue}
+        continueDisabled={!selectedType}
+      />
+
       <StoryMagicTray
         slot1={{
           filled: !!selectedType,
@@ -101,12 +107,6 @@ export const CreateStep2 = () => {
           />
         ))}
       </div>
-
-      <CreateNavBar
-        onBack={handleBack}
-        onContinue={handleContinue}
-        continueDisabled={!selectedType}
-      />
     </div>
   );
 };
