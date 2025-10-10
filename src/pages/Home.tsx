@@ -144,18 +144,18 @@ const Home = () => {
 
         {/* Create Story CTA */}
         <section 
-          className="relative overflow-hidden rounded-3xl p-8 md:p-12 shadow-[var(--shadow-magical)] bg-gradient-to-br from-primary/10 to-accent/10"
+          className="relative overflow-hidden rounded-3xl p-8 md:p-12 shadow-[var(--shadow-magical)] bg-black"
         >
           {/* Centered Content */}
           <div className="relative z-10 w-full flex flex-col items-center text-center gap-6 max-w-3xl mx-auto">
             {/* Title */}
-            <h2 className="text-4xl md:text-5xl font-poppins font-bold text-foreground">
+            <h2 className="text-4xl md:text-5xl font-poppins font-bold text-amber-400">
               Create Your Own Magical Story
             </h2>
             
             {/* Description */}
-            <p className="text-xl text-muted-foreground">
-              Choose your hero, pick an adventure, and let AI weave a tale with an important lesson!
+            <p className="text-xl text-white/90">
+              Choose your hero, pick your adventure and let us craft your Epic Story!
             </p>
             
             {/* Button */}
