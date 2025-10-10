@@ -439,20 +439,30 @@ const StoryView = () => {
         </p>
         
         {/* Insert images at calculated positions */}
-        {imagePositions.map(({ position, index: imageIndex, label }) => {
-          if (storyImages.length > imageIndex && index === position) {
-            return (
-              <div key={imageIndex} className="my-8 rounded-lg overflow-hidden shadow-lg bg-muted/30">
-                <img
-                  src={storyImages[imageIndex].image_url}
-                  alt={`${story.title} - ${label}`}
-                  className="w-full max-h-[600px] object-contain"
-                />
-              </div>
-            );
-          }
-          return null;
-        })}
+            {imagePositions.map(({ position, index: imageIndex, label }) => {
+              if (storyImages.length > imageIndex && index === position) {
+                return (
+                  <div key={imageIndex} className="my-8 rounded-lg overflow-hidden shadow-lg bg-muted/30 relative">
+                    <img
+                      src={storyImages[imageIndex].image_url}
+                      alt={`${story.title} - ${label}`}
+                      className="w-full max-h-[600px] object-contain"
+                    />
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleOpenRegenerateDialog(storyImages[imageIndex].id, imageIndex);
+                      }}
+                      className="absolute top-3 right-3 h-10 w-10 rounded-full bg-primary/90 backdrop-blur-sm flex items-center justify-center shadow-lg border-2 border-primary-foreground/20 hover:bg-primary hover:scale-110 transition-all duration-200 z-20"
+                      aria-label={`Regenerate ${label} image`}
+                    >
+                      <Sparkles className="h-5 w-5 text-primary-foreground" />
+                    </button>
+                  </div>
+                );
+              }
+              return null;
+            })}
       </div>
     ));
 
