@@ -139,6 +139,29 @@ serve(async (req) => {
       throw new Error("Unauthorized");
     }
 
+    // Check if user's library is full (max 10 stories)
+    const { count: libraryCount, error: countError } = await supabase
+      .from("user_libraries")
+      .select("id", { count: "exact", head: true })
+      .eq("user_id", user.id);
+
+    if (countError) {
+      console.error("Failed to check library count:", countError);
+      // Continue anyway - don't block story creation
+    } else if (libraryCount !== null && libraryCount >= 10) {
+      return new Response(
+        JSON.stringify({ 
+          error: "LIBRARY_FULL",
+          message: "Your library is full (10/10 stories). Please delete a story before creating a new one.",
+          currentCount: libraryCount 
+        }),
+        { 
+          status: 400, 
+          headers: { ...corsHeaders, "Content-Type": "application/json" } 
+        }
+      );
+    }
+
     // Generate story using Lovable AI
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) {
@@ -381,6 +404,25 @@ Length: ${wordCounts[storyLength as keyof typeof wordCounts]}`;
     }
 
     console.log("Story created successfully:", story.id);
+
+    // Auto-save the story to user's library
+    try {
+      const { error: libraryError } = await supabase
+        .from("user_libraries")
+        .insert({
+          user_id: user.id,
+          story_id: story.id,
+        });
+
+      if (libraryError) {
+        console.error("Failed to auto-save story to library:", libraryError);
+        // Don't throw - story creation succeeded, library save is secondary
+      } else {
+        console.log("Story auto-saved to user's library");
+      }
+    } catch (libError) {
+      console.error("Error auto-saving to library:", libError);
+    }
 
     // Map art style to prompt description
 // Helper functions for intelligent image placement

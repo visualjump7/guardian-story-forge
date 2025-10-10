@@ -147,8 +147,9 @@ const Library = () => {
     if (error) {
       toast.error("Failed to remove story");
     } else {
-      toast.success("Removed from library");
-      setSavedStories(savedStories.filter((s) => s.id !== storyToRemove.id));
+      const newStories = savedStories.filter((s) => s.id !== storyToRemove.id);
+      setSavedStories(newStories);
+      toast.success(`Removed from library (${newStories.length}/10 stories)`);
     }
 
     setDialogOpen(false);
@@ -226,14 +227,69 @@ const Library = () => {
           </div>
         ) : (
           <div className="space-y-8">
-            <div className="space-y-4">
-              <h2 className="text-4xl md:text-5xl font-poppins font-bold text-primary">
-                Your Saved Stories
-              </h2>
-              <p className="text-lg text-muted-foreground">
-                You have {savedStories.length} {savedStories.length === 1 ? 'story' : 'stories'} in your collection
-              </p>
+            {/* Header with Counter */}
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-4 border-b-2 border-primary/20">
+              <div className="space-y-2">
+                <h2 className="text-4xl md:text-5xl font-poppins font-bold text-primary">
+                  Your Saved Stories
+                </h2>
+                <p className="text-lg text-muted-foreground">
+                  Your personal collection of magical tales
+                </p>
+              </div>
+              
+              {/* Story Counter Badge */}
+              <div className="flex items-center gap-3">
+                <div className={cn(
+                  "relative px-6 py-4 rounded-2xl shadow-lg",
+                  savedStories.length >= 10 
+                    ? "bg-gradient-to-br from-red-500/20 to-orange-500/20 border-2 border-red-500/50" 
+                    : "bg-gradient-to-br from-primary/20 to-secondary/20 border-2 border-primary/30"
+                )}>
+                  <div className="flex items-center gap-3">
+                    <BookOpen className={cn(
+                      "h-6 w-6",
+                      savedStories.length >= 10 ? "text-red-600" : "text-primary"
+                    )} />
+                    <div className="text-center">
+                      <div className={cn(
+                        "text-3xl font-bold font-poppins",
+                        savedStories.length >= 10 ? "text-red-600" : "text-primary"
+                      )}>
+                        {savedStories.length}/10
+                      </div>
+                      <div className="text-xs text-muted-foreground font-medium uppercase tracking-wide">
+                        Stories
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* Full Library Warning */}
+                  {savedStories.length >= 10 && (
+                    <div className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full shadow-lg animate-pulse">
+                      FULL
+                    </div>
+                  )}
+                </div>
+              </div>
             </div>
+            
+            {/* Full Library Alert Message */}
+            {savedStories.length >= 10 && (
+              <div className="bg-amber-500/10 border-2 border-amber-500/50 rounded-xl p-4 flex items-start gap-3">
+                <div className="bg-amber-500 rounded-full p-2 mt-0.5">
+                  <BookOpen className="h-5 w-5 text-white" />
+                </div>
+                <div className="flex-1 space-y-1">
+                  <h3 className="font-semibold text-amber-900 dark:text-amber-100">
+                    Library Full
+                  </h3>
+                  <p className="text-sm text-amber-800 dark:text-amber-200">
+                    You've reached the maximum of 10 stories. Delete a story to create new ones.
+                  </p>
+                </div>
+              </div>
+            )}
             
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {savedStories.map((saved) => (

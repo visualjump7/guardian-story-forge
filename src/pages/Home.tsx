@@ -11,6 +11,8 @@ import { ShareDialog } from "@/components/ShareDialog";
 import { AppHeader } from "@/components/AppHeader";
 import { DesktopNav } from "@/components/DesktopNav";
 import { useAuth } from "@/hooks/useAuth";
+import { useLibraryCount } from "@/hooks/useLibraryCount";
+import { LibraryLimitDialog } from "@/components/LibraryLimitDialog";
 
 interface Story {
   id: string;
@@ -35,6 +37,8 @@ const Home = () => {
   const [loading, setLoading] = useState(true);
   const [shareDialogOpen, setShareDialogOpen] = useState(false);
   const [storyToShare, setStoryToShare] = useState<Story | null>(null);
+  const [showLibraryFullDialog, setShowLibraryFullDialog] = useState(false);
+  const { count: libraryCount, isFull } = useLibraryCount(user?.id || null);
 
   useEffect(() => {
     checkUser();
@@ -87,6 +91,14 @@ const Home = () => {
     setShareDialogOpen(true);
   };
 
+  const handleCreateStoryClick = () => {
+    if (isFull) {
+      setShowLibraryFullDialog(true);
+    } else {
+      navigate("/create/01");
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background to-muted">
@@ -105,7 +117,7 @@ const Home = () => {
         isAdmin={isAdmin}
         rightContent={
           <>
-            <Button variant="outline" size="sm" onClick={() => navigate("/create/01")} className="text-white border-white/30 hover:bg-white/10">
+            <Button variant="outline" size="sm" onClick={handleCreateStoryClick} className="text-white border-white/30 hover:bg-white/10">
               <Wand2 className="w-4 h-4 mr-2" />
               Create A Story
             </Button>
@@ -158,7 +170,7 @@ const Home = () => {
             <Button
               variant="outline"
               size="lg"
-              onClick={() => navigate("/create/01")}
+              onClick={handleCreateStoryClick}
               className="shadow-xl whitespace-nowrap border-white/30 text-white hover:bg-white/10 hover:text-white"
             >
               <PlusCircle className="w-6 h-6" />
@@ -242,6 +254,14 @@ const Home = () => {
           storyTitle={storyToShare.title}
         />
       )}
+
+      {/* Library Full Dialog */}
+      <LibraryLimitDialog
+        open={showLibraryFullDialog}
+        onOpenChange={setShowLibraryFullDialog}
+        currentCount={libraryCount}
+        onGoToLibrary={() => navigate("/library")}
+      />
     </div>
   );
 };

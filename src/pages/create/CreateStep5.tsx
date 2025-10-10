@@ -7,6 +7,7 @@ import { StoryMagicTray } from '@/components/create/StoryMagicTray';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2 } from 'lucide-react';
+import { LibraryLimitDialog } from '@/components/LibraryLimitDialog';
 
 // Mission to Theme UUID mapping
 const MISSION_TO_THEME: Record<string, string> = {
@@ -31,6 +32,8 @@ export const CreateStep5 = () => {
   const { toast } = useToast();
   const { storyConfig } = useStoryConfig();
   const [isGenerating, setIsGenerating] = useState(false);
+  const [showLibraryFullDialog, setShowLibraryFullDialog] = useState(false);
+  const [libraryCount, setLibraryCount] = useState(10);
 
   const handleSlot1Click = () => navigate('/create/02');
   const handleSlot2Click = () => navigate('/create/03');
@@ -69,7 +72,21 @@ export const CreateStep5 = () => {
         },
       });
 
-      if (error) throw error;
+      if (error) {
+        // Check for library full error
+        if (error.message?.includes('LIBRARY_FULL')) {
+          try {
+            const errorData = JSON.parse(error.message);
+            setLibraryCount(errorData.currentCount || 10);
+          } catch {
+            setLibraryCount(10);
+          }
+          setShowLibraryFullDialog(true);
+          setIsGenerating(false);
+          return;
+        }
+        throw error;
+      }
 
       if (data?.storyId) {
         toast({
@@ -82,6 +99,13 @@ export const CreateStep5 = () => {
       }
     } catch (error: any) {
       console.error('Story generation error:', error);
+      
+      // Check if it's a library full error
+      if (error.message?.includes('LIBRARY_FULL')) {
+        setShowLibraryFullDialog(true);
+        return;
+      }
+
       toast({
         title: "Story Generation Failed",
         description: error.message || "Failed to create your story. Please try again.",
@@ -153,6 +177,13 @@ export const CreateStep5 = () => {
           </Button>
         </div>
       </div>
+
+      <LibraryLimitDialog
+        open={showLibraryFullDialog}
+        onOpenChange={setShowLibraryFullDialog}
+        currentCount={libraryCount}
+        onGoToLibrary={() => navigate("/library")}
+      />
     </div>
   );
 };
