@@ -138,7 +138,7 @@ const Home = () => {
             videoId="1126023861" 
             title="Welcome to Guardian Kids"
             autoplay={false}
-            muted={true}
+            muted={false}
           />
         </section>
 
