@@ -58,50 +58,50 @@ export const MobileNav = ({ profile, isAdmin = false }: MobileNavProps) => {
 
           {/* Menu Items */}
           <Button
-            variant="ghost"
-            className="justify-start h-12 text-base"
+            variant="outline"
+            className="justify-start h-12 text-base border-gray-700 text-gray-400"
             onClick={() => handleNavigation("/create/01")}
           >
             <Wand2 className="w-5 h-5 mr-3" />
             Create A Story
           </Button>
-
+          
           <Button
-            variant="ghost"
-            className="justify-start h-12 text-base"
+            variant="outline"
+            className="justify-start h-12 text-base border-gray-700 text-gray-400"
             onClick={() => handleNavigation("/library")}
           >
             <Library className="w-5 h-5 mr-3" />
             My Library
           </Button>
-
+          
           <Button
-            variant="ghost"
-            className="justify-start h-12 text-base"
+            variant="outline"
+            className="justify-start h-12 text-base border-gray-700 text-gray-400"
             onClick={() => handleNavigation("/profile")}
           >
             <User className="w-5 h-5 mr-3" />
             Profile
           </Button>
-
+          
           <Button
-            variant="ghost"
-            className="justify-start h-12 text-base"
+            variant="outline"
+            className="justify-start h-12 text-base border-gray-700 text-yellow-500 hover:bg-yellow-500/10 hover:text-yellow-400"
             onClick={() => handleNavigation("/feedback")}
           >
             <MessageSquare className="w-5 h-5 mr-3" />
-            Beta Feedback
+            Send Feedback
           </Button>
 
           {isAdmin && (
-            <Button
-              variant="ghost"
-              className="justify-start h-12 text-base"
-              onClick={() => handleNavigation("/admin/dashboard")}
-            >
-              <Shield className="w-5 h-5 mr-3" />
-              Admin Dashboard
-            </Button>
+              <Button
+                variant="outline"
+                className="justify-start h-12 text-base border-gray-700 text-gray-400"
+                onClick={() => handleNavigation("/admin/dashboard")}
+              >
+                <Shield className="w-5 h-5 mr-3" />
+                Admin Dashboard
+              </Button>
           )}
 
           <div className="mt-auto pt-4 border-t">

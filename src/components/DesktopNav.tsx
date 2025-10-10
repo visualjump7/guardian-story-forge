@@ -50,7 +50,7 @@ export const DesktopNav = ({ profile, isAdmin = false }: DesktopNavProps) => {
         <div className="flex flex-col gap-4 mt-8">
           <Button
             variant="outline"
-            className="w-full justify-start gap-3 text-lg py-6"
+            className="w-full justify-start gap-3 text-lg py-6 border-gray-700 text-gray-400"
             onClick={() => handleNavigation("/create/01")}
           >
             <Wand2 className="w-5 h-5" />
@@ -59,7 +59,7 @@ export const DesktopNav = ({ profile, isAdmin = false }: DesktopNavProps) => {
           
           <Button
             variant="outline"
-            className="w-full justify-start gap-3 text-lg py-6"
+            className="w-full justify-start gap-3 text-lg py-6 border-gray-700 text-gray-400"
             onClick={() => handleNavigation("/library")}
           >
             <Library className="w-5 h-5" />
@@ -68,7 +68,7 @@ export const DesktopNav = ({ profile, isAdmin = false }: DesktopNavProps) => {
           
           <Button
             variant="outline"
-            className="w-full justify-start gap-3 text-lg py-6"
+            className="w-full justify-start gap-3 text-lg py-6 border-gray-700 text-gray-400"
             onClick={() => handleNavigation("/profile")}
           >
             <User className="w-5 h-5" />
@@ -77,11 +77,11 @@ export const DesktopNav = ({ profile, isAdmin = false }: DesktopNavProps) => {
           
           <Button
             variant="outline"
-            className="w-full justify-start gap-3 text-lg py-6 border-yellow-500/30 hover:bg-yellow-500/10"
+            className="w-full justify-start gap-3 text-lg py-6 border-gray-700 text-yellow-500 hover:bg-yellow-500/10 hover:text-yellow-400"
             onClick={() => handleNavigation("/feedback")}
           >
             <MessageSquare className="w-5 h-5" />
-            Beta Feedback
+            Send Feedback
           </Button>
 
           {isAdmin && (
@@ -89,7 +89,7 @@ export const DesktopNav = ({ profile, isAdmin = false }: DesktopNavProps) => {
               <div className="border-t border-border my-2" />
               <Button
                 variant="outline"
-                className="w-full justify-start gap-3 text-lg py-6"
+                className="w-full justify-start gap-3 text-lg py-6 border-gray-700 text-gray-400"
                 onClick={() => handleNavigation("/admin/dashboard")}
               >
                 <Shield className="w-5 h-5" />
