@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { StoryMagicTray } from '@/components/create/StoryMagicTray';
 import { CreateNavBar } from '@/components/create/CreateNavBar';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -84,12 +83,6 @@ export default function CreateStep1() {
           continueDisabled={!isValid && (!localName || validateName(localName) !== '')}
         />
       </div>
-
-      <StoryMagicTray
-        slot1={{ filled: false, active: false }}
-        slot2={{ filled: false, active: false }}
-        slot3={{ filled: false, active: false }}
-      />
     </div>
   );
 }
