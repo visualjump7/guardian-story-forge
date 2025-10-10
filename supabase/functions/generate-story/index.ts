@@ -263,6 +263,37 @@ Length: ${wordCounts[storyLength as keyof typeof wordCounts]}`;
     console.log("Story created successfully:", story.id);
 
     // Map art style to prompt description
+// Helper functions for intelligent image placement
+    const getVisualInterestScore = (text: string): number => {
+      const actionWords = (text.match(/\b(ran|jumped|flew|fought|discovered|found|shouted|laughed|cried|grabbed|chased|explored|soared|climbed|danced|swam|raced)\b/gi) || []).length;
+      const descriptiveWords = (text.match(/\b(bright|dark|magical|enormous|tiny|beautiful|scary|mysterious|shining|glowing|sparkling|dazzling|magnificent|wondrous)\b/gi) || []).length;
+      const hasDialogue = text.includes('"') || text.includes("'");
+      const wordCount = text.split(/\s+/).length;
+      return (actionWords * 3) + (descriptiveWords * 2) + (hasDialogue ? 5 : 0) + Math.min(wordCount / 20, 5);
+    };
+
+    const findBestParagraphNear = (paragraphs: string[], targetPercent: number): { index: number; content: string } => {
+      const totalParagraphs = paragraphs.length;
+      const targetIndex = Math.floor(totalParagraphs * targetPercent);
+      const searchRange = 3;
+      const startIndex = Math.max(0, targetIndex - searchRange);
+      const endIndex = Math.min(totalParagraphs - 1, targetIndex + searchRange);
+      
+      let bestIndex = targetIndex;
+      let bestScore = 0;
+      
+      for (let i = startIndex; i <= endIndex; i++) {
+        const score = getVisualInterestScore(paragraphs[i]);
+        if (score > bestScore) {
+          bestScore = score;
+          bestIndex = i;
+        }
+      }
+      
+      return { index: bestIndex, content: paragraphs[bestIndex] };
+    };
+
+    // Map art style to prompt description
     const artStylePrompts: Record<string, string> = {
       'pixar-3d': 'vibrant 3D animated illustration in Pixar/DreamWorks style with rich colors and cinematic lighting',
       'ghibli-2d': 'soft watercolor 2D illustration in Studio Ghibli style with gentle brushstrokes and dreamy atmosphere',
@@ -275,52 +306,92 @@ Length: ${wordCounts[storyLength as keyof typeof wordCounts]}`;
 
     const styleDescription = artStylePrompts[artStyle] || artStylePrompts['pixar-3d'];
 
-    // Generate cover image automatically
-    console.log("Generating cover image...");
-    try {
-      const imagePrompt = `Create a child-friendly cover illustration in ${styleDescription}. Feature ${heroName} as the main character in a ${storyType} setting. Scene: ${cleanContent.substring(0, 200)}. Art style: colorful, family-friendly, high-quality with expressive characters and magical atmosphere.`;
+    // Split content into paragraphs for intelligent image placement
+    const paragraphs = cleanContent.split('\n\n').filter((p: string) => p.trim());
 
-      const imageResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-        method: "POST",
-        headers: {
-          "Authorization": `Bearer ${LOVABLE_API_KEY}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          model: "google/gemini-2.5-flash-image-preview",
-          messages: [
-            { role: "user", content: imagePrompt }
-          ],
-          modalities: ["image", "text"]
-        }),
-      });
-
-      if (imageResponse.ok) {
-        const imageData = await imageResponse.json();
-        const imageUrl = imageData.choices?.[0]?.message?.images?.[0]?.image_url?.url;
-
-        if (imageUrl) {
-          // Save image to story_images table
-          await supabase
-            .from("story_images")
-            .insert({
-              story_id: story.id,
-              image_url: imageUrl,
-              is_selected: true
-            });
-          
-          // Also update the story's cover_image_url for backward compatibility
-          await supabase
-            .from("stories")
-            .update({ cover_image_url: imageUrl })
-            .eq("id", story.id);
-          console.log("Cover image generated and saved");
-        }
+    // Generate 3 images automatically: cover, middle, and ending
+    const imagesToGenerate = [
+      {
+        type: 'cover',
+        content: paragraphs[0] || cleanContent.substring(0, 200),
+        description: 'opening scene with hero introduction'
+      },
+      {
+        type: 'mid-scene',
+        ...findBestParagraphNear(paragraphs, 0.50),
+        description: 'exciting mid-story adventure moment'
+      },
+      {
+        type: 'ending',
+        ...findBestParagraphNear(paragraphs, 0.90),
+        description: 'resolution and triumph'
       }
-    } catch (imageError) {
-      console.error("Failed to generate image, but story was created:", imageError);
-      // Continue anyway - story is still valid without image
+    ];
+
+    console.log("Generating 3 initial images...");
+
+    for (let i = 0; i < imagesToGenerate.length; i++) {
+      const imageConfig = imagesToGenerate[i];
+      
+      try {
+        console.log(`Generating ${imageConfig.type} image (${i + 1}/3)...`);
+        
+        const imagePrompt = `Create a child-friendly illustration in ${styleDescription}. Feature ${heroName} in this ${imageConfig.description}: ${imageConfig.content}. Art style: colorful, family-friendly, high-quality with expressive characters and magical atmosphere.`;
+
+        const imageResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+          method: "POST",
+          headers: {
+            "Authorization": `Bearer ${LOVABLE_API_KEY}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            model: "google/gemini-2.5-flash-image-preview",
+            messages: [
+              { role: "user", content: imagePrompt }
+            ],
+            modalities: ["image", "text"]
+          }),
+        });
+
+        if (imageResponse.ok) {
+          const imageData = await imageResponse.json();
+          const imageUrl = imageData.choices?.[0]?.message?.images?.[0]?.image_url?.url;
+
+          if (imageUrl) {
+            await supabase
+              .from("story_images")
+              .insert({
+                story_id: story.id,
+                image_url: imageUrl,
+                image_type: imageConfig.type,
+                is_selected: i === 0 // First image is selected as cover
+              });
+            
+            if (i === 0) {
+              // Update story cover_image_url for backward compatibility
+              await supabase
+                .from("stories")
+                .update({ cover_image_url: imageUrl })
+                .eq("id", story.id);
+            }
+            
+            console.log(`${imageConfig.type} image generated successfully`);
+          }
+        } else {
+          console.error(`Failed to generate ${imageConfig.type} image:`, await imageResponse.text());
+        }
+        
+        // Small delay between generations to avoid rate limits
+        if (i < imagesToGenerate.length - 1) {
+          await new Promise(resolve => setTimeout(resolve, 200));
+        }
+      } catch (imageError) {
+        console.error(`Failed to generate ${imageConfig.type} image:`, imageError);
+        // Continue with next image even if one fails
+      }
     }
+
+    console.log("Initial image generation complete");
 
     return new Response(
       JSON.stringify({ storyId: story.id, title, content: cleanContent }),
