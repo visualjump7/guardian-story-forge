@@ -10,8 +10,7 @@ const corsHeaders = {
 
 // Input validation schema
 const audioRequestSchema = z.object({
-  storyId: z.string().uuid("Invalid story ID format"),
-  voiceType: z.enum(["whimsical", "adventure", "ranch"]).default("whimsical")
+  storyId: z.string().uuid("Invalid story ID format")
 });
 
 serve(async (req) => {
@@ -37,22 +36,10 @@ serve(async (req) => {
       );
     }
 
-    const { storyId, voiceType } = validation.data;
+    const { storyId } = validation.data;
 
-    // Map voice types to ElevenLabs voice IDs
-    const voiceConfig = {
-      whimsical: {
-        voiceId: "pFZP5JQG7iQjIQuC4Bku", // Lily - sweet, gentle voice
-      },
-      adventure: {
-        voiceId: "CwhRBWXzGAHq8TQ4Fs17", // Roger - warm, confident narrator
-      },
-      ranch: {
-        voiceId: "pqHfZKP75CvOlQylNhV4", // Bill - friendly storytelling voice
-      },
-    };
-
-    const config = voiceConfig[voiceType as keyof typeof voiceConfig] || voiceConfig.whimsical;
+    // Use adventure voice only (Roger - warm, confident narrator)
+    const voiceId = "CwhRBWXzGAHq8TQ4Fs17";
 
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
@@ -127,7 +114,7 @@ serve(async (req) => {
     console.log(`Generating audio for ${audioContent.length} characters`);
 
     // Generate audio using ElevenLabs TTS
-    const ttsResponse = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${config.voiceId}`, {
+    const ttsResponse = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`, {
       method: 'POST',
       headers: {
         'xi-api-key': elevenLabsApiKey,

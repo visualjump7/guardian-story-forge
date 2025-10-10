@@ -116,7 +116,6 @@ const StoryView = () => {
   const [profile, setProfile] = useState<any>(null);
   const [generatingImage, setGeneratingImage] = useState(false);
   const [isGeneratingAudio, setIsGeneratingAudio] = useState(false);
-  const [selectedVoiceType, setSelectedVoiceType] = useState("whimsical");
   const [isShareDialogOpen, setIsShareDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [imageToDelete, setImageToDelete] = useState<string | null>(null);
@@ -385,7 +384,7 @@ const StoryView = () => {
     setIsGeneratingAudio(true);
     try {
       const { data, error } = await supabase.functions.invoke("generate-story-audio", {
-        body: { storyId, voiceType: selectedVoiceType },
+        body: { storyId },
       });
 
       if (error) throw error;
@@ -784,108 +783,32 @@ const StoryView = () => {
                       <div className="space-y-4">
                         <div className="text-center">
                           <p className="text-sm text-muted-foreground">
-                            Generate AI-powered narration for your story
+                            Bring your story to life with AI-powered narration.
                           </p>
                         </div>
                         
-                        <div className="space-y-3">
-                          <Select value={selectedVoiceType} onValueChange={setSelectedVoiceType}>
-                            <SelectTrigger className="w-full">
-                              <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="whimsical">
-                                <div className="flex flex-col">
-                                  <span className="font-medium">Whimsical</span>
-                                  <span className="text-xs text-muted-foreground">Magical & light-hearted</span>
-                                </div>
-                              </SelectItem>
-                              <SelectItem value="adventure">
-                                <div className="flex flex-col">
-                                  <span className="font-medium">Adventure</span>
-                                  <span className="text-xs text-muted-foreground">Energetic & dynamic</span>
-                                </div>
-                              </SelectItem>
-                              <SelectItem value="ranch">
-                                <div className="flex flex-col">
-                                  <span className="font-medium">Ranch Narrator</span>
-                                  <span className="text-xs text-muted-foreground">Southern drawl & cinematic</span>
-                                </div>
-                              </SelectItem>
-                            </SelectContent>
-                          </Select>
-                          
-                          <Button
-                            onClick={handleGenerateAudio}
-                            disabled={isGeneratingAudio}
-                            size="default"
-                            className="w-full gap-2"
-                          >
-                            {isGeneratingAudio ? (
-                              <>
-                                <Loader2 className="h-4 w-4 animate-spin" />
-                                Generating...
-                              </>
-                            ) : (
-                              <>
-                                <Play className="h-4 w-4" />
-                                Generate Narration
-                              </>
-                            )}
-                          </Button>
-                        </div>
+                        <Button
+                          onClick={handleGenerateAudio}
+                          disabled={isGeneratingAudio}
+                          size="default"
+                          className="w-full gap-2"
+                        >
+                          {isGeneratingAudio ? (
+                            <>
+                              <Loader2 className="h-4 w-4 animate-spin" />
+                              Generating...
+                            </>
+                          ) : (
+                            <>
+                              <Play className="h-4 w-4" />
+                              Generate Narration
+                            </>
+                          )}
+                        </Button>
                       </div>
                     ) : (
                       /* Audio Player State - Mobile */
-                      <div className="space-y-3">
-                        <AudioPlayer audioUrl={story.audio_url} title={story.title} />
-                        
-                        <div className="space-y-2">
-                          <p className="text-sm text-muted-foreground">Want a different voice?</p>
-                          <Select value={selectedVoiceType} onValueChange={setSelectedVoiceType}>
-                            <SelectTrigger className="w-full">
-                              <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="whimsical">Whimsical</SelectItem>
-                              <SelectItem value="adventure">Adventure</SelectItem>
-                              <SelectItem value="ranch">Ranch Narrator</SelectItem>
-                            </SelectContent>
-                          </Select>
-                          <Button
-                            variant="outline"
-                            size="default"
-                            onClick={handleGenerateAudio}
-                            disabled={isGeneratingAudio}
-                            className="w-full gap-2"
-                          >
-                            {isGeneratingAudio ? (
-                              <>
-                                <Loader2 className="h-4 w-4 animate-spin" />
-                                Regenerating...
-                              </>
-                            ) : (
-                              <>
-                                <RefreshCw className="h-4 w-4" />
-                                Regenerate
-                              </>
-                            )}
-                          </Button>
-                        </div>
-                      </div>
-                    )}
-
-                    {/* Multi-Stage Generation Progress - Mobile */}
-                    {isGeneratingAudio && (
-                      <div className="p-4 rounded-xl bg-gradient-to-br from-primary/10 to-primary/5 border border-primary/20 space-y-3 animate-fade-in">
-                        <div className="flex items-center gap-3">
-                          <Loader2 className="h-5 w-5 text-primary animate-spin" />
-                          <div>
-                            <h4 className="font-semibold text-sm">Generating Audio</h4>
-                            <p className="text-xs text-muted-foreground">Please wait...</p>
-                          </div>
-                        </div>
-                      </div>
+                      <AudioPlayer audioUrl={story.audio_url} title={story.title} />
                     )}
                   </AccordionContent>
                 </AccordionItem>
@@ -903,98 +826,35 @@ const StoryView = () => {
                     <div>
                       <h3 className="text-lg font-semibold mb-2">Generate Audio Narration</h3>
                       <p className="text-sm text-muted-foreground max-w-md mx-auto">
-                        Bring your story to life with AI-powered narration. Choose a voice and let AI read your story aloud.
+                        Bring your story to life with AI-powered narration.
                       </p>
                     </div>
                     
-                    <div className="flex items-center justify-center gap-3">
-                      <Select value={selectedVoiceType} onValueChange={setSelectedVoiceType}>
-                        <SelectTrigger className="w-48">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="whimsical">
-                            <div className="flex flex-col">
-                              <span className="font-medium">Whimsical</span>
-                              <span className="text-xs text-muted-foreground">Magical & light-hearted</span>
-                            </div>
-                          </SelectItem>
-                          <SelectItem value="adventure">
-                            <div className="flex flex-col">
-                              <span className="font-medium">Adventure</span>
-                              <span className="text-xs text-muted-foreground">Energetic & dynamic</span>
-                            </div>
-                          </SelectItem>
-                          <SelectItem value="ranch">
-                            <div className="flex flex-col">
-                              <span className="font-medium">Ranch Narrator</span>
-                              <span className="text-xs text-muted-foreground">Southern drawl & cinematic</span>
-                            </div>
-                          </SelectItem>
-                        </SelectContent>
-                      </Select>
-                      
-                      <Button
-                        onClick={handleGenerateAudio}
-                        disabled={isGeneratingAudio}
-                        size="lg"
-                        className="gap-2"
-                      >
-                        {isGeneratingAudio ? (
-                          <>
-                            <Loader2 className="h-4 w-4 animate-spin" />
-                            Generating...
-                          </>
-                        ) : (
-                          <>
-                            <Play className="h-4 w-4" />
-                            Generate Narration
-                          </>
-                        )}
-                      </Button>
-                    </div>
+                    <Button
+                      onClick={handleGenerateAudio}
+                      disabled={isGeneratingAudio}
+                      size="lg"
+                      className="gap-2"
+                    >
+                      {isGeneratingAudio ? (
+                        <>
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                          Generating...
+                        </>
+                      ) : (
+                        <>
+                          <Play className="h-4 w-4" />
+                          Generate Narration
+                        </>
+                      )}
+                    </Button>
                   </div>
                 ) : (
                   /* Audio Player State - Desktop */
-                  <div className="space-y-3">
-                    <AudioPlayer audioUrl={story.audio_url} title={story.title} />
-                    
-                    {/* Regenerate Option */}
-                    <div className="flex items-center justify-between px-4 py-2 rounded-lg bg-muted/20 border border-border/30">
-                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                        <RefreshCw className="h-4 w-4" />
-                        <span>Want a different voice?</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Select value={selectedVoiceType} onValueChange={setSelectedVoiceType}>
-                          <SelectTrigger className="w-40 h-8 text-xs">
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="whimsical">Whimsical</SelectItem>
-                            <SelectItem value="adventure">Adventure</SelectItem>
-                            <SelectItem value="ranch">Ranch Narrator</SelectItem>
-                          </SelectContent>
-                        </Select>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={handleGenerateAudio}
-                          disabled={isGeneratingAudio}
-                          className="h-8"
-                        >
-                          {isGeneratingAudio ? (
-                            <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                          ) : (
-                            'Regenerate'
-                          )}
-                        </Button>
-                      </div>
-                    </div>
-                  </div>
+                  <AudioPlayer audioUrl={story.audio_url} title={story.title} />
                 )}
 
-                {/* Multi-Stage Generation Progress - Desktop */}
+                {/* Generation Progress - Desktop */}
                 {isGeneratingAudio && (
                   <div className="p-6 rounded-xl bg-gradient-to-br from-primary/10 to-primary/5 border border-primary/20 space-y-4 animate-fade-in">
                     <div className="flex items-center gap-3">
