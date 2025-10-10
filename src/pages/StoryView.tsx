@@ -38,7 +38,8 @@ import {
   Info,
   Palette,
   Library,
-  Sparkles
+  Sparkles,
+  Download
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -124,6 +125,7 @@ const StoryView = () => {
   const [isImagePromptDialogOpen, setIsImagePromptDialogOpen] = useState(false);
   const [regenerateDialogOpen, setRegenerateDialogOpen] = useState(false);
   const [imageToRegenerate, setImageToRegenerate] = useState<{ id: string; index: number } | null>(null);
+  const [isDownloadingPdf, setIsDownloadingPdf] = useState(false);
 
   useEffect(() => {
     loadStory();
@@ -423,6 +425,41 @@ const StoryView = () => {
     setImageToRegenerate(null);
   };
 
+  const handleDownloadPdf = async () => {
+    setIsDownloadingPdf(true);
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        toast.error("Please sign in to download PDF");
+        return;
+      }
+
+      const { data, error } = await supabase.functions.invoke('generate-story-pdf', {
+        body: { storyId }
+      });
+
+      if (error) throw error;
+
+      // Create a simple PDF download using the HTML
+      const blob = new Blob([data.html], { type: 'text/html' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${data.title.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.html`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      
+      toast.success("Story downloaded! Open the HTML file in your browser and use Print to PDF");
+    } catch (error: any) {
+      console.error("PDF generation error:", error);
+      toast.error("Failed to generate PDF");
+    } finally {
+      setIsDownloadingPdf(false);
+    }
+  };
+
   const renderStoryWithImages = () => {
     const paragraphs = story.content.split("\n\n");
     const totalParagraphs = paragraphs.length;
@@ -466,6 +503,43 @@ const StoryView = () => {
         <p className="text-2xl font-serif italic text-muted-foreground">
           ~ The End ~
         </p>
+      </div>
+    );
+
+    // Add action buttons at the bottom
+    content.push(
+      <div key="bottom-actions" className="mt-8 mb-12 flex flex-col sm:flex-row items-center justify-center gap-4">
+        {/* Download PDF Button */}
+        <Button
+          onClick={handleDownloadPdf}
+          disabled={isDownloadingPdf}
+          size="lg"
+          variant="default"
+          className="w-full sm:w-auto min-w-[200px] gap-2 text-lg py-6"
+        >
+          {isDownloadingPdf ? (
+            <>
+              <Loader2 className="h-5 w-5 animate-spin" />
+              Generating PDF...
+            </>
+          ) : (
+            <>
+              <Download className="h-5 w-5" />
+              Download PDF
+            </>
+          )}
+        </Button>
+
+        {/* Share Button */}
+        <Button
+          onClick={handleShare}
+          size="lg"
+          variant="outline"
+          className="w-full sm:w-auto min-w-[200px] gap-2 text-lg py-6 border-2"
+        >
+          <Share2 className="h-5 w-5" />
+          Share Story
+        </Button>
       </div>
     );
 
