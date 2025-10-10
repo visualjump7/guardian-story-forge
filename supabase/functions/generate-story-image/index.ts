@@ -92,8 +92,8 @@ serve(async (req) => {
       .order("created_at", { ascending: true });
 
     console.log("Current image count:", existingImages?.length, "Count error:", countError?.message);
-    if (existingImages && existingImages.length >= 5) {
-      throw new Error("Maximum 5 images per story reached");
+    if (existingImages && existingImages.length >= 3) {
+      throw new Error("Maximum 3 images per story reached");
     }
 
     // Determine image type and content to use based on count with intelligent placement

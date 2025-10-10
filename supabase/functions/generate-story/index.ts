@@ -471,32 +471,22 @@ Length: ${wordCounts[storyLength as keyof typeof wordCounts]}`;
     // Split content into paragraphs for intelligent image placement
     const paragraphs = cleanContent.split('\n\n').filter((p: string) => p.trim());
 
-    // Generate 3 images automatically: cover, middle, and ending
+    // Generate ONLY 1 hero image automatically
     const imagesToGenerate = [
       {
         type: 'cover',
         content: paragraphs[0] || cleanContent.substring(0, 200),
         description: 'opening scene with hero introduction'
-      },
-      {
-        type: 'mid-scene',
-        ...findBestParagraphNear(paragraphs, 0.50),
-        description: 'exciting mid-story adventure moment'
-      },
-      {
-        type: 'ending',
-        ...findBestParagraphNear(paragraphs, 0.90),
-        description: 'resolution and triumph'
       }
     ];
 
-    console.log("Generating 3 initial images...");
+    console.log("Generating 1 hero image...");
 
     for (let i = 0; i < imagesToGenerate.length; i++) {
       const imageConfig = imagesToGenerate[i];
       
       try {
-        console.log(`Generating ${imageConfig.type} image (${i + 1}/3)...`);
+        console.log(`Generating ${imageConfig.type} image...`);
         
         const imagePrompt = `Create a child-friendly illustration in ${styleDescription}. Feature ${heroName} in this ${imageConfig.description}: ${imageConfig.content}. Art style: colorful, family-friendly, high-quality with expressive characters and magical atmosphere.`;
 

@@ -3,12 +3,6 @@ import { useParams, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
 import { useIsMobile } from "@/hooks/use-mobile";
 import {
   AlertDialog,
@@ -23,19 +17,9 @@ import {
 import { 
   BookmarkPlus, 
   BookmarkCheck, 
-  ChevronLeft, 
-  ChevronRight, 
   Share2, 
   Volume2, 
   Loader2, 
-  Plus, 
-  Trash2, 
-  RefreshCw, 
-  Star,
-  Play,
-  Pause,
-  MoreVertical,
-  Info,
   Palette,
   Library,
   Sparkles,
@@ -60,19 +44,6 @@ import { AudioPlayer } from "@/components/AudioPlayer";
 import { AppHeader } from "@/components/AppHeader";
 import { ImagePromptDialog } from "@/components/ImagePromptDialog";
 import { useAuth } from "@/hooks/useAuth";
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
-} from "@/components/ui/carousel";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 
 interface StoryImage {
   id: string;
@@ -111,8 +82,8 @@ const StoryView = () => {
   const { isAdmin } = useAuth();
   const [story, setStory] = useState<Story | null>(null);
   const [storyImages, setStoryImages] = useState<StoryImage[]>([]);
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isSaved, setIsSaved] = useState(false);
+  const [isGeneratingAdditionalImages, setIsGeneratingAdditionalImages] = useState(false);
   const [loading, setLoading] = useState(true);
   const [userId, setUserId] = useState<string | null>(null);
   const [profile, setProfile] = useState<any>(null);
@@ -189,11 +160,6 @@ const StoryView = () => {
 
     if (!imagesError && imagesData) {
       setStoryImages(imagesData);
-      // Find the selected image index
-      const selectedIndex = imagesData.findIndex(img => img.is_selected);
-      if (selectedIndex !== -1) {
-        setCurrentImageIndex(selectedIndex);
-      }
     }
 
     // Check if saved
@@ -244,16 +210,16 @@ const StoryView = () => {
   };
 
   const handleOpenImageDialog = () => {
-    if (storyImages.length >= 5) {
-      toast.error("Maximum 5 images per story");
+    if (storyImages.length >= 3) {
+      toast.error("Maximum 3 images per story");
       return;
     }
     setIsImagePromptDialogOpen(true);
   };
 
   const handleGenerateImage = async (customizations?: string) => {
-    if (!storyId || storyImages.length >= 5) {
-      toast.error("Maximum 5 images per story");
+    if (!storyId || storyImages.length >= 3) {
+      toast.error("Maximum 3 images per story");
       return;
     }
 
@@ -291,33 +257,45 @@ const StoryView = () => {
     }
   };
 
-  const handleRecreateImage = async () => {
-    if (!storyId || storyImages.length === 0) return;
-
-    setGeneratingImage(true);
-    toast.loading("Re-creating illustration...", { id: "recreate-image" });
-
+  const handleGenerateAdditionalImages = async () => {
+    if (!storyId) return;
+    
+    setIsGeneratingAdditionalImages(true);
+    toast.loading("Building new images...", { id: "additional-images" });
+    
     try {
-      // Delete the current image first
-      const currentImage = storyImages[currentImageIndex];
-      await supabase
-        .from("story_images")
-        .delete()
-        .eq("id", currentImage.id);
+      // Generate 2 more images: mid-scene and ending
+      const imagesToCreate = 2;
+      
+      for (let i = 0; i < imagesToCreate; i++) {
+        const { data, error } = await supabase.functions.invoke('generate-story-image', {
+          body: { storyId }
+        });
 
-      // Generate a new image
-      const { error } = await supabase.functions.invoke("generate-story-image", {
-        body: { storyId },
-      });
+        if (error) {
+          console.error(`Failed to generate image ${i + 1}:`, error);
+          toast.error(`Failed to create image ${i + 1} of ${imagesToCreate}`, { id: "additional-images" });
+          continue;
+        }
 
-      if (error) throw error;
+        console.log(`Successfully generated image ${i + 1} of ${imagesToCreate}`);
+        
+        // Small delay between generations to avoid rate limits
+        if (i < imagesToCreate - 1) {
+          await new Promise(resolve => setTimeout(resolve, 500));
+        }
+      }
 
+      // Reload story to show new images
       await loadStory();
-      toast.success("Illustration re-created!", { id: "recreate-image" });
+      
+      toast.success("Additional images created!", { id: "additional-images" });
+      
     } catch (error: any) {
-      toast.error(error.message || "Failed to re-create image", { id: "recreate-image" });
+      console.error("Error generating additional images:", error);
+      toast.error("Failed to create additional images", { id: "additional-images" });
     } finally {
-      setGeneratingImage(false);
+      setIsGeneratingAdditionalImages(false);
     }
   };
 
@@ -337,11 +315,6 @@ const StoryView = () => {
 
       if (error) throw error;
 
-      // Adjust current index if needed
-      if (currentImageIndex >= storyImages.length - 1 && currentImageIndex > 0) {
-        setCurrentImageIndex(currentImageIndex - 1);
-      }
-
       await loadStory();
       toast.success("Image deleted");
     } catch (error: any) {
@@ -352,36 +325,6 @@ const StoryView = () => {
     }
   };
 
-  const handleSelectImage = async (imageId: string) => {
-    try {
-      // Unselect all images first
-      await supabase
-        .from("story_images")
-        .update({ is_selected: false })
-        .eq("story_id", storyId);
-
-      // Select the chosen image
-      const { error } = await supabase
-        .from("story_images")
-        .update({ is_selected: true })
-        .eq("id", imageId);
-
-      if (error) throw error;
-
-      await loadStory();
-      toast.success("Image selected as cover");
-    } catch (error: any) {
-      toast.error(error.message || "Failed to select image");
-    }
-  };
-
-  const navigateImage = (direction: 'prev' | 'next') => {
-    if (direction === 'prev' && currentImageIndex > 0) {
-      setCurrentImageIndex(currentImageIndex - 1);
-    } else if (direction === 'next' && currentImageIndex < storyImages.length - 1) {
-      setCurrentImageIndex(currentImageIndex + 1);
-    }
-  };
 
   const handleGenerateAudio = async () => {
     if (!storyId) return;
@@ -410,17 +353,33 @@ const StoryView = () => {
   };
 
   const confirmRegenerateImage = async () => {
-    if (!imageToRegenerate) return;
-    
+    if (!imageToRegenerate || !storyId) return;
+
+    setGeneratingImage(true);
     setRegenerateDialogOpen(false);
-    
-    // Navigate carousel to the image being regenerated
-    setCurrentImageIndex(imageToRegenerate.index);
-    
-    // Trigger regeneration after state update
-    setTimeout(() => {
-      handleRecreateImage();
-    }, 0);
+    toast.loading("Regenerating illustration...", { id: "regenerate-image" });
+
+    try {
+      // Delete the current image
+      await supabase
+        .from("story_images")
+        .delete()
+        .eq("id", imageToRegenerate.id);
+
+      // Generate a new image
+      const { error } = await supabase.functions.invoke("generate-story-image", {
+        body: { storyId },
+      });
+
+      if (error) throw error;
+
+      await loadStory();
+      toast.success("Illustration regenerated!", { id: "regenerate-image" });
+    } catch (error: any) {
+      toast.error(error.message || "Failed to regenerate image", { id: "regenerate-image" });
+    } finally {
+      setGeneratingImage(false);
+    }
     
     setImageToRegenerate(null);
   };
@@ -650,220 +609,51 @@ const StoryView = () => {
           <CardHeader className="space-y-4">
             {storyImages.length > 0 ? (
               <div className="space-y-4">
-                {/* Image Carousel with Peek Effect */}
-                <Carousel 
-                  opts={{
-                    align: "center",
-                    loop: true,
-                    containScroll: "trimSnaps",
-                  }}
-                  className="w-full relative"
-                >
-                  <CarouselContent className="-ml-2 md:-ml-4">
-                    {storyImages.map((image, index) => (
-                      <CarouselItem key={image.id} className="pl-2 md:pl-4 basis-[85%] md:basis-[90%]">
-                  <div className="relative aspect-video w-full overflow-hidden rounded-xl bg-gradient-to-br from-muted/50 to-muted flex items-center justify-center shadow-2xl border border-border/50 transition-all duration-300 hover:shadow-3xl hover:scale-[1.02] group">
+                {/* Single Hero Image - No Carousel */}
+                <div className="relative w-full overflow-hidden rounded-xl bg-gradient-to-br from-muted/50 to-muted flex items-center justify-center shadow-2xl border border-border/50">
+                  <div className="relative w-full aspect-video overflow-hidden">
                     <img
-                      src={image.image_url}
-                      alt={`${story.title} - Image ${index + 1}`}
-                      className="h-full w-full object-contain"
+                      src={storyImages[0].image_url}
+                      alt={`${story.title} - Hero Image`}
+                      className="h-full w-full object-cover"
                     />
                     
-                    {/* Magical Regenerate Icon */}
+                    {/* Regenerate Icon */}
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
-                        handleOpenRegenerateDialog(image.id, index);
+                        handleOpenRegenerateDialog(storyImages[0].id, 0);
                       }}
-                      className="absolute top-3 right-3 h-10 w-10 rounded-full bg-primary/90 backdrop-blur-sm flex items-center justify-center shadow-lg border-2 border-primary-foreground/20 hover:bg-primary hover:scale-110 transition-all duration-200 z-20 group-hover:scale-110"
-                      aria-label="Regenerate this image"
+                      className="absolute top-3 right-3 h-10 w-10 rounded-full bg-primary/90 backdrop-blur-sm flex items-center justify-center shadow-lg border-2 border-primary-foreground/20 hover:bg-primary hover:scale-110 transition-all duration-200 z-20"
+                      aria-label="Regenerate hero image"
                     >
                       <Sparkles className="h-5 w-5 text-primary-foreground" />
                     </button>
-                    
-                    {storyImages.length > 1 && (
-                      <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-1.5">
-                        {storyImages.map((_, dotIndex) => (
-                          <div
-                            key={dotIndex}
-                            className={`h-2 rounded-full transition-all duration-300 ${
-                              dotIndex === index 
-                                ? 'w-8 bg-primary' 
-                                : 'w-2 bg-muted-foreground/30 hover:bg-muted-foreground/50'
-                            }`}
-                          />
-                        ))}
-                      </div>
-                    )}
                   </div>
-                      </CarouselItem>
-                    ))}
-                  </CarouselContent>
-                  {storyImages.length > 1 && (
-                    <>
-                      <div className="absolute top-4 right-4 bg-primary/90 backdrop-blur-sm px-4 py-2 rounded-full text-sm font-semibold text-primary-foreground shadow-lg border border-primary-foreground/20 z-10">
-                        {currentImageIndex + 1} / {storyImages.length}
-                      </div>
-                      <CarouselPrevious className="left-2 md:left-4 h-12 w-12 border-2 bg-background/95 hover:bg-background hover:scale-110 transition-all duration-200 shadow-xl" />
-                      <CarouselNext className="right-2 md:right-4 h-12 w-12 border-2 bg-background/95 hover:bg-background hover:scale-110 transition-all duration-200 shadow-xl" />
-                    </>
-                  )}
-                </Carousel>
+                </div>
 
-                {/* Compact Control Bar with Dots */}
-                {isMobile ? (
-                  <Accordion type="single" collapsible defaultValue="illustrations" className="w-full">
-                    <AccordionItem value="illustrations" className="border rounded-lg bg-muted/30">
-                      <AccordionTrigger className="px-4 py-3 hover:no-underline">
-                        <div className="flex items-center gap-2">
-                          <Palette className="h-4 w-4 text-primary" />
-                          <span className="font-semibold">Illustrations</span>
-                        </div>
-                      </AccordionTrigger>
-                      <AccordionContent className="px-4 pb-4 space-y-2">
-                        <Button
-                          variant="default"
-                          size="sm"
-                          onClick={handleOpenImageDialog}
-                          disabled={generatingImage || storyImages.length >= 5}
-                          className="w-full gap-2"
-                        >
-                          {generatingImage ? (
-                            <>
-                              <Loader2 className="h-4 w-4 animate-spin" />
-                              Creating...
-                            </>
-                          ) : (
-                            <>
-                              <Palette className="h-4 w-4" />
-                              New Illustration
-                            </>
-                          )}
-                        </Button>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={handleRecreateImage}
-                          disabled={generatingImage}
-                          className="w-full gap-2"
-                        >
-                          <RefreshCw className="h-4 w-4" />
-                          Recreate Current
-                        </Button>
-                        <Button
-                          variant={storyImages[currentImageIndex].is_selected ? "default" : "outline"}
-                          size="sm"
-                          onClick={() => handleSelectImage(storyImages[currentImageIndex].id)}
-                          disabled={storyImages[currentImageIndex].is_selected}
-                          className="w-full gap-2"
-                        >
-                          <Star className={`h-4 w-4 ${storyImages[currentImageIndex].is_selected ? 'fill-current' : ''}`} />
-                          {storyImages[currentImageIndex].is_selected ? 'Cover Image' : 'Set as Cover'}
-                        </Button>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => handleDeleteImage(storyImages[currentImageIndex].id)}
-                          className="w-full gap-2 text-destructive hover:text-destructive"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                          Delete Image
-                        </Button>
-                      </AccordionContent>
-                    </AccordionItem>
-                  </Accordion>
-                ) : (
-                  <div className="flex items-center justify-between gap-3 px-4 py-2 bg-muted/30 rounded-lg border border-border/50">
-                    {/* Left: Primary Actions */}
-                    <div className="flex items-center gap-2">
-                      <TooltipProvider>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <Button
-                              variant="default"
-                              size="sm"
-                              onClick={handleOpenImageDialog}
-                              disabled={generatingImage || storyImages.length >= 5}
-                              className="h-8 gap-1.5"
-                            >
-                              {generatingImage ? (
-                                <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                              ) : (
-                                <>
-                                  <Palette className="h-3.5 w-3.5" />
-                                  <span className="text-xs font-medium">Create New Illustration</span>
-                                </>
-                              )}
-                            </Button>
-                          </TooltipTrigger>
-                          <TooltipContent>
-                            <p>Create custom illustrations for your story - up to 5 images total</p>
-                          </TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={handleRecreateImage}
-                        disabled={generatingImage}
-                        className="h-8"
-                      >
-                        <RefreshCw className="h-3.5 w-3.5" />
-                      </Button>
-                    </div>
-
-                    {/* Center: Dots + Counter */}
-                    <div className="flex items-center gap-3">
-                      {storyImages.length > 1 && (
-                        <div className="flex gap-1.5">
-                          {storyImages.map((image, index) => (
-                            <button
-                              key={image.id}
-                              onClick={() => setCurrentImageIndex(index)}
-                              className={`h-1.5 rounded-full transition-all ${
-                                index === currentImageIndex 
-                                  ? 'w-6 bg-primary' 
-                                  : 'w-1.5 bg-muted-foreground/30'
-                              }`}
-                              aria-label={`Go to image ${index + 1}`}
-                            />
-                          ))}
-                        </div>
+                {/* Create Additional Images Button */}
+                {storyImages.length < 3 && (
+                  <div className="flex justify-center">
+                    <Button
+                      onClick={handleGenerateAdditionalImages}
+                      disabled={isGeneratingAdditionalImages}
+                      size="lg"
+                      variant="default"
+                      className="gap-2 min-w-[280px]"
+                    >
+                      {isGeneratingAdditionalImages ? (
+                        <>
+                          <Loader2 className="h-5 w-5 animate-spin" />
+                          <span className="animate-pulse">Building new images...</span>
+                        </>
+                      ) : (
+                        <>
+                          <Palette className="h-5 w-5" />
+                          Create Additional Story Images
+                        </>
                       )}
-                      <span className="text-xs font-medium text-muted-foreground">
-                        {currentImageIndex + 1}/{storyImages.length}
-                      </span>
-                    </div>
-
-                    {/* Right: Secondary Actions */}
-                    <div className="flex items-center gap-2">
-                      <Button
-                        variant={storyImages[currentImageIndex].is_selected ? "default" : "ghost"}
-                        size="sm"
-                        onClick={() => handleSelectImage(storyImages[currentImageIndex].id)}
-                        disabled={storyImages[currentImageIndex].is_selected}
-                        className="h-8"
-                        title="Set as cover"
-                      >
-                        <Star className={`h-3.5 w-3.5 ${storyImages[currentImageIndex].is_selected ? 'fill-current' : ''}`} />
-                      </Button>
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                            <MoreVertical className="h-3.5 w-3.5" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuItem 
-                            onClick={() => handleDeleteImage(storyImages[currentImageIndex].id)}
-                            className="text-destructive focus:text-destructive"
-                          >
-                            <Trash2 className="h-4 w-4 mr-2" />
-                            Delete Image
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </div>
+                    </Button>
                   </div>
                 )}
               </div>
@@ -875,7 +665,7 @@ const StoryView = () => {
                 <div className="text-center space-y-2">
                   <h3 className="text-lg font-semibold">Bring Your Story to Life</h3>
                   <p className="text-sm text-muted-foreground max-w-md">
-                    Create stunning illustrations to accompany your story. Add up to 5 custom images that will be beautifully woven throughout the narrative.
+                    Create a hero image for your story to bring it to life visually.
                   </p>
                 </div>
                 <Button
@@ -892,157 +682,47 @@ const StoryView = () => {
                   ) : (
                     <>
                       <Palette className="w-5 h-5" />
-                      Create Your First Illustration
+                      Create Hero Image
                     </>
                   )}
                 </Button>
-                <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                  <Info className="h-3.5 w-3.5" />
-                  <span>Customize the prompt to match your vision</span>
-                </div>
               </div>
             )}
 
-            {/* Enhanced Audio Section */}
-            {isMobile ? (
-              <Accordion type="single" collapsible defaultValue="audio" className="w-full">
-                <AccordionItem value="audio" className="border rounded-lg bg-muted/30">
-                  <AccordionTrigger className="px-4 py-3 hover:no-underline">
-                    <div className="flex items-center gap-2">
-                      <Volume2 className="h-4 w-4 text-primary" />
-                      <span className="font-semibold">Audio Narration</span>
-                    </div>
-                  </AccordionTrigger>
-                  <AccordionContent className="px-4 pb-4 space-y-4">
-                    {!story.audio_url ? (
-                      /* Pre-Generation State - Mobile */
-                      <div className="space-y-4">
-                        <div className="text-center">
-                          <p className="text-sm text-muted-foreground">
-                            Bring your story to life with AI-powered narration.
-                          </p>
-                        </div>
-                        
-                        <Button
-                          onClick={handleGenerateAudio}
-                          disabled={isGeneratingAudio}
-                          size="default"
-                          className="w-full gap-2"
-                        >
-                          {isGeneratingAudio ? (
-                            <>
-                              <Loader2 className="h-4 w-4 animate-spin" />
-                              Generating...
-                            </>
-                          ) : (
-                            <>
-                              <Play className="h-4 w-4" />
-                              Generate Narration
-                            </>
-                          )}
-                        </Button>
-                      </div>
+            {/* Minimal Audio Controls */}
+            <div className="w-full mt-6">
+              {!story.audio_url ? (
+                <div className="flex justify-center">
+                  <Button
+                    onClick={handleGenerateAudio}
+                    disabled={isGeneratingAudio}
+                    size="default"
+                    variant="outline"
+                    className="gap-2"
+                  >
+                    {isGeneratingAudio ? (
+                      <>
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                        Generating Narration...
+                      </>
                     ) : (
-                      /* Audio Player State - Mobile */
-                      <AudioPlayer audioUrl={story.audio_url} title={story.title} />
+                      <>
+                        <Volume2 className="h-4 w-4" />
+                        Generate Narration
+                      </>
                     )}
-                  </AccordionContent>
-                </AccordionItem>
-              </Accordion>
-            ) : (
-              <div className="space-y-4">
-                {!story.audio_url ? (
-                  /* Pre-Generation State - Desktop */
-                  <div className="p-8 rounded-xl bg-gradient-to-br from-primary/5 via-primary/10 to-primary/5 border-2 border-dashed border-primary/30 text-center space-y-4">
-                    <div className="flex justify-center">
-                      <div className="p-4 rounded-full bg-primary/10">
-                        <Volume2 className="h-8 w-8 text-primary" />
-                      </div>
-                    </div>
-                    <div>
-                      <h3 className="text-lg font-semibold mb-2">Generate Audio Narration</h3>
-                      <p className="text-sm text-muted-foreground max-w-md mx-auto">
-                        Bring your story to life with AI-powered narration.
-                      </p>
-                    </div>
-                    
-                    <Button
-                      onClick={handleGenerateAudio}
-                      disabled={isGeneratingAudio}
-                      size="lg"
-                      className="gap-2"
-                    >
-                      {isGeneratingAudio ? (
-                        <>
-                          <Loader2 className="h-4 w-4 animate-spin" />
-                          Generating...
-                        </>
-                      ) : (
-                        <>
-                          <Play className="h-4 w-4" />
-                          Generate Narration
-                        </>
-                      )}
-                    </Button>
+                  </Button>
+                </div>
+              ) : (
+                <div className="flex justify-center">
+                  <div className="w-full max-w-md">
+                    <AudioPlayer audioUrl={story.audio_url} title={story.title} />
                   </div>
-                ) : (
-                  /* Audio Player State - Desktop */
-                  <AudioPlayer audioUrl={story.audio_url} title={story.title} />
-                )}
+                </div>
+              )}
+            </div>
 
-                {/* Generation Progress - Desktop */}
-                {isGeneratingAudio && (
-                  <div className="p-6 rounded-xl bg-gradient-to-br from-primary/10 to-primary/5 border border-primary/20 space-y-4 animate-fade-in">
-                    <div className="flex items-center gap-3">
-                      <div className="relative">
-                        <Loader2 className="h-6 w-6 text-primary animate-spin" />
-                        <div className="absolute inset-0 blur-md bg-primary/30 animate-pulse" />
-                      </div>
-                      <div>
-                        <h4 className="font-semibold text-foreground">Generating Your Audio Narration</h4>
-                        <p className="text-sm text-muted-foreground">This may take a moment...</p>
-                      </div>
-                    </div>
-                    
-                    {/* Stage Indicators */}
-                    <div className="space-y-3">
-                      <div className="flex items-center gap-3 p-3 rounded-lg bg-background/50 border border-border/50">
-                        <div className="flex-shrink-0 w-8 h-8 rounded-full bg-primary flex items-center justify-center text-primary-foreground font-semibold text-sm">
-                          1
-                        </div>
-                        <div className="flex-1">
-                          <p className="text-sm font-medium">Analyzing Story Content</p>
-                          <p className="text-xs text-muted-foreground">Processing text and preparing for narration</p>
-                        </div>
-                        <Loader2 className="h-4 w-4 text-primary animate-spin" />
-                      </div>
-                      
-                      <div className="flex items-center gap-3 p-3 rounded-lg bg-background/30 border border-border/30 opacity-60">
-                        <div className="flex-shrink-0 w-8 h-8 rounded-full bg-muted flex items-center justify-center text-muted-foreground font-semibold text-sm">
-                          2
-                        </div>
-                        <div className="flex-1">
-                          <p className="text-sm font-medium">Generating Audio</p>
-                          <p className="text-xs text-muted-foreground">Creating narration with selected voice</p>
-                        </div>
-                      </div>
-                      
-                      <div className="flex items-center gap-3 p-3 rounded-lg bg-background/30 border border-border/30 opacity-40">
-                        <div className="flex-shrink-0 w-8 h-8 rounded-full bg-muted flex items-center justify-center text-muted-foreground font-semibold text-sm">
-                          3
-                        </div>
-                        <div className="flex-1">
-                          <p className="text-sm font-medium">Finalizing</p>
-                          <p className="text-xs text-muted-foreground">Converting and saving your audio file</p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </div>
-            )}
-
-            <CardTitle className="text-4xl font-bold text-center">
+            <CardTitle className="text-4xl font-bold text-center mt-8">
               {story.title}
             </CardTitle>
             {story.excerpt && (
