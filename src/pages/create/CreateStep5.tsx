@@ -120,30 +120,6 @@ export const CreateStep5 = () => {
     <div className="w-full max-w-4xl mx-auto min-h-screen flex flex-col">
       <HeroImage />
 
-      <StoryMagicTray
-        slot1={{
-          filled: true,
-          imageSrc: storyConfig.assets.characterTypeIcon || undefined,
-          label: storyConfig.characterType || undefined,
-          active: false,
-          onClick: handleSlot1Click,
-        }}
-        slot2={{
-          filled: true,
-          imageSrc: storyConfig.assets.storyTypeIcon || undefined,
-          label: storyConfig.storyType || undefined,
-          active: false,
-          onClick: handleSlot2Click,
-        }}
-        slot3={{
-          filled: true,
-          imageSrc: storyConfig.assets.missionIcon || undefined,
-          label: storyConfig.mission || undefined,
-          active: false,
-          onClick: handleSlot3Click,
-        }}
-      />
-
       <div className="flex flex-col items-center text-center px-4 mt-8">
         <h1 className="text-4xl md:text-5xl font-bold text-story-heading mb-8">
           Ready to build your story?
@@ -177,6 +153,30 @@ export const CreateStep5 = () => {
           </Button>
         </div>
       </div>
+
+      <StoryMagicTray
+        slot1={{
+          filled: true,
+          imageSrc: storyConfig.assets.characterTypeIcon || undefined,
+          label: storyConfig.characterType || undefined,
+          active: false,
+          onClick: handleSlot1Click,
+        }}
+        slot2={{
+          filled: true,
+          imageSrc: storyConfig.assets.storyTypeIcon || undefined,
+          label: storyConfig.storyType || undefined,
+          active: false,
+          onClick: handleSlot2Click,
+        }}
+        slot3={{
+          filled: true,
+          imageSrc: storyConfig.assets.missionIcon || undefined,
+          label: storyConfig.mission || undefined,
+          active: false,
+          onClick: handleSlot3Click,
+        }}
+      />
 
       <LibraryLimitDialog
         open={showLibraryFullDialog}
