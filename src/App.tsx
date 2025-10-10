@@ -10,6 +10,7 @@ import StoryView from "./pages/StoryView";
 import Library from "./pages/Library";
 import Profile from "./pages/Profile";
 import Test from "./pages/Test";
+import Feedback from "./pages/Feedback";
 import NotFound from "./pages/NotFound";
 import AdminDashboard from "./pages/admin/Dashboard";
 import AdminUsers from "./pages/admin/Users";
@@ -44,6 +45,7 @@ const App = () => (
           <Route path="/story/:storyId" element={<StoryView />} />
           <Route path="/library" element={<Library />} />
           <Route path="/profile" element={<Profile />} />
+          <Route path="/feedback" element={<Feedback />} />
           <Route path="/test" element={<Test />} />
           <Route path="/admin/dashboard" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
           <Route path="/admin/users" element={<AdminRoute><AdminUsers /></AdminRoute>} />

@@ -70,14 +70,6 @@ export const AppHeader = ({
           ) : (
             <>
               {rightContent}
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => navigate("/profile")}
-                className="rounded-full text-white hover:bg-white/10"
-              >
-                <User className="w-5 h-5" />
-              </Button>
             </>
           )}
         </div>

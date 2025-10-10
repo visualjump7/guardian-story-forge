@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Menu, Library, Wand2, User, LogOut, Shield } from "lucide-react";
+import { Menu, Library, Wand2, User, MessageSquare, LogOut, Shield } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
@@ -82,6 +82,15 @@ export const MobileNav = ({ profile, isAdmin = false }: MobileNavProps) => {
           >
             <User className="w-5 h-5 mr-3" />
             Profile
+          </Button>
+
+          <Button
+            variant="ghost"
+            className="justify-start h-12 text-base"
+            onClick={() => handleNavigation("/feedback")}
+          >
+            <MessageSquare className="w-5 h-5 mr-3" />
+            Beta Feedback
           </Button>
 
           {isAdmin && (

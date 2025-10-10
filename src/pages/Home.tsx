@@ -9,6 +9,7 @@ import heroImage from "@/assets/swiss-chocolate-story.jpg";
 import VimeoPlayer from "@/components/VimeoPlayer";
 import { ShareDialog } from "@/components/ShareDialog";
 import { AppHeader } from "@/components/AppHeader";
+import { DesktopNav } from "@/components/DesktopNav";
 import { useAuth } from "@/hooks/useAuth";
 
 interface Story {
@@ -112,6 +113,7 @@ const Home = () => {
               <Library className="w-4 h-4 mr-2" />
               My Library
             </Button>
+            <DesktopNav profile={profile} isAdmin={isAdmin} />
           </>
         }
       />
