@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
+import headerLogo from '@/assets/guardian-kids-logo-header.png';
 
 interface AdminLayoutProps {
   children: React.ReactNode;
@@ -33,8 +34,11 @@ export function AdminLayout({ children }: AdminLayoutProps) {
     <div className="min-h-screen flex w-full bg-background">
       {/* Sidebar */}
       <aside className="w-64 border-r bg-card">
-        <div className="p-6">
-          <h1 className="text-2xl font-poppins font-bold text-primary">Admin Panel</h1>
+        <div className="p-6 space-y-2">
+          <img src={headerLogo} alt="Guardian Kids" className="h-10 w-auto mb-2" />
+          <div className="text-sm font-semibold text-muted-foreground">
+            Admin Panel
+          </div>
         </div>
         <nav className="space-y-1 px-3">
           {navItems.map((item) => {

@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft, User, Wand2 } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { MobileNav } from "@/components/MobileNav";
+import headerLogo from "@/assets/guardian-kids-logo-header.png";
 
 interface AppHeaderProps {
   showBackButton?: boolean;
@@ -35,15 +36,17 @@ export const AppHeader = ({
             </Button>
           )}
           {!isMobile ? (
-            <div>
-              <h1 className="text-2xl font-poppins font-bold text-white">Guardian Kids</h1>
-              <p className="text-sm text-white/70">
-                Welcome back, {profile?.display_name || "Guardian"}!
-              </p>
+            <div className="flex items-center gap-3 cursor-pointer" onClick={() => navigate('/home')}>
+              <img src={headerLogo} alt="Guardian Kids" className="h-12 w-auto" />
+              <div>
+                <p className="text-sm text-white/70">
+                  Welcome back, {profile?.display_name || "Guardian"}!
+                </p>
+              </div>
             </div>
           ) : (
-            <div>
-              <h1 className="text-xl font-poppins font-bold text-white">Guardian Kids</h1>
+            <div className="flex items-center gap-2 cursor-pointer" onClick={() => navigate('/home')}>
+              <img src={headerLogo} alt="Guardian Kids" className="h-8 w-auto" />
               <p className="text-xs text-white/70">
                 {profile?.display_name || "Guardian"}
               </p>
