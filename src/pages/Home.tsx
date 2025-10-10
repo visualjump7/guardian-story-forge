@@ -118,10 +118,10 @@ const Home = () => {
 
       {/* Main Content */}
       <main className="container mx-auto px-4 py-8 space-y-12">
-        {/* Video Section */}
-        <section className="space-y-4">
+        {/* Video Hero Section */}
+        <section className="w-full -mx-4 px-0">
           <VimeoPlayer 
-            videoId="1121252443" 
+            videoId="1126023861" 
             title="Welcome to Guardian Kids"
             autoplay={false}
             muted={true}
