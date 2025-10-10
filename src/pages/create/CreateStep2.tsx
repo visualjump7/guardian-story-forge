@@ -34,21 +34,16 @@ export const CreateStep2 = () => {
   }, [storyConfig.characterType]);
 
   const handleSelect = (typeId: string, image: string) => {
-    let finalType: CharacterType;
-    let finalImage = image;
-
-    // Handle "Surprise Me!" - randomly select from first 5 options
     if (typeId === 'Surprise') {
-      const randomIndex = Math.floor(Math.random() * 5);
-      const randomChoice = CHARACTER_TYPES[randomIndex];
-      finalType = randomChoice.id as CharacterType;
-      finalImage = surpriseImg; // Keep surprise image for the tray
+      // For surprise, just store 'Surprise' without picking now
+      // Actual randomization will happen at story generation time
+      setSelectedType('Surprise');
+      setCharacterType('Surprise' as CharacterType, surpriseImg);
     } else {
-      finalType = typeId as CharacterType;
+      // For normal selections, store the actual type
+      setSelectedType(typeId);
+      setCharacterType(typeId as CharacterType, image);
     }
-
-    setSelectedType(typeId === 'Surprise' ? 'Surprise' : finalType);
-    setCharacterType(finalType, finalImage);
   };
 
   const handleSlotClick = () => {

@@ -57,6 +57,7 @@ export const CreateStep5 = () => {
       const { data, error } = await supabase.functions.invoke('generate-story', {
         body: {
           heroName: storyConfig.characterName,
+          characterType: storyConfig.characterType,
           storyType: storyConfig.storyType,
           themeId: themeId,
           narrativeStructure: narrativeStructure,

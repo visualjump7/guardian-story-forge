@@ -11,7 +11,8 @@ const corsHeaders = {
 const storyRequestSchema = z.object({
   heroName: z.string().trim().min(1, "Hero name is required").max(50, "Hero name must be less than 50 characters"),
   excerpt: z.string().trim().max(500, "Excerpt must be less than 500 characters").optional(),
-  storyType: z.string().min(1, "Story type is required").max(50),
+  characterType: z.enum(['Explorer', 'Super Hero', 'Creature', 'Robot', 'Warrior', 'Surprise']).optional(),
+  storyType: z.enum(['Adventure', 'Mystery', 'Magical', 'Epic', 'Space', 'Surprise']),
   themeId: z.string().uuid("Invalid theme ID"),
   secondaryThemeId: z.string().uuid("Invalid secondary theme ID").optional(),
   narrativeStructure: z.enum(["heros-journey", "problem-solution", "rags-to-riches", "voyage-return", "quest", "overcoming-monster"], {
@@ -47,9 +48,10 @@ serve(async (req) => {
       );
     }
 
-    const { 
+    let { 
       heroName, 
       excerpt,
+      characterType,
       storyType, 
       themeId, 
       narrativeStructure,
@@ -60,6 +62,20 @@ serve(async (req) => {
       artStyle,
       storyUniverse
     } = validation.data;
+
+    // Handle "Surprise Me" for character type - randomize at generation time
+    if (characterType === 'Surprise') {
+      const characterOptions = ['Explorer', 'Super Hero', 'Creature', 'Robot', 'Warrior'];
+      characterType = characterOptions[Math.floor(Math.random() * characterOptions.length)] as typeof characterType;
+      console.log(`Surprise character type selected: ${characterType}`);
+    }
+
+    // Handle "Surprise Me" for story type - randomize at generation time
+    if (storyType === 'Surprise') {
+      const storyOptions = ['Adventure', 'Mystery', 'Magical', 'Epic', 'Space'];
+      storyType = storyOptions[Math.floor(Math.random() * storyOptions.length)] as typeof storyType;
+      console.log(`Surprise story type selected: ${storyType}`);
+    }
 
     // Initialize Supabase client
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;

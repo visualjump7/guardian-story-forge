@@ -32,20 +32,16 @@ export const CreateStep3 = () => {
   }, [storyConfig.storyType]);
 
   const handleSelect = (typeId: string, image: string) => {
-    let finalType: StoryType;
-    let finalImage = image;
-
     if (typeId === 'Surprise') {
-      const randomIndex = Math.floor(Math.random() * 5);
-      const randomChoice = STORY_TYPES[randomIndex];
-      finalType = randomChoice.id as StoryType;
-      finalImage = surpriseImg;
+      // For surprise, just store 'Surprise' without picking now
+      // Actual randomization will happen at story generation time
+      setSelectedType('Surprise');
+      setStoryType('Surprise' as StoryType, surpriseImg);
     } else {
-      finalType = typeId as StoryType;
+      // For normal selections, store the actual type
+      setSelectedType(typeId);
+      setStoryType(typeId as StoryType, image);
     }
-
-    setSelectedType(typeId === 'Surprise' ? 'Surprise' : finalType);
-    setStoryType(finalType, finalImage);
   };
 
   const handleSlot1Click = () => {

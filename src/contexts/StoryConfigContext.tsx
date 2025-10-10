@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 
-export type CharacterType = 'Explorer' | 'Super Hero' | 'Creature' | 'Robot' | 'Warrior';
-export type StoryType = 'Adventure' | 'Mystery' | 'Magical' | 'Epic' | 'Space';
+export type CharacterType = 'Explorer' | 'Super Hero' | 'Creature' | 'Robot' | 'Warrior' | 'Surprise';
+export type StoryType = 'Adventure' | 'Mystery' | 'Magical' | 'Epic' | 'Space' | 'Surprise';
 export type Mission = 'Rescue' | 'Treasure' | 'Protect' | 'Ranch' | 'Escape';
 
 interface StoryConfig {
