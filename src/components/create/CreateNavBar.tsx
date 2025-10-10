@@ -13,7 +13,7 @@ interface CreateNavBarProps {
 export const CreateNavBar = ({
   onBack,
   onContinue,
-  backLabel = '< Back',
+  backLabel = 'Back',
   continueLabel = 'Continue >',
   continueDisabled = false,
   showBack = true,
@@ -36,7 +36,11 @@ export const CreateNavBar = ({
         <Button
           onClick={onContinue}
           disabled={continueDisabled}
-          className="gap-2 w-full md:w-auto text-base md:text-lg py-6 md:py-3"
+          className={`gap-2 w-full md:w-auto text-base md:text-lg py-6 md:py-3 ${
+            continueDisabled 
+              ? 'border border-gray-700 text-gray-400 bg-transparent hover:bg-transparent' 
+              : ''
+          }`}
         >
           {continueLabel}
         </Button>
