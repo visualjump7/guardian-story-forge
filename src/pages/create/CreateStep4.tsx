@@ -86,20 +86,16 @@ export const CreateStep4 = () => {
     setCustomMissionDescription('');
     setIsInputConfirmed(false);
     
-    let finalMission: Mission;
-    let finalImage = image;
-
     if (missionId === 'Surprise') {
-      const randomIndex = Math.floor(Math.random() * 5);
-      const randomChoice = MISSION_OPTIONS[randomIndex];
-      finalMission = randomChoice.id as Mission;
-      finalImage = surpriseImg;
+      // For surprise, just store 'Surprise' without picking now
+      // Actual randomization will happen at story generation time
+      setSelectedMission('Surprise');
+      setMission('Surprise' as Mission, surpriseImg);
     } else {
-      finalMission = missionId as Mission;
+      // For normal selections, store the actual type
+      setSelectedMission(missionId);
+      setMission(missionId as Mission, image);
     }
-
-    setSelectedMission(missionId === 'Surprise' ? 'Surprise' : finalMission);
-    setMission(finalMission, finalImage);
   };
 
   const handleSlot1Click = () => {
