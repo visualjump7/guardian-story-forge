@@ -67,8 +67,13 @@ export const CreateStep5 = () => {
         actualStoryType = types[Math.floor(Math.random() * types.length)];
       }
 
-      // Mission doesn't have 'Surprise' in its type, but we need to handle custom missions
-      const actualMission = storyConfig.mission;
+      // Handle "Surprise" mission by randomly choosing an actual mission
+      let actualMission: string = storyConfig.mission;
+      if (storyConfig.mission === 'Surprise') {
+        const missions = ['Rescue', 'Treasure', 'Protect', 'Ranch', 'Escape'];
+        actualMission = missions[Math.floor(Math.random() * missions.length)];
+      }
+
       const themeId = MISSION_TO_THEME[actualMission];
       const narrativeStructure = MISSION_TO_NARRATIVE[actualMission] || 'heros-journey';
 

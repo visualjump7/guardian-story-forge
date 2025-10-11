@@ -2,7 +2,7 @@ import React, { createContext, useContext, useState, useEffect, ReactNode } from
 
 export type CharacterType = 'Explorer' | 'Super Hero' | 'Creature' | 'Robot' | 'Warrior' | 'Surprise';
 export type StoryType = 'Adventure' | 'Mystery' | 'Magical' | 'Epic' | 'Space' | 'Surprise';
-export type Mission = 'Rescue' | 'Treasure' | 'Protect' | 'Ranch' | 'Escape';
+export type Mission = 'Rescue' | 'Treasure' | 'Protect' | 'Ranch' | 'Escape' | 'Surprise';
 export type WritingStyle = 
   | 'interactive-playful'
   | 'rhyming-rhythmic'
