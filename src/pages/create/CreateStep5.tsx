@@ -54,14 +54,29 @@ export const CreateStep5 = () => {
     setIsGenerating(true);
 
     try {
-      const themeId = MISSION_TO_THEME[storyConfig.mission];
-      const narrativeStructure = MISSION_TO_NARRATIVE[storyConfig.mission] || 'heros-journey';
+      // Handle "Surprise" selections by randomly choosing actual values
+      let actualCharacterType: string = storyConfig.characterType || '';
+      if (storyConfig.characterType === 'Surprise') {
+        const types = ['Explorer', 'Super Hero', 'Warrior', 'Robot', 'Creature'];
+        actualCharacterType = types[Math.floor(Math.random() * types.length)];
+      }
+
+      let actualStoryType: string = storyConfig.storyType || '';
+      if (storyConfig.storyType === 'Surprise') {
+        const types = ['Adventure', 'Mystery', 'Epic', 'Magical', 'Space'];
+        actualStoryType = types[Math.floor(Math.random() * types.length)];
+      }
+
+      // Mission doesn't have 'Surprise' in its type, but we need to handle custom missions
+      const actualMission = storyConfig.mission;
+      const themeId = MISSION_TO_THEME[actualMission];
+      const narrativeStructure = MISSION_TO_NARRATIVE[actualMission] || 'heros-journey';
 
       const { data, error } = await supabase.functions.invoke('generate-story', {
         body: {
           heroName: storyConfig.characterName,
-          characterType: storyConfig.characterType,
-          storyType: storyConfig.storyType,
+          characterType: actualCharacterType,
+          storyType: actualStoryType,
           themeId: themeId,
           narrativeStructure: narrativeStructure,
           writingStyle: storyConfig.writingStyle || undefined,
