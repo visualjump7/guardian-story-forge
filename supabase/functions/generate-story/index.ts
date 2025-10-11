@@ -104,6 +104,16 @@ serve(async (req) => {
     validateCustomContent(customStoryTypeDescription, "Custom story type description");
     validateCustomContent(customMissionDescription, "Custom mission description");
 
+    // Log custom inputs for debugging
+    console.log('Custom inputs received:', {
+      hasCustomCharacter: !!customCharacterDescription,
+      hasCustomStoryType: !!customStoryTypeDescription,
+      hasCustomMission: !!customMissionDescription,
+      characterValue: customCharacterDescription || `Standard: ${characterType}`,
+      storyTypeValue: customStoryTypeDescription || `Standard: ${storyType}`,
+      missionValue: customMissionDescription || `Derived from: ${narrativeStructure}`
+    });
+
     // Handle "Surprise Me" for character type - randomize at generation time
     if (characterType === 'Surprise' && !customCharacterDescription) {
       const characterOptions = ['Explorer', 'Super Hero', 'Creature', 'Robot', 'Warrior'];
@@ -300,7 +310,18 @@ Example: "${heroName} took a deep breath and felt a little better. It was okay t
 
     const selectedStyle = writingStyleGuidelines[writingStyle as keyof typeof writingStyleGuidelines];
 
-    let systemPrompt = `You are a creative children's story writer. Create engaging, age-appropriate stories that teach important life lessons.
+    let systemPrompt = `You are a creative children's story writer who PRECISELY follows user requirements. 
+
+🎯 CORE PRINCIPLE: USER INPUT IS SACRED
+When a user provides custom descriptions (character details, story type, or mission), these are NOT suggestions - they are EXACT specifications that must be woven into every aspect of the narrative. You must analyze each word and ensure it appears in your story.
+
+Your stories are evaluated on:
+1. ACCURACY: Does it match what the user asked for? (Most Important)
+2. ENGAGEMENT: Is it exciting and age-appropriate?
+3. QUALITY: Is it well-written with good structure?
+
+A perfectly written story that doesn't match the user's specifications is a FAILURE.
+A story that precisely matches specifications but is less polished is a SUCCESS.
 
 WRITING STYLE REQUIREMENT:
 ${selectedStyle.prompt}
@@ -360,10 +381,27 @@ Write in a warm, friendly tone that captivates young readers.`;
     // Build character description with critical emphasis
     let characterDescription = '';
     if (customCharacterDescription) {
-      characterDescription = `\n\n🎯 CRITICAL CHARACTER REQUIREMENT - THIS IS MANDATORY:
-The hero ${heroName} MUST BE EXACTLY: ${customCharacterDescription}
+      characterDescription = `
+🎯 CUSTOM CHARACTER REQUIREMENT (USER'S EXACT WORDS)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+"${customCharacterDescription}"
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-This is the user's personal vision and is NON-NEGOTIABLE. Every aspect of the character's appearance, personality, and abilities MUST reflect this description. Reference these character traits multiple times throughout the story.${storyUniverse === 'guardian-ranch' ? ' Remember this character is an animal with special abilities in the Guardian Ranch universe.' : ''}`;
+INTERPRETATION REQUIREMENTS:
+✓ Analyze every word in the description above
+✓ ${heroName} must embody ALL traits mentioned
+✓ Show these traits through actions, not just descriptions
+✓ Reference this description in at least 3 different scenes
+✓ Make these character traits ESSENTIAL to how the plot unfolds
+✓ Other characters should notice and comment on these traits${storyUniverse === 'guardian-ranch' ? '\n✓ Remember: In Guardian Ranch, this is an animal with special abilities' : ''}
+
+EXAMPLE: If the user wrote "a brave young wizard with a fear of heights", your story must:
+- Show the character being brave in multiple situations
+- Establish they are young (mention age/appearance)
+- Have them use magic/wizardry as their primary ability
+- Create a scene where their fear of heights is a challenge they must overcome
+
+THIS IS NOT OPTIONAL. The user specifically chose these words for a reason.`;
     } else if (characterType && characterType !== 'Surprise') {
       characterDescription = `\n\n🎯 CRITICAL CHARACTER REQUIREMENT:
 ${heroName} MUST BE a ${characterType}${storyUniverse === 'guardian-ranch' ? ' (an animal with special abilities)' : ''}.
@@ -375,10 +413,24 @@ ${heroName} MUST BE a ${characterType}${storyUniverse === 'guardian-ranch' ? ' (
     // Build story type requirement with critical emphasis
     let storyTypeRequirement = '';
     if (customStoryTypeDescription) {
-      storyTypeRequirement = `\n\n🎯 CRITICAL STORY TYPE REQUIREMENT - THIS IS MANDATORY:
-The story type MUST BE EXACTLY: ${customStoryTypeDescription}
+      storyTypeRequirement = `
+🎯 CUSTOM STORY TYPE REQUIREMENT (USER'S EXACT WORDS)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+"${customStoryTypeDescription}"
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-This defines the core genre and tone. Every plot element, setting choice, and story beat MUST align with this story type. This is NON-NEGOTIABLE.`;
+INTERPRETATION REQUIREMENTS:
+✓ This defines the GENRE, TONE, and ATMOSPHERE of the entire story
+✓ Every scene must feel like it belongs in this type of story
+✓ Use vocabulary and pacing appropriate to this description
+✓ The plot structure should match what this description implies
+
+EXAMPLE: If the user wrote "a mysterious adventure in an underwater kingdom":
+- Mystery elements: Include secrets, clues, discovery moments
+- Adventure elements: Include exploration, challenges, excitement
+- Underwater kingdom: All scenes take place underwater, show unique sea creatures, bioluminescence, underwater physics
+
+Each word in the user's description is intentional and must be reflected.`;
     } else {
       storyTypeRequirement = `\n\n🎯 CRITICAL STORY TYPE REQUIREMENT:
 This MUST BE a ${storyType} story.
@@ -389,10 +441,26 @@ ${storyType === 'Adventure' ? '- Include exciting journeys, exploration, and dis
     // Build mission requirement with critical emphasis
     let missionRequirement = '';
     if (customMissionDescription) {
-      missionRequirement = `\n\n🎯 CRITICAL MISSION/PLOT REQUIREMENT - THIS IS MANDATORY:
-The story's central mission MUST BE: ${customMissionDescription}
+      missionRequirement = `
+🎯 CUSTOM MISSION REQUIREMENT (USER'S EXACT WORDS)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+"${customMissionDescription}"
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-This is the heart of the plot. The entire narrative arc must revolve around accomplishing this mission. Every challenge, decision, and story beat must relate directly to this mission. This is NON-NEGOTIABLE.`;
+INTERPRETATION REQUIREMENTS:
+✓ This is the CENTRAL PLOT - everything revolves around this
+✓ The beginning must establish WHY this mission matters
+✓ The middle must show CHALLENGES in achieving this mission
+✓ The ending must COMPLETE this mission (success or meaningful resolution)
+✓ Every major scene should advance progress toward this goal
+
+EXAMPLE: If the user wrote "find the lost crystal in the underwater kingdom":
+- Opening: Establish the crystal is lost and why it's important
+- Middle: Show the hero searching underwater locations, facing obstacles
+- Climax: The discovery/recovery of the crystal
+- End: What happens now that the crystal is found
+
+The mission is the spine of your story. Every scene should connect to it.`;
     } else {
       // Mission descriptions based on narrative structure
       const missionDescriptions: Record<string, string> = {
@@ -411,20 +479,81 @@ This is the heart of the plot. The entire narrative arc must revolve around acco
 ${missionDesc}`;
     }
 
-    let userPrompt = `Create a ${storyType} story with these details:
+    // Force AI to analyze custom inputs BEFORE generating story
+    let analysisPhase = '';
+    if (customCharacterDescription || customStoryTypeDescription || customMissionDescription) {
+      analysisPhase = `\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📋 MANDATORY PRE-WRITING ANALYSIS PHASE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-Hero's Name: ${heroName}${characterDescription}${storyTypeRequirement}${missionRequirement}
+BEFORE writing the story, you MUST internally analyze these user requirements:
+
+${customCharacterDescription ? `CHARACTER INPUT TO ANALYZE: "${customCharacterDescription}"
+What this tells us:
+- Physical traits to incorporate:
+- Personality traits to show:
+- Abilities/powers to demonstrate:
+- Role in the story:
+` : ''}${customStoryTypeDescription ? `STORY TYPE INPUT TO ANALYZE: "${customStoryTypeDescription}"
+What this tells us:
+- Genre elements required:
+- Tone and atmosphere needed:
+- Setting implications:
+- Plot structure suggested:
+` : ''}${customMissionDescription ? `MISSION INPUT TO ANALYZE: "${customMissionDescription}"
+What this tells us:
+- Central conflict:
+- Stakes involved:
+- Key plot beats required:
+- Resolution needed:
+` : ''}
+⚠️ YOUR STORY WILL BE INVALID IF IT DOESN'T MATCH THESE INPUTS EXACTLY.
+Do not proceed until you understand how to weave ALL of these elements throughout the entire narrative.
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`;
+    }
+
+    let userPrompt = `
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🎯 ABSOLUTE REQUIREMENTS (HIGHEST PRIORITY)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+These are the user's EXACT specifications. Your story will be REJECTED if it doesn't follow these precisely:
+
+Hero's Name: ${heroName} (use this name throughout)
+${analysisPhase}
+${characterDescription}
+${storyTypeRequirement}
+${missionRequirement}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📚 STORY FRAMEWORK (SECONDARY REQUIREMENTS)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+ONLY after incorporating the above requirements, apply these guidelines:
 
 Narrative Structure: ${narrativeStructure}
-Primary Moral Theme: ${theme.name} - ${theme.description}${secondaryThemeText}${settingDescription}
-Age Range: ${ageRange}
-Length: ${wordCounts[storyLength as keyof typeof wordCounts]}
+${narrativeDescriptions[narrativeStructure as keyof typeof narrativeDescriptions]}
 
-⚠️ CRITICAL INSTRUCTIONS:
-1. The CHARACTER TYPE/DESCRIPTION above is MANDATORY - reference it throughout
-2. The STORY TYPE above is MANDATORY - every scene must match this genre
-3. The MISSION/PLOT above is MANDATORY - this drives the entire narrative
-4. These three elements must work together seamlessly throughout the story`;
+Moral Theme: ${theme.name} - ${theme.description}${secondaryThemeText}
+
+Technical Specs:
+- Age Range: ${ageRange}
+- Length: ${wordCounts[storyLength as keyof typeof wordCounts]}
+- Setting: ${setting ? setting.replace(/-/g, ' ') : 'appropriate to the story type'}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+✅ VERIFICATION CHECKLIST
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Before submitting your story, verify:
+${customCharacterDescription ? `☑ Does the character match: "${customCharacterDescription}"?` : `☑ Is ${heroName} clearly a ${characterType}?`}
+${customStoryTypeDescription ? `☑ Does the story type match: "${customStoryTypeDescription}"?` : `☑ Is this clearly a ${storyType} story?`}
+${customMissionDescription ? `☑ Does the mission match: "${customMissionDescription}"?` : `☑ Does the plot follow the specified narrative structure?`}
+☑ Are these elements present in EVERY major scene?
+☑ Does the ending directly relate to these core elements?
+
+If ANY checkbox is unchecked, REWRITE THE STORY.
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`;
 
     if (storyUniverse === 'guardian-ranch') {
       userPrompt += `\n\nGUARDIAN RANCH STORY REQUIREMENTS:

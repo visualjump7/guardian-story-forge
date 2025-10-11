@@ -77,6 +77,17 @@ export const CreateStep5 = () => {
       const themeId = MISSION_TO_THEME[actualMission];
       const narrativeStructure = MISSION_TO_NARRATIVE[actualMission] || 'heros-journey';
 
+      // Log what we're sending to help debug
+      console.log('Generating story with:', {
+        heroName: storyConfig.characterName,
+        characterType: actualCharacterType,
+        customCharacterDescription: storyConfig.customCharacterDescription || 'None',
+        storyType: actualStoryType,
+        customStoryTypeDescription: storyConfig.customStoryTypeDescription || 'None',
+        mission: narrativeStructure,
+        customMissionDescription: storyConfig.customMissionDescription || 'None',
+      });
+
       const { data, error } = await supabase.functions.invoke('generate-story', {
         body: {
           heroName: storyConfig.characterName,
@@ -92,6 +103,17 @@ export const CreateStep5 = () => {
           customStoryTypeDescription: storyConfig.customStoryTypeDescription,
           customMissionDescription: storyConfig.customMissionDescription,
         },
+      });
+
+      // Log what we're sending to help debug
+      console.log('Generating story with:', {
+        heroName: storyConfig.characterName,
+        characterType: actualCharacterType,
+        customCharacterDescription: storyConfig.customCharacterDescription || 'None',
+        storyType: actualStoryType,
+        customStoryTypeDescription: storyConfig.customStoryTypeDescription || 'None',
+        mission: narrativeStructure,
+        customMissionDescription: storyConfig.customMissionDescription || 'None',
       });
 
       if (error) {
