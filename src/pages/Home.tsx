@@ -154,8 +154,12 @@ const Home = () => {
             </h2>
             
             {/* Description */}
-            <p className="text-xl text-white/90">
-              Choose your hero, pick your adventure and let us craft your Epic Story!
+            <p className="text-xl text-white/90 leading-relaxed">
+              Step into a world where imagination takes the lead. ✨<br />
+              Choose your hero, pick your adventure, and watch as we bring your Epic Story to life—crafted with cinematic wonder, heartfelt emotion, and the magic only you can inspire.
+              <br /><br />
+              🧙‍♀️ Your story begins here.<br />
+              Are you ready to see where it leads?
             </p>
             
             {/* Button */}
