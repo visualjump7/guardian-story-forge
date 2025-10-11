@@ -31,7 +31,10 @@ const storyRequestSchema = z.object({
   ageRange: z.enum(["5-7", "8-10", "11-12"]).default("8-10"),
   setting: z.string().max(100, "Setting must be less than 100 characters").optional(),
   artStyle: z.enum(["pixar-3d", "ghibli-2d", "watercolor", "classic-disney", "modern-cartoon", "anime", "comic-book"]).default("pixar-3d"),
-  storyUniverse: z.string().max(50, "Story universe must be less than 50 characters").optional()
+  storyUniverse: z.string().max(50, "Story universe must be less than 50 characters").optional(),
+  customCharacterDescription: z.string().trim().max(200, "Custom character description must be less than 200 characters").optional(),
+  customStoryTypeDescription: z.string().trim().max(200, "Custom story type description must be less than 200 characters").optional(),
+  customMissionDescription: z.string().trim().max(200, "Custom mission description must be less than 200 characters").optional()
 });
 
 serve(async (req) => {
@@ -70,11 +73,39 @@ serve(async (req) => {
       setting,
       secondaryThemeId,
       artStyle,
-      storyUniverse
+      storyUniverse,
+      customCharacterDescription,
+      customStoryTypeDescription,
+      customMissionDescription
     } = validation.data;
 
+    // Server-side content validation for custom descriptions
+    const INAPPROPRIATE_WORDS = [
+      'damn', 'hell', 'crap', 'suck', 'stupid', 'idiot', 'dumb', 'hate',
+      'kill', 'murder', 'death', 'dead', 'die', 'blood', 'knife', 'gun', 'weapon',
+      'terror', 'horror', 'nightmare', 'demon', 'devil', 'evil',
+      'sexy', 'drugs', 'alcohol', 'drunk', 'beer', 'wine'
+    ];
+
+    const validateCustomContent = (content: string | undefined, fieldName: string) => {
+      if (!content) return;
+      
+      const lowerContent = content.toLowerCase();
+      for (const word of INAPPROPRIATE_WORDS) {
+        const regex = new RegExp(`\\b${word}\\b`, 'i');
+        if (regex.test(lowerContent)) {
+          throw new Error(`${fieldName} contains inappropriate content for children. Please use kid-friendly language.`);
+        }
+      }
+    };
+
+    // Validate all custom descriptions
+    validateCustomContent(customCharacterDescription, "Custom character description");
+    validateCustomContent(customStoryTypeDescription, "Custom story type description");
+    validateCustomContent(customMissionDescription, "Custom mission description");
+
     // Handle "Surprise Me" for character type - randomize at generation time
-    if (characterType === 'Surprise') {
+    if (characterType === 'Surprise' && !customCharacterDescription) {
       const characterOptions = ['Explorer', 'Super Hero', 'Creature', 'Robot', 'Warrior'];
       characterType = characterOptions[Math.floor(Math.random() * characterOptions.length)] as typeof characterType;
       console.log(`Surprise character type selected: ${characterType}`);
@@ -311,9 +342,20 @@ Write in a warm, friendly tone that captivates young readers.`;
     const settingDescription = setting ? `\nSetting: ${setting.replace(/-/g, ' ')} - Make this setting come alive with rich sensory details.` : '';
     const secondaryThemeText = secondaryTheme ? `\n\nSecondary Theme: Also weave in the lesson of "${secondaryTheme.name}" (${secondaryTheme.description}) as a supporting element in the story.` : '';
 
+    // Build character description for prompt
+    let characterDescription = '';
+    if (customCharacterDescription) {
+      characterDescription = `\n\nCUSTOM CHARACTER DESCRIPTION (VERY IMPORTANT - USE THIS EXACTLY):
+The hero ${heroName} is: ${customCharacterDescription}
+
+This is the user's personal vision for the character. Make this description central to the story and incorporate these specific details throughout the narrative.${storyUniverse === 'guardian-ranch' ? ' Remember this character is an animal with special abilities in the Guardian Ranch universe.' : ''}`;
+    } else if (characterType && characterType !== 'Surprise') {
+      characterDescription = `\nCharacter Type: ${characterType}${storyUniverse === 'guardian-ranch' ? ' (an animal with special abilities)' : ''}`;
+    }
+
     let userPrompt = `Create a ${storyType} story with these details:
 
-Hero's Name: ${heroName}${storyUniverse === 'guardian-ranch' ? ' (an animal with special abilities)' : ''}
+Hero's Name: ${heroName}${characterDescription}
 Story Type: ${storyType}
 Narrative Structure: ${narrativeStructure}
 Primary Moral Theme: ${theme.name} - ${theme.description}${secondaryThemeText}${settingDescription}

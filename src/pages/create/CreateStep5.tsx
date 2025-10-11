@@ -68,6 +68,9 @@ export const CreateStep5 = () => {
           storyLength: 'medium',
           ageRange: '8-10',
           artStyle: 'pixar-3d',
+          customCharacterDescription: storyConfig.customCharacterDescription,
+          customStoryTypeDescription: storyConfig.customStoryTypeDescription,
+          customMissionDescription: storyConfig.customMissionDescription,
         },
       });
 

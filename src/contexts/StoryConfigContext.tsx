@@ -18,6 +18,9 @@ interface StoryConfig {
   storyType: StoryType | null;
   mission: Mission | null;
   writingStyle: WritingStyle | null;
+  customCharacterDescription?: string;
+  customStoryTypeDescription?: string;
+  customMissionDescription?: string;
   assets: {
     characterTypeIcon: string | null;
     storyTypeIcon: string | null;
@@ -33,6 +36,9 @@ interface StoryConfigContextType {
   setStoryType: (type: StoryType, icon: string) => void;
   setMission: (mission: Mission, icon: string) => void;
   setWritingStyle: (style: WritingStyle, icon: string) => void;
+  setCustomCharacterDescription: (description: string) => void;
+  setCustomStoryTypeDescription: (description: string) => void;
+  setCustomMissionDescription: (description: string) => void;
   clearCharacterType: () => void;
   clearStoryType: () => void;
   clearMission: () => void;
@@ -51,6 +57,9 @@ const defaultConfig: StoryConfig = {
   storyType: null,
   mission: null,
   writingStyle: null,
+  customCharacterDescription: undefined,
+  customStoryTypeDescription: undefined,
+  customMissionDescription: undefined,
   assets: {
     characterTypeIcon: null,
     storyTypeIcon: null,
@@ -79,6 +88,7 @@ export const StoryConfigProvider = ({ children }: { children: ReactNode }) => {
     setStoryConfig(prev => ({
       ...prev,
       characterType: type,
+      customCharacterDescription: undefined, // Clear custom description when card is selected
       assets: { ...prev.assets, characterTypeIcon: icon },
     }));
   };
@@ -99,10 +109,32 @@ export const StoryConfigProvider = ({ children }: { children: ReactNode }) => {
     }));
   };
 
+  const setCustomCharacterDescription = (description: string) => {
+    setStoryConfig(prev => ({
+      ...prev,
+      customCharacterDescription: description,
+    }));
+  };
+
+  const setCustomStoryTypeDescription = (description: string) => {
+    setStoryConfig(prev => ({
+      ...prev,
+      customStoryTypeDescription: description,
+    }));
+  };
+
+  const setCustomMissionDescription = (description: string) => {
+    setStoryConfig(prev => ({
+      ...prev,
+      customMissionDescription: description,
+    }));
+  };
+
   const clearCharacterType = () => {
     setStoryConfig(prev => ({
       ...prev,
       characterType: null,
+      customCharacterDescription: undefined,
       assets: { ...prev.assets, characterTypeIcon: null },
     }));
   };
@@ -149,7 +181,7 @@ export const StoryConfigProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const isStep2Complete = () => {
-    return storyConfig.characterType !== null;
+    return storyConfig.characterType !== null || (storyConfig.customCharacterDescription && storyConfig.customCharacterDescription.trim().length > 0);
   };
 
   const isStep3Complete = () => {
@@ -173,6 +205,9 @@ export const StoryConfigProvider = ({ children }: { children: ReactNode }) => {
         setStoryType,
         setMission,
         setWritingStyle,
+        setCustomCharacterDescription,
+        setCustomStoryTypeDescription,
+        setCustomMissionDescription,
         clearCharacterType,
         clearStoryType,
         clearMission,
