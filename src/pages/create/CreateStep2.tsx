@@ -6,6 +6,8 @@ import { StoryMagicTray } from '@/components/create/StoryMagicTray';
 import { ChoiceCard } from '@/components/create/ChoiceCard';
 import { CreateNavBar } from '@/components/create/CreateNavBar';
 import { Textarea } from '@/components/ui/textarea';
+import { Button } from '@/components/ui/button';
+import { CornerDownLeft, Pencil } from 'lucide-react';
 import { validateContent } from '@/utils/contentFilter';
 
 import explorerImg from '@/assets/character-explorer.jpg';
@@ -30,6 +32,7 @@ export const CreateStep2 = () => {
   const [selectedType, setSelectedType] = useState<string>(storyConfig.characterType || '');
   const [customInput, setCustomInput] = useState<string>(storyConfig.customCharacterDescription || '');
   const [inputError, setInputError] = useState<string>('');
+  const [isInputConfirmed, setIsInputConfirmed] = useState<boolean>(false);
 
   useEffect(() => {
     if (storyConfig.characterType) {
@@ -44,6 +47,7 @@ export const CreateStep2 = () => {
     const previousValue = customInput;
     setCustomInput(value);
     setInputError('');
+    setIsInputConfirmed(false);
     
     // When user starts typing (first character), immediately show Surprise icon
     if (value.trim() && !previousValue.trim()) {
@@ -58,24 +62,25 @@ export const CreateStep2 = () => {
     }
   };
 
-  const handleCustomInputBlur = () => {
+  const handleConfirmInput = () => {
     const trimmedInput = customInput.trim();
+    if (!trimmedInput) return;
     
-    if (!trimmedInput) {
-      setCustomCharacterDescription('');
-      return;
-    }
-
     const validation = validateContent(trimmedInput);
     if (!validation.isValid) {
       setInputError(validation.message || 'Invalid input');
       return;
     }
-
-    // Valid custom input - set as "Surprise" type
+    
     setCustomCharacterDescription(trimmedInput);
     setCharacterType('Surprise' as CharacterType, surpriseImg);
     setSelectedType('Surprise');
+    setIsInputConfirmed(true);
+    setInputError('');
+  };
+
+  const handleEditInput = () => {
+    setIsInputConfirmed(false);
   };
 
   const handleSelect = (typeId: string, image: string) => {
@@ -83,6 +88,7 @@ export const CreateStep2 = () => {
     setCustomInput('');
     setInputError('');
     setCustomCharacterDescription('');
+    setIsInputConfirmed(false);
 
     if (typeId === 'Surprise') {
       setSelectedType('Surprise');
@@ -166,36 +172,74 @@ export const CreateStep2 = () => {
 
         {/* Custom Character Description Input */}
         <div className="mb-6">
-          <div className="relative">
-            <Textarea
-              value={customInput}
-              onChange={(e) => handleCustomInputChange(e.target.value)}
-              onBlur={handleCustomInputBlur}
-              placeholder="Describe your character... (e.g., a brave young wizard) - optional"
-              maxLength={80}
-              className={`bg-black border-2 text-white placeholder:text-gray-500 min-h-[60px] resize-none ${
-                inputError 
-                  ? 'border-red-500 focus-visible:ring-red-500' 
-                  : customInput.trim() 
-                  ? 'border-primary focus-visible:ring-primary'
-                  : 'border-gray-700 focus-visible:ring-ring'
-              }`}
-            />
-            <div className="flex items-center justify-between mt-2">
-              <div className="text-sm">
-                {inputError ? (
-                  <span className="text-red-500">{inputError}</span>
-                ) : customInput.trim() ? (
-                  <span className="text-primary">✓ Custom character saved</span>
-                ) : (
-                  <span className="text-muted-foreground">Or select a character type below</span>
-                )}
+          {!isInputConfirmed ? (
+            // INPUT MODE
+            <div className="relative">
+              <Textarea
+                value={customInput}
+                onChange={(e) => handleCustomInputChange(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    handleConfirmInput();
+                  }
+                }}
+                placeholder="Describe your character... (e.g., a brave young wizard) - optional"
+                maxLength={80}
+                className={`bg-black border-2 text-white placeholder:text-gray-500 min-h-[60px] resize-none pr-12 ${
+                  inputError 
+                    ? 'border-red-500 focus-visible:ring-red-500' 
+                    : customInput.trim() 
+                    ? 'border-primary focus-visible:ring-primary'
+                    : 'border-gray-700 focus-visible:ring-ring'
+                }`}
+              />
+              <Button
+                type="button"
+                size="icon"
+                variant="ghost"
+                onClick={handleConfirmInput}
+                disabled={!customInput.trim() || !!inputError}
+                className="absolute right-2 top-2 h-8 w-8 text-primary hover:text-primary/80 disabled:opacity-30"
+              >
+                <CornerDownLeft className="w-4 h-4" />
+              </Button>
+              
+              <div className="flex items-center justify-between mt-2">
+                <div className="text-sm">
+                  {inputError ? (
+                    <span className="text-red-500">{inputError}</span>
+                  ) : customInput.trim() ? (
+                    <span className="text-muted-foreground">Press Enter or click ↵ to confirm</span>
+                  ) : (
+                    <span className="text-muted-foreground">Or select a character type below</span>
+                  )}
+                </div>
+                <span className={`text-sm ${customInput.length >= 70 ? 'text-amber-500' : 'text-muted-foreground'}`}>
+                  {customInput.length}/80
+                </span>
               </div>
-              <span className={`text-sm ${customInput.length >= 70 ? 'text-amber-500' : 'text-muted-foreground'}`}>
-                {customInput.length}/80
-              </span>
             </div>
-          </div>
+          ) : (
+            // CONFIRMED MODE
+            <div className="relative bg-black/50 border-2 border-primary/50 rounded-md px-4 py-3">
+              <div className="flex items-start justify-between gap-3">
+                <p className="text-white text-sm flex-1 leading-relaxed">
+                  {customInput}
+                </p>
+                <Button
+                  type="button"
+                  size="icon"
+                  variant="ghost"
+                  onClick={handleEditInput}
+                  className="h-8 w-8 text-primary hover:text-primary/80 shrink-0"
+                >
+                  <Pencil className="w-4 h-4" />
+                </Button>
+              </div>
+              <p className="text-xs text-primary mt-2">✓ Custom character confirmed</p>
+            </div>
+          )}
         </div>
       </div>
 
