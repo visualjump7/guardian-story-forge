@@ -34,7 +34,7 @@ export const StoryMagicTray = ({ slot1, slot2, slot3 }: StoryMagicTrayProps) => 
             ${isClickable ? 'cursor-pointer hover:opacity-75' : ''}
             ${
               slot.filled
-                ? 'bg-card border-2 border-story-magic-active'
+                ? 'bg-card border-2 border-story-magic-active animate-scale-in shadow-lg shadow-primary/50'
                 : 'bg-card/50 border-2 border-dashed border-story-magic-empty'
             }
             ${slot.active && slot.filled ? 'ring-2 ring-story-magic-active ring-offset-2 ring-offset-background' : ''}
@@ -44,7 +44,7 @@ export const StoryMagicTray = ({ slot1, slot2, slot3 }: StoryMagicTrayProps) => 
             <img
               src={slot.imageSrc}
               alt={slot.label || 'Story element'}
-              className="w-full h-full object-cover rounded-lg"
+              className="w-full h-full object-cover rounded-lg animate-fade-in"
             />
           ) : (
             <Sparkles className="w-8 h-8 text-muted-foreground/30" />

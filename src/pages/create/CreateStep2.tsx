@@ -41,11 +41,19 @@ export const CreateStep2 = () => {
   }, [storyConfig.characterType, storyConfig.customCharacterDescription]);
 
   const handleCustomInputChange = (value: string) => {
+    const previousValue = customInput;
     setCustomInput(value);
     setInputError('');
     
-    // Clear card selection when typing
-    if (value.trim()) {
+    // When user starts typing (first character), immediately show Surprise icon
+    if (value.trim() && !previousValue.trim()) {
+      setCharacterType('Surprise' as CharacterType, surpriseImg);
+      setSelectedType('Surprise');
+    }
+    
+    // Clear icon if user deletes all text
+    if (!value.trim() && previousValue.trim()) {
+      clearCharacterType();
       setSelectedType('');
     }
   };
@@ -151,9 +159,9 @@ export const CreateStep2 = () => {
           Who is Your Character?
         </h2>
         <p className="text-muted-foreground mb-4">
-          <span className="bg-primary/10 text-primary px-2 py-1 rounded font-medium">Type above</span>
+          <span className="bg-primary/10 text-primary px-2 py-1 rounded font-medium">TYPE HERE</span>
           {' '}or{' '}
-          <span className="bg-primary/10 text-primary px-2 py-1 rounded font-medium">choose below</span>
+          <span className="bg-primary/10 text-primary px-2 py-1 rounded font-medium">CHOOSE BELOW</span>
         </p>
 
         {/* Custom Character Description Input */}
