@@ -39,7 +39,7 @@ export const CreateStep5 = () => {
   const handleSlot2Click = () => navigate('/create/03');
   const handleSlot3Click = () => navigate('/create/04');
 
-  const handleBack = () => navigate('/create/04_5');
+  const handleBack = () => navigate('/create/04');
 
   const handleGenerateStory = async () => {
     if (!storyConfig.characterName || !storyConfig.storyType || !storyConfig.mission) {
