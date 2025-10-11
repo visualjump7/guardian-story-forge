@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { BookOpen, Trash2, Share2, PlusCircle, Sparkles } from "lucide-react";
+import { BookOpen, Trash2, Share2, PlusCircle, Sparkles, X } from "lucide-react";
 import { toast } from "sonner";
 import { ShareDialog } from "@/components/ShareDialog";
 import { AppHeader } from "@/components/AppHeader";
@@ -89,6 +89,7 @@ const Library = () => {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [shareDialogOpen, setShareDialogOpen] = useState(false);
   const [storyToShare, setStoryToShare] = useState<SavedStory | null>(null);
+  const [isLibraryAlertDismissed, setIsLibraryAlertDismissed] = useState(false);
 
   useEffect(() => {
     loadLibrary();
@@ -132,6 +133,10 @@ const Library = () => {
       toast.error("Failed to load library");
     } else {
       setSavedStories(data || []);
+      // Reset alert dismissed state if user deletes stories (library no longer full)
+      if (data && data.length < 10) {
+        setIsLibraryAlertDismissed(false);
+      }
     }
 
     setLoading(false);
@@ -151,6 +156,10 @@ const Library = () => {
       const newStories = savedStories.filter((s) => s.id !== storyToRemove.id);
       setSavedStories(newStories);
       toast.success(`Removed from library (${newStories.length}/10 stories)`);
+      // Reset alert dismissed state if we just went below 10 stories
+      if (newStories.length < 10) {
+        setIsLibraryAlertDismissed(false);
+      }
     }
 
     setDialogOpen(false);
@@ -279,8 +288,8 @@ const Library = () => {
             </div>
             
             {/* Full Library Alert Message */}
-            {savedStories.length >= 10 && (
-              <div className="bg-amber-500/10 border-2 border-amber-500/50 rounded-xl p-4 flex items-start gap-3">
+            {savedStories.length >= 10 && !isLibraryAlertDismissed && (
+              <div className="bg-amber-500/10 border-2 border-amber-500/50 rounded-xl p-4 flex items-start gap-3 relative">
                 <div className="bg-amber-500 rounded-full p-2 mt-0.5">
                   <BookOpen className="h-5 w-5 text-white" />
                 </div>
@@ -292,6 +301,14 @@ const Library = () => {
                     You've reached the maximum of 10 stories. Delete a story to create new ones.
                   </p>
                 </div>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="absolute top-2 right-2 h-6 w-6 rounded-full hover:bg-amber-500/20"
+                  onClick={() => setIsLibraryAlertDismissed(true)}
+                >
+                  <X className="h-4 w-4 text-amber-700 dark:text-amber-300" />
+                </Button>
               </div>
             )}
             
