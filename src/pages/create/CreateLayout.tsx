@@ -1,6 +1,7 @@
 import { Outlet } from 'react-router-dom';
 import { StoryConfigProvider } from '@/contexts/StoryConfigContext';
 import { AppHeader } from '@/components/AppHeader';
+import { CreateNav } from '@/components/CreateNav';
 import { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useNavigate } from 'react-router-dom';
@@ -34,7 +35,12 @@ export const CreateLayout = () => {
   return (
     <StoryConfigProvider>
       <div className="min-h-screen bg-background">
-        <AppHeader profile={profile} isAdmin={isAdmin} showBackButton={false} />
+        <AppHeader 
+          profile={profile} 
+          isAdmin={isAdmin} 
+          showBackButton={false}
+          rightContent={<CreateNav profile={profile} isAdmin={isAdmin} />}
+        />
         <main className="container max-w-4xl mx-auto px-4 py-8">
           <Outlet />
         </main>
