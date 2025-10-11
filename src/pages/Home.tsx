@@ -113,6 +113,7 @@ const Home = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-muted to-background">
       <AppHeader 
+        showBackButton={false}
         profile={profile}
         isAdmin={isAdmin}
         rightContent={

@@ -305,6 +305,21 @@ Example: "${heroName} took a deep breath and felt a little better. It was okay t
 WRITING STYLE REQUIREMENT:
 ${selectedStyle.prompt}
 
+🛡️ MANDATORY CHILD SAFETY MESSAGING (CRITICAL FOR CHILDREN UNDER 12):
+Every story MUST naturally incorporate age-appropriate personal safety lessons. Include at least 2-3 of these safety themes woven into the narrative:
+- Stranger Danger: Don't go with strangers, even if they seem nice or offer treats
+- Trusted Adults: Know who your trusted adults are and go to them when you need help
+- Body Safety: Your body is yours - it's okay to say "no" to unwanted touch
+- Speaking Up: Tell a trusted adult if something makes you uncomfortable
+- Safe vs Unsafe Secrets: Safe secrets are fun (like surprise parties), unsafe secrets make you feel bad and should be told
+- Internet Safety: Never share personal information online or meet internet friends in person without a parent
+- Emergency Awareness: Know how to call for help and what to do in emergencies
+- Buddy System: Stay with friends or family in public places
+- Listen to Your Feelings: If something feels wrong, it probably is - trust your instincts
+- Home Alone Safety: Never tell strangers you're home alone; keep doors locked
+
+IMPORTANT: Weave these lessons naturally into the story through the character's choices and experiences. Don't preach - show the character making safe choices and explaining why. Make safety empowering, not scary.
+
 CRITICAL REQUIREMENT FOR TITLE:
 - Generate a unique, creative, and captivating title that reflects the specific story and theme
 - The title MUST be original and avoid generic patterns like "The Adventures of [name]"
@@ -342,25 +357,74 @@ Write in a warm, friendly tone that captivates young readers.`;
     const settingDescription = setting ? `\nSetting: ${setting.replace(/-/g, ' ')} - Make this setting come alive with rich sensory details.` : '';
     const secondaryThemeText = secondaryTheme ? `\n\nSecondary Theme: Also weave in the lesson of "${secondaryTheme.name}" (${secondaryTheme.description}) as a supporting element in the story.` : '';
 
-    // Build character description for prompt
+    // Build character description with critical emphasis
     let characterDescription = '';
     if (customCharacterDescription) {
-      characterDescription = `\n\nCUSTOM CHARACTER DESCRIPTION (VERY IMPORTANT - USE THIS EXACTLY):
-The hero ${heroName} is: ${customCharacterDescription}
+      characterDescription = `\n\n🎯 CRITICAL CHARACTER REQUIREMENT - THIS IS MANDATORY:
+The hero ${heroName} MUST BE EXACTLY: ${customCharacterDescription}
 
-This is the user's personal vision for the character. Make this description central to the story and incorporate these specific details throughout the narrative.${storyUniverse === 'guardian-ranch' ? ' Remember this character is an animal with special abilities in the Guardian Ranch universe.' : ''}`;
+This is the user's personal vision and is NON-NEGOTIABLE. Every aspect of the character's appearance, personality, and abilities MUST reflect this description. Reference these character traits multiple times throughout the story.${storyUniverse === 'guardian-ranch' ? ' Remember this character is an animal with special abilities in the Guardian Ranch universe.' : ''}`;
     } else if (characterType && characterType !== 'Surprise') {
-      characterDescription = `\nCharacter Type: ${characterType}${storyUniverse === 'guardian-ranch' ? ' (an animal with special abilities)' : ''}`;
+      characterDescription = `\n\n🎯 CRITICAL CHARACTER REQUIREMENT:
+${heroName} MUST BE a ${characterType}${storyUniverse === 'guardian-ranch' ? ' (an animal with special abilities)' : ''}.
+- Make the character's ${characterType} nature central to the plot
+- Use ${characterType}-specific abilities, traits, and behaviors throughout the story
+- Reference the ${characterType} characteristics multiple times`;
+    }
+
+    // Build story type requirement with critical emphasis
+    let storyTypeRequirement = '';
+    if (customStoryTypeDescription) {
+      storyTypeRequirement = `\n\n🎯 CRITICAL STORY TYPE REQUIREMENT - THIS IS MANDATORY:
+The story type MUST BE EXACTLY: ${customStoryTypeDescription}
+
+This defines the core genre and tone. Every plot element, setting choice, and story beat MUST align with this story type. This is NON-NEGOTIABLE.`;
+    } else {
+      storyTypeRequirement = `\n\n🎯 CRITICAL STORY TYPE REQUIREMENT:
+This MUST BE a ${storyType} story.
+${storyType === 'Adventure' ? '- Include exciting journeys, exploration, and discovering new places' : ''}${storyType === 'Mystery' ? '- Include clues, puzzles, secrets to uncover, and a mystery to solve' : ''}${storyType === 'Magical' ? '- Include magic, enchantment, fantastical elements, and wonder' : ''}${storyType === 'Epic' ? '- Include grand scale, high stakes, heroic deeds, and momentous challenges' : ''}${storyType === 'Space' ? '- Include space travel, alien worlds, futuristic technology, and cosmic exploration' : ''}
+- Every scene must reinforce the ${storyType} genre`;
+    }
+
+    // Build mission requirement with critical emphasis
+    let missionRequirement = '';
+    if (customMissionDescription) {
+      missionRequirement = `\n\n🎯 CRITICAL MISSION/PLOT REQUIREMENT - THIS IS MANDATORY:
+The story's central mission MUST BE: ${customMissionDescription}
+
+This is the heart of the plot. The entire narrative arc must revolve around accomplishing this mission. Every challenge, decision, and story beat must relate directly to this mission. This is NON-NEGOTIABLE.`;
+    } else {
+      // Mission descriptions based on narrative structure
+      const missionDescriptions: Record<string, string> = {
+        'quest': 'The hero must find or protect a valuable TREASURE. The quest for this treasure drives every plot point.',
+        'overcoming-monster': 'The hero must PROTECT someone or something from harm. Defense and guardianship are central themes.',
+        'voyage-return': 'The hero must ESCAPE from danger or return from an unfamiliar place. The tension of the journey drives the narrative.',
+        'guardian-ranch': 'Set in Guardian Ranch where the hero must help animals and protect the sanctuary. The mission involves caring for and defending the ranch.',
+        'heros-journey': 'The hero must complete an epic RESCUE mission. Saving someone or something in danger is the central quest.',
+        'problem-solution': 'The hero must solve a critical problem through clever thinking and bravery.',
+        'rags-to-riches': 'The hero must overcome their circumstances and achieve something greater through determination.'
+      };
+      
+      const missionDesc = missionDescriptions[narrativeStructure] || 'The hero must complete an important mission that drives the entire story.';
+      
+      missionRequirement = `\n\n🎯 CRITICAL MISSION/PLOT REQUIREMENT:
+${missionDesc}`;
     }
 
     let userPrompt = `Create a ${storyType} story with these details:
 
-Hero's Name: ${heroName}${characterDescription}
-Story Type: ${storyType}
+Hero's Name: ${heroName}${characterDescription}${storyTypeRequirement}${missionRequirement}
+
 Narrative Structure: ${narrativeStructure}
 Primary Moral Theme: ${theme.name} - ${theme.description}${secondaryThemeText}${settingDescription}
 Age Range: ${ageRange}
-Length: ${wordCounts[storyLength as keyof typeof wordCounts]}`;
+Length: ${wordCounts[storyLength as keyof typeof wordCounts]}
+
+⚠️ CRITICAL INSTRUCTIONS:
+1. The CHARACTER TYPE/DESCRIPTION above is MANDATORY - reference it throughout
+2. The STORY TYPE above is MANDATORY - every scene must match this genre
+3. The MISSION/PLOT above is MANDATORY - this drives the entire narrative
+4. These three elements must work together seamlessly throughout the story`;
 
     if (storyUniverse === 'guardian-ranch') {
       userPrompt += `\n\nGUARDIAN RANCH STORY REQUIREMENTS:
