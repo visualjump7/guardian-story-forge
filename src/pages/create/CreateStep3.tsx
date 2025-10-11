@@ -5,6 +5,8 @@ import { HeroImage } from '@/components/create/HeroImage';
 import { StoryMagicTray } from '@/components/create/StoryMagicTray';
 import { ChoiceCard } from '@/components/create/ChoiceCard';
 import { CreateNavBar } from '@/components/create/CreateNavBar';
+import { Textarea } from '@/components/ui/textarea';
+import { validateContent } from '@/utils/contentFilter';
 
 import adventureImg from '@/assets/story-adventure.jpg';
 import mysteryImg from '@/assets/story-mystery.jpg';
@@ -24,14 +26,52 @@ const STORY_TYPES = [
 
 export const CreateStep3 = () => {
   const navigate = useNavigate();
-  const { storyConfig, setStoryType, clearStoryType } = useStoryConfig();
+  const { storyConfig, setStoryType, clearStoryType, setCustomStoryTypeDescription } = useStoryConfig();
   const [selectedType, setSelectedType] = useState<string>(storyConfig.storyType || '');
+  const [customInput, setCustomInput] = useState<string>(storyConfig.customStoryTypeDescription || '');
+  const [inputError, setInputError] = useState<string>('');
 
   useEffect(() => {
     setSelectedType(storyConfig.storyType || '');
-  }, [storyConfig.storyType]);
+    setCustomInput(storyConfig.customStoryTypeDescription || '');
+  }, [storyConfig.storyType, storyConfig.customStoryTypeDescription]);
+
+  const handleCustomInputChange = (value: string) => {
+    const previousValue = customInput;
+    setCustomInput(value);
+    setInputError('');
+    
+    // When user starts typing (first character), immediately show Surprise icon
+    if (value.trim() && !previousValue.trim()) {
+      setStoryType('Surprise' as StoryType, surpriseImg);
+      setSelectedType('Surprise');
+    }
+    
+    // Clear icon if user deletes all text
+    if (!value.trim() && previousValue.trim()) {
+      clearStoryType();
+      setSelectedType('');
+    }
+  };
+
+  const handleCustomInputBlur = () => {
+    if (!customInput.trim()) return;
+    
+    const validation = validateContent(customInput);
+    if (!validation.isValid) {
+      setInputError(validation.message || 'Invalid input');
+      return;
+    }
+    
+    setCustomStoryTypeDescription(customInput);
+  };
 
   const handleSelect = (typeId: string, image: string) => {
+    // Clear custom input when selecting a card
+    setCustomInput('');
+    setInputError('');
+    setCustomStoryTypeDescription('');
+    
     if (typeId === 'Surprise') {
       // For surprise, just store 'Surprise' without picking now
       // Actual randomization will happen at story generation time
@@ -61,6 +101,14 @@ export const CreateStep3 = () => {
     navigate('/create/04');
   };
 
+  const isContinueEnabled = () => {
+    if (customInput.trim()) {
+      const validation = validateContent(customInput);
+      return validation.isValid;
+    }
+    return !!selectedType;
+  };
+
   const handleBack = () => {
     navigate('/create/02');
   };
@@ -72,7 +120,7 @@ export const CreateStep3 = () => {
       <CreateNavBar
         onBack={handleBack}
         onContinue={handleContinue}
-        continueDisabled={!selectedType}
+        continueDisabled={!isContinueEnabled()}
       />
 
       <StoryMagicTray
@@ -94,12 +142,38 @@ export const CreateStep3 = () => {
       />
 
       <div className="text-center mb-8">
-        <h1 className="text-3xl md:text-4xl font-bold text-story-heading mb-2" style={{ fontFamily: 'Poppins, sans-serif' }}>
-          What kind of story do you want to create?
-        </h1>
-        <p className="text-muted-foreground">
-          Choose one from below and add it to your Story Magic.
+        <h2 className="text-3xl md:text-4xl font-bold text-story-heading mb-2" style={{ fontFamily: 'Poppins, sans-serif' }}>
+          What Kind of Story?
+        </h2>
+        <p className="text-muted-foreground mb-4">
+          <span className="bg-primary/10 text-primary px-2 py-1 rounded font-medium">TYPE HERE</span>
+          {' '}or{' '}
+          <span className="bg-primary/10 text-primary px-2 py-1 rounded font-medium">CHOOSE BELOW</span>
         </p>
+
+        {/* Custom Story Type Description Input */}
+        <div className="mb-6 max-w-2xl mx-auto">
+          <Textarea
+            value={customInput}
+            onChange={(e) => handleCustomInputChange(e.target.value)}
+            onBlur={handleCustomInputBlur}
+            placeholder="Describe your story... (e.g., a magical adventure in an enchanted forest) - optional"
+            maxLength={80}
+            className={`min-h-[60px] resize-none bg-black border-gray-700 text-white ${
+              inputError ? 'border-red-500' : ''
+            }`}
+          />
+          <div className="flex justify-between items-center mt-1 text-xs">
+            {inputError ? (
+              <span className="text-red-500">{inputError}</span>
+            ) : (
+              <span className="text-muted-foreground">Custom story descriptions help personalize your tale</span>
+            )}
+            <span className={`${customInput.length >= 70 ? 'text-yellow-500' : 'text-muted-foreground'}`}>
+              {customInput.length}/80
+            </span>
+          </div>
+        </div>
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-8">

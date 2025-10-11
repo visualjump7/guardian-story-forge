@@ -5,6 +5,8 @@ import { HeroImage } from '@/components/create/HeroImage';
 import { StoryMagicTray } from '@/components/create/StoryMagicTray';
 import { ChoiceCard } from '@/components/create/ChoiceCard';
 import { CreateNavBar } from '@/components/create/CreateNavBar';
+import { Textarea } from '@/components/ui/textarea';
+import { validateContent } from '@/utils/contentFilter';
 
 import rescueImg from '@/assets/mission-rescue.jpg';
 import treasureImg from '@/assets/mission-treasure.jpg';
@@ -24,14 +26,52 @@ const MISSION_OPTIONS = [
 
 export const CreateStep4 = () => {
   const navigate = useNavigate();
-  const { storyConfig, setMission, clearMission } = useStoryConfig();
+  const { storyConfig, setMission, clearMission, setCustomMissionDescription } = useStoryConfig();
   const [selectedMission, setSelectedMission] = useState<string>(storyConfig.mission || '');
+  const [customInput, setCustomInput] = useState<string>(storyConfig.customMissionDescription || '');
+  const [inputError, setInputError] = useState<string>('');
 
   useEffect(() => {
     setSelectedMission(storyConfig.mission || '');
-  }, [storyConfig.mission]);
+    setCustomInput(storyConfig.customMissionDescription || '');
+  }, [storyConfig.mission, storyConfig.customMissionDescription]);
+
+  const handleCustomInputChange = (value: string) => {
+    const previousValue = customInput;
+    setCustomInput(value);
+    setInputError('');
+    
+    // When user starts typing (first character), immediately show Surprise icon
+    if (value.trim() && !previousValue.trim()) {
+      setMission('Surprise' as Mission, surpriseImg);
+      setSelectedMission('Surprise');
+    }
+    
+    // Clear icon if user deletes all text
+    if (!value.trim() && previousValue.trim()) {
+      clearMission();
+      setSelectedMission('');
+    }
+  };
+
+  const handleCustomInputBlur = () => {
+    if (!customInput.trim()) return;
+    
+    const validation = validateContent(customInput);
+    if (!validation.isValid) {
+      setInputError(validation.message || 'Invalid input');
+      return;
+    }
+    
+    setCustomMissionDescription(customInput);
+  };
 
   const handleSelect = (missionId: string, image: string) => {
+    // Clear custom input when selecting a card
+    setCustomInput('');
+    setInputError('');
+    setCustomMissionDescription('');
+    
     let finalMission: Mission;
     let finalImage = image;
 
@@ -65,6 +105,14 @@ export const CreateStep4 = () => {
     navigate('/create/05');
   };
 
+  const isContinueEnabled = () => {
+    if (customInput.trim()) {
+      const validation = validateContent(customInput);
+      return validation.isValid;
+    }
+    return !!selectedMission;
+  };
+
   const handleBack = () => {
     navigate('/create/03');
   };
@@ -76,7 +124,7 @@ export const CreateStep4 = () => {
       <CreateNavBar
         onBack={handleBack}
         onContinue={handleContinue}
-        continueDisabled={!selectedMission}
+        continueDisabled={!isContinueEnabled()}
       />
 
       <StoryMagicTray
@@ -104,12 +152,38 @@ export const CreateStep4 = () => {
       />
 
       <div className="text-center mb-8">
-        <h1 className="text-3xl md:text-4xl font-bold text-story-heading mb-2">
+        <h2 className="text-3xl md:text-4xl font-bold text-story-heading mb-2" style={{ fontFamily: 'Poppins, sans-serif' }}>
           What is the Mission?
-        </h1>
-        <p className="text-muted-foreground">
-          Choose the mission for your story and add it to your Story Magic.
+        </h2>
+        <p className="text-muted-foreground mb-4">
+          <span className="bg-primary/10 text-primary px-2 py-1 rounded font-medium">TYPE HERE</span>
+          {' '}or{' '}
+          <span className="bg-primary/10 text-primary px-2 py-1 rounded font-medium">CHOOSE BELOW</span>
         </p>
+
+        {/* Custom Mission Description Input */}
+        <div className="mb-6 max-w-2xl mx-auto">
+          <Textarea
+            value={customInput}
+            onChange={(e) => handleCustomInputChange(e.target.value)}
+            onBlur={handleCustomInputBlur}
+            placeholder="Describe your mission... (e.g., find the lost crystal in the underwater kingdom) - optional"
+            maxLength={80}
+            className={`min-h-[60px] resize-none bg-black border-gray-700 text-white ${
+              inputError ? 'border-red-500' : ''
+            }`}
+          />
+          <div className="flex justify-between items-center mt-1 text-xs">
+            {inputError ? (
+              <span className="text-red-500">{inputError}</span>
+            ) : (
+              <span className="text-muted-foreground">Custom missions make your story unique</span>
+            )}
+            <span className={`${customInput.length >= 70 ? 'text-yellow-500' : 'text-muted-foreground'}`}>
+              {customInput.length}/80
+            </span>
+          </div>
+        </div>
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-8">
