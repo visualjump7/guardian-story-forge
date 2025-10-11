@@ -30,7 +30,7 @@ export const AppHeader = ({
       <div className="container mx-auto px-4 py-4 flex items-center justify-between">
         <div className="flex items-center gap-4">
           {showBackButton && !isMobile && (
-            <Button variant="ghost" onClick={() => navigate(backPath)} className="text-white hover:bg-white/10">
+            <Button variant="ghost" onClick={() => navigate(backPath)} className="text-yellow-500 hover:bg-white/10 hover:text-yellow-400">
               <ArrowLeft className="w-5 h-5 mr-2" />
               Back
             </Button>

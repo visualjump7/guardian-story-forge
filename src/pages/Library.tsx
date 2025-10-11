@@ -7,6 +7,7 @@ import { BookOpen, Trash2, Share2, PlusCircle, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 import { ShareDialog } from "@/components/ShareDialog";
 import { AppHeader } from "@/components/AppHeader";
+import { DesktopNav } from "@/components/DesktopNav";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/useAuth";
 import {
@@ -178,15 +179,18 @@ const Library = () => {
         profile={profile}
         isAdmin={isAdmin}
         rightContent={
-          <Button
-            onClick={() => navigate("/create/01")}
-            variant="magical"
-            size="sm"
-            className="gap-2"
-          >
-            <PlusCircle className="w-4 h-4" />
-            Create New Story
-          </Button>
+          <>
+            <Button
+              onClick={() => navigate("/create/01")}
+              variant="magical"
+              size="sm"
+              className="gap-2 hidden md:flex"
+            >
+              <PlusCircle className="w-4 h-4" />
+              Create New Story
+            </Button>
+            <DesktopNav profile={profile} isAdmin={isAdmin} />
+          </>
         }
       />
 
