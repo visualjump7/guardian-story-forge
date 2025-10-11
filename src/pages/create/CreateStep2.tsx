@@ -151,7 +151,9 @@ export const CreateStep2 = () => {
           Who is Your Character?
         </h2>
         <p className="text-muted-foreground mb-4">
-          Tell us about your character or choose a character type below.
+          <span className="bg-primary/10 text-primary px-2 py-1 rounded font-medium">Type above</span>
+          {' '}or{' '}
+          <span className="bg-primary/10 text-primary px-2 py-1 rounded font-medium">choose below</span>
         </p>
 
         {/* Custom Character Description Input */}
@@ -161,9 +163,9 @@ export const CreateStep2 = () => {
               value={customInput}
               onChange={(e) => handleCustomInputChange(e.target.value)}
               onBlur={handleCustomInputBlur}
-              placeholder="Describe your character... (e.g., a brave young wizard with a pet dragon)"
-              maxLength={200}
-              className={`bg-black border-2 text-white placeholder:text-gray-500 min-h-[100px] resize-none ${
+              placeholder="Describe your character... (e.g., a brave young wizard) - optional"
+              maxLength={80}
+              className={`bg-black border-2 text-white placeholder:text-gray-500 min-h-[60px] resize-none ${
                 inputError 
                   ? 'border-red-500 focus-visible:ring-red-500' 
                   : customInput.trim() 
@@ -181,8 +183,8 @@ export const CreateStep2 = () => {
                   <span className="text-muted-foreground">Or select a character type below</span>
                 )}
               </div>
-              <span className={`text-sm ${customInput.length >= 180 ? 'text-amber-500' : 'text-muted-foreground'}`}>
-                {customInput.length}/200
+              <span className={`text-sm ${customInput.length >= 70 ? 'text-amber-500' : 'text-muted-foreground'}`}>
+                {customInput.length}/80
               </span>
             </div>
           </div>

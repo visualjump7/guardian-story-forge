@@ -42,10 +42,10 @@ export const validateContent = (content: string): ValidationResult => {
     };
   }
 
-  if (trimmedContent.length > 200) {
+  if (trimmedContent.length > 80) {
     return {
       isValid: false,
-      message: "Description is too long (maximum 200 characters)"
+      message: "Description is too long (maximum 80 characters)"
     };
   }
 

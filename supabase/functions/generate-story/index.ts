@@ -32,9 +32,9 @@ const storyRequestSchema = z.object({
   setting: z.string().max(100, "Setting must be less than 100 characters").optional(),
   artStyle: z.enum(["pixar-3d", "ghibli-2d", "watercolor", "classic-disney", "modern-cartoon", "anime", "comic-book"]).default("pixar-3d"),
   storyUniverse: z.string().max(50, "Story universe must be less than 50 characters").optional(),
-  customCharacterDescription: z.string().trim().max(200, "Custom character description must be less than 200 characters").optional(),
-  customStoryTypeDescription: z.string().trim().max(200, "Custom story type description must be less than 200 characters").optional(),
-  customMissionDescription: z.string().trim().max(200, "Custom mission description must be less than 200 characters").optional()
+  customCharacterDescription: z.string().trim().max(80, "Custom character description must be less than 80 characters").optional(),
+  customStoryTypeDescription: z.string().trim().max(80, "Custom story type description must be less than 80 characters").optional(),
+  customMissionDescription: z.string().trim().max(80, "Custom mission description must be less than 80 characters").optional()
 });
 
 serve(async (req) => {
