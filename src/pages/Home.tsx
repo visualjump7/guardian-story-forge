@@ -14,6 +14,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useLibraryCount } from "@/hooks/useLibraryCount";
 import { LibraryLimitDialog } from "@/components/LibraryLimitDialog";
 import { FixedFeedbackButton } from "@/components/FixedFeedbackButton";
+import { WelcomeVideoDialog } from "@/components/WelcomeVideoDialog";
 
 interface Story {
   id: string;
@@ -39,10 +40,19 @@ const Home = () => {
   const [shareDialogOpen, setShareDialogOpen] = useState(false);
   const [storyToShare, setStoryToShare] = useState<Story | null>(null);
   const [showLibraryFullDialog, setShowLibraryFullDialog] = useState(false);
+  const [showWelcomeVideo, setShowWelcomeVideo] = useState(false);
   const { count: libraryCount, isFull } = useLibraryCount(user?.id || null);
 
   useEffect(() => {
     checkUser();
+  }, []);
+
+  useEffect(() => {
+    const shouldShowVideo = sessionStorage.getItem('showWelcomeVideo');
+    if (shouldShowVideo === 'true') {
+      setShowWelcomeVideo(true);
+      sessionStorage.removeItem('showWelcomeVideo');
+    }
   }, []);
 
   const checkUser = async () => {
@@ -265,6 +275,13 @@ const Home = () => {
         currentCount={libraryCount}
         onGoToLibrary={() => navigate("/library")}
       />
+
+      {/* Welcome Video Dialog */}
+      <WelcomeVideoDialog
+        open={showWelcomeVideo}
+        onOpenChange={setShowWelcomeVideo}
+      />
+
       <FixedFeedbackButton />
     </div>
   );

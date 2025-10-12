@@ -63,6 +63,7 @@ const Auth = () => {
           password: validation.data.password,
         });
         if (error) throw error;
+        sessionStorage.setItem('showWelcomeVideo', 'true');
         toast.success("Welcome back to Guardian Kids!");
         navigate("/home");
       } else {
@@ -92,6 +93,7 @@ const Auth = () => {
           },
         });
         if (error) throw error;
+        sessionStorage.setItem('showWelcomeVideo', 'true');
         toast.success("Welcome to Guardian Kids! Your account is ready.");
         navigate("/home");
       }
