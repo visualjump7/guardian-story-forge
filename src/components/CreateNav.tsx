@@ -77,7 +77,10 @@ export const CreateNav = ({ profile, isAdmin = false }: CreateNavProps) => {
           <Button
             variant="outline"
             className={`w-full justify-start gap-3 ${isMobile ? 'h-12 text-base' : 'text-lg py-6'} border-gray-700 text-yellow-500 hover:bg-yellow-500/10 hover:text-yellow-400`}
-            onClick={() => handleNavigation("/feedback")}
+            onClick={() => {
+              window.open("https://www.jotform.com/app/252842472872161", "_blank");
+              setOpen(false);
+            }}
           >
             <MessageSquare className="w-5 h-5" />
             Send Feedback
