@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { AppHeader } from "@/components/AppHeader";
 import { useAuth } from "@/hooks/useAuth";
-import { Loader2 } from "lucide-react";
+import { Loader2, Mic, MessageSquare } from "lucide-react";
 
 const Feedback = () => {
   const navigate = useNavigate();
@@ -74,8 +74,18 @@ const Feedback = () => {
             <h1 className="text-3xl md:text-4xl font-poppins font-bold text-foreground">
               Beta Feedback
             </h1>
-            <p className="text-muted-foreground text-lg">
-              Share your feedback via voice or text - we'd love to hear from you!
+            <p className="text-muted-foreground text-lg flex items-center justify-center gap-2 flex-wrap">
+              Share your feedback via
+              <span className="inline-flex items-center gap-1 px-3 py-1 rounded-lg bg-primary/10 text-primary font-bold">
+                <Mic className="w-4 h-4" />
+                voice
+              </span>
+              or
+              <span className="inline-flex items-center gap-1 px-3 py-1 rounded-lg bg-primary/10 text-primary font-bold">
+                <MessageSquare className="w-4 h-4" />
+                text
+              </span>
+              - we'd love to hear from you!
             </p>
           </div>
 
