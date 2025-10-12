@@ -44,8 +44,8 @@ const Feedback = () => {
     script.onload = () => {
       if (window.jotformEmbedHandler) {
         window.jotformEmbedHandler(
-          "iframe[id='JotFormIFrame-252842472872161']", 
-          "https://form.jotform.com/"
+          "iframe[id='JotFormIFrame-0199d774e59c750a816c17fab151a7cf98f9']", 
+          "https://www.jotform.com"
         );
       }
     };
@@ -75,22 +75,22 @@ const Feedback = () => {
               Beta Feedback
             </h1>
             <p className="text-muted-foreground text-lg">
-              Help us improve Guardian Kids by sharing your thoughts and suggestions!
+              Share your feedback via voice or text - we'd love to hear from you!
             </p>
           </div>
 
           <div className="bg-card rounded-lg shadow-lg overflow-hidden">
             <iframe
-              id="JotFormIFrame-252842472872161"
-              title="Beta Feedback Form"
+              id="JotFormIFrame-0199d774e59c750a816c17fab151a7cf98f9"
+              title="Guardian: Feedback Collector"
               onLoad={() => {
                 window.parent.scrollTo(0, 0);
               }}
               allowTransparency={true}
-              allow="geolocation; microphone; camera; fullscreen; payment"
-              src="https://form.jotform.com/252842472872161"
+              allow="geolocation; microphone; camera; fullscreen"
+              src="https://agent.jotform.com/0199d774e59c750a816c17fab151a7cf98f9/voice?embedMode=iframe&background=1&shadow=1"
               frameBorder="0"
-              className="w-full min-h-[539px] md:min-h-[600px] border-none"
+              className="w-full h-[688px] border-none"
               scrolling="no"
             />
           </div>
