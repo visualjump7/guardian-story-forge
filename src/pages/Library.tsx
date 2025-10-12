@@ -176,7 +176,7 @@ const Library = () => {
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary/5 via-secondary/5 to-accent/5">
         <div className="text-center space-y-4">
           <Sparkles className="w-16 h-16 text-primary animate-spin mx-auto" />
-          <p className="text-xl font-poppins font-bold text-primary">Loading your magical library...</p>
+          <p className="text-xl font-poppins font-bold text-primary">Loading your library...</p>
         </div>
       </div>
     );
