@@ -1,12 +1,14 @@
 import { Button } from "@/components/ui/button";
 import { MessageSquare } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useNavigate } from "react-router-dom";
 
 export const FixedFeedbackButton = () => {
   const isMobile = useIsMobile();
+  const navigate = useNavigate();
   
   const handleClick = () => {
-    window.open("https://www.jotform.com/app/252842472872161", "_blank");
+    navigate("/feedback");
   };
 
   return (

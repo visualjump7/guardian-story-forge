@@ -44,7 +44,7 @@ const Feedback = () => {
     script.onload = () => {
       if (window.jotformEmbedHandler) {
         window.jotformEmbedHandler(
-          "iframe[id='JotFormIFrame-252323717423048']", 
+          "iframe[id='JotFormIFrame-252842472872161']", 
           "https://form.jotform.com/"
         );
       }
@@ -81,14 +81,14 @@ const Feedback = () => {
 
           <div className="bg-card rounded-lg shadow-lg overflow-hidden">
             <iframe
-              id="JotFormIFrame-252323717423048"
+              id="JotFormIFrame-252842472872161"
               title="Beta Feedback Form"
               onLoad={() => {
                 window.parent.scrollTo(0, 0);
               }}
               allowTransparency={true}
               allow="geolocation; microphone; camera; fullscreen; payment"
-              src="https://form.jotform.com/252323717423048"
+              src="https://form.jotform.com/252842472872161"
               frameBorder="0"
               className="w-full min-h-[539px] md:min-h-[600px] border-none"
               scrolling="no"

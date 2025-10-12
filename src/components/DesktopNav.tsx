@@ -78,10 +78,7 @@ export const DesktopNav = ({ profile, isAdmin = false }: DesktopNavProps) => {
           <Button
             variant="outline"
             className="w-full justify-start gap-3 text-lg py-6 border-gray-700 text-yellow-500 hover:bg-yellow-500/10 hover:text-yellow-400"
-            onClick={() => {
-              window.open("https://www.jotform.com/app/252842472872161", "_blank");
-              setOpen(false);
-            }}
+            onClick={() => handleNavigation("/feedback")}
           >
             <MessageSquare className="w-5 h-5" />
             Send Feedback
