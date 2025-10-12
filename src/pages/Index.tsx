@@ -2,6 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Sparkles, BookOpen } from "lucide-react";
 import logo from "@/assets/guardian-kids-logo.png";
+import { FixedFeedbackButton } from "@/components/FixedFeedbackButton";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -61,6 +62,7 @@ const Index = () => {
           </div>
         </div>
       </section>
+      <FixedFeedbackButton />
     </div>
   );
 };

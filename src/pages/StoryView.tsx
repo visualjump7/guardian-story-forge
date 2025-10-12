@@ -44,6 +44,7 @@ import { AudioPlayer } from "@/components/AudioPlayer";
 import { AppHeader } from "@/components/AppHeader";
 import { ImagePromptDialog } from "@/components/ImagePromptDialog";
 import { useAuth } from "@/hooks/useAuth";
+import { FixedFeedbackButton } from "@/components/FixedFeedbackButton";
 
 interface StoryImage {
   id: string;
@@ -797,6 +798,7 @@ const StoryView = () => {
           isGenerating={generatingImage}
         />
       )}
+      <FixedFeedbackButton />
     </div>
   );
 };

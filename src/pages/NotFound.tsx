@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { AppHeader } from "@/components/AppHeader";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import { FixedFeedbackButton } from "@/components/FixedFeedbackButton";
 
 const NotFound = () => {
   const location = useLocation();
@@ -39,6 +40,7 @@ const NotFound = () => {
           </a>
         </div>
       </div>
+      <FixedFeedbackButton />
     </div>
   );
 };

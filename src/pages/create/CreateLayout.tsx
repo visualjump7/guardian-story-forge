@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
+import { FixedFeedbackButton } from '@/components/FixedFeedbackButton';
 
 export const CreateLayout = () => {
   const navigate = useNavigate();
@@ -44,6 +45,7 @@ export const CreateLayout = () => {
         <main className="container max-w-4xl mx-auto px-4 py-8">
           <Outlet />
         </main>
+        <FixedFeedbackButton />
       </div>
     </StoryConfigProvider>
   );

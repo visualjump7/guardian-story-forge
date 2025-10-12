@@ -10,6 +10,7 @@ import { AppHeader } from "@/components/AppHeader";
 import { DesktopNav } from "@/components/DesktopNav";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/useAuth";
+import { FixedFeedbackButton } from "@/components/FixedFeedbackButton";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -426,6 +427,7 @@ const Library = () => {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+      <FixedFeedbackButton />
     </div>
   );
 };

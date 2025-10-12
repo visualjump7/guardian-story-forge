@@ -13,6 +13,7 @@ import { DesktopNav } from "@/components/DesktopNav";
 import { useAuth } from "@/hooks/useAuth";
 import { useLibraryCount } from "@/hooks/useLibraryCount";
 import { LibraryLimitDialog } from "@/components/LibraryLimitDialog";
+import { FixedFeedbackButton } from "@/components/FixedFeedbackButton";
 
 interface Story {
   id: string;
@@ -264,6 +265,7 @@ const Home = () => {
         currentCount={libraryCount}
         onGoToLibrary={() => navigate("/library")}
       />
+      <FixedFeedbackButton />
     </div>
   );
 };

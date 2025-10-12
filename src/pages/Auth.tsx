@@ -10,6 +10,7 @@ import { Sparkles } from "lucide-react";
 import logo from "@/assets/guardian-kids-logo.png";
 import bgImage from "@/assets/BG-Sign_In.jpg";
 import { z } from "zod";
+import { FixedFeedbackButton } from "@/components/FixedFeedbackButton";
 
 // Input validation schemas
 const loginSchema = z.object({
@@ -211,6 +212,7 @@ const Auth = () => {
           </div>
         </CardContent>
       </Card>
+      <FixedFeedbackButton />
     </div>
   );
 };

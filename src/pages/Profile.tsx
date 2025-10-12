@@ -10,6 +10,7 @@ import { User, Save, LogOut } from "lucide-react";
 import { toast } from "sonner";
 import { AppHeader } from "@/components/AppHeader";
 import { useAuth } from "@/hooks/useAuth";
+import { FixedFeedbackButton } from "@/components/FixedFeedbackButton";
 
 interface Profile {
   id: string;
@@ -285,6 +286,7 @@ const Profile = () => {
           </CardContent>
         </Card>
       </main>
+      <FixedFeedbackButton />
     </div>
   );
 };

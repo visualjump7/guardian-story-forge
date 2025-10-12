@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { AppHeader } from "@/components/AppHeader";
 import { useAuth } from "@/hooks/useAuth";
+import { FixedFeedbackButton } from "@/components/FixedFeedbackButton";
 
 const Test = () => {
   const [profile, setProfile] = useState<any>(null);
@@ -56,6 +57,7 @@ const Test = () => {
           </div>
         </div>
       </main>
+      <FixedFeedbackButton />
     </div>
   );
 };
