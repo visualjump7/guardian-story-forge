@@ -194,11 +194,12 @@ const Home = () => {
 
         {/* Featured Stories */}
         <section className="space-y-6">
-          <div className="flex items-center justify-between">
+          <div className="space-y-2">
             <h2 className="text-3xl font-poppins font-bold text-foreground flex items-center gap-3">
               <BookOpen className="w-8 h-8 text-primary" />
               Featured Stories
             </h2>
+            <p className="text-sm text-muted-foreground ml-11">(coming soon)</p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {stories.map((story) => (
