@@ -603,8 +603,10 @@ If ANY checkbox is unchecked, REWRITE THE STORY.
     }
     const title = titleMatch[1].trim();
 
-    // Remove title from content if it exists
-    const cleanContent = storyContent.replace(/^#\s*.+\n\n/, "");
+    // Remove title from content if it exists and clean markdown formatting
+    const cleanContent = storyContent
+      .replace(/^#\s*.+\n\n/, "") // Remove title
+      .replace(/\*\*(.*?)\*\*/g, '$1'); // Remove markdown bold formatting
 
     console.log("Saving story to database...");
 

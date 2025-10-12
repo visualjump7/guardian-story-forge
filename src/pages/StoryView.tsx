@@ -435,7 +435,7 @@ const StoryView = () => {
     const content = paragraphs.map((paragraph, index) => (
       <div key={index}>
         <p className="text-lg leading-relaxed mb-4">
-          {paragraph}
+          {paragraph.replace(/\*\*(.*?)\*\*/g, '$1')}
         </p>
         
         {/* Insert images at calculated positions */}
