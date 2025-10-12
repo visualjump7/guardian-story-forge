@@ -118,11 +118,11 @@ const Home = () => {
         isAdmin={isAdmin}
         rightContent={
           <>
-            <Button variant="outline" size="sm" onClick={handleCreateStoryClick} className="text-white border-white/30 hover:bg-white/10">
+            <Button variant="outline" size="sm" onClick={handleCreateStoryClick} className="text-white border-white/30 hover:bg-white/10 hover:text-amber-400">
               <Wand2 className="w-4 h-4 mr-2" />
               Create A Story
             </Button>
-            <Button variant="outline" size="sm" onClick={() => navigate("/library")} className="text-white border-white/30 hover:bg-white/10">
+            <Button variant="outline" size="sm" onClick={() => navigate("/library")} className="text-white border-white/30 hover:bg-white/10 hover:text-amber-400">
               <Library className="w-4 h-4 mr-2" />
               My Library
             </Button>
