@@ -772,23 +772,14 @@ const StoryView = () => {
             </div>
           </CardHeader>
           
-          {/* Conditional rendering based on narrative type */}
-          {story.narrative_type === 'interactive' ? (
-            <div className="px-4 py-8">
-              <InteractiveStoryViewer
-                storyId={storyId!}
-                storyTitle={story.title}
-                heroImageUrl={storyImages[0]?.image_url}
-              />
-            </div>
-          ) : (
-            <CardContent className="px-[15%] sm:px-[12%] md:px-[15%]">
-              {/* Story Content with Embedded Images */}
-              <div className="prose prose-lg max-w-none">
-                {renderStoryWithImages()}
-              </div>
-            </CardContent>
-          )}
+          {/* Always use InteractiveStoryViewer for all stories */}
+          <div className="px-4 py-8">
+            <InteractiveStoryViewer
+              storyId={storyId!}
+              storyTitle={story.title}
+              heroImageUrl={storyImages[0]?.image_url}
+            />
+          </div>
         </Card>
       </main>
 

@@ -207,11 +207,11 @@ serve(async (req) => {
       throw new Error("LOVABLE_API_KEY not configured");
     }
 
-    // Word count based on length
-    const wordCounts = {
-      short: "300-400 words",
-      medium: "500-700 words", 
-      long: "800-1000 words"
+    // Word count per node based on length
+    const wordCountsPerNode = {
+      short: "40-60 words per node, 6 nodes total",
+      medium: "60-90 words per node, 7 nodes total", 
+      long: "90-130 words per node, 8 nodes total"
     };
 
     // Vocabulary and complexity based on age
@@ -310,7 +310,7 @@ Example: "${heroName} took a deep breath and felt a little better. It was okay t
 
     const selectedStyle = writingStyleGuidelines[writingStyle as keyof typeof writingStyleGuidelines];
 
-    let systemPrompt = `You are a creative children's story writer who PRECISELY follows user requirements. 
+    let systemPrompt = `You are a creative children's story writer who creates INTERACTIVE BRANCHING NARRATIVES with multiple paths and choices.
 
 🎯 CORE PRINCIPLE: USER INPUT IS SACRED
 When a user provides custom descriptions (character details, story type, or mission), these are NOT suggestions - they are EXACT specifications that must be woven into every aspect of the narrative. You must analyze each word and ensure it appears in your story.
@@ -318,10 +318,64 @@ When a user provides custom descriptions (character details, story type, or miss
 Your stories are evaluated on:
 1. ACCURACY: Does it match what the user asked for? (Most Important)
 2. ENGAGEMENT: Is it exciting and age-appropriate?
-3. QUALITY: Is it well-written with good structure?
+3. STRUCTURE: Does it follow the branching narrative format?
+4. QUALITY: Is it well-written with good structure?
 
-A perfectly written story that doesn't match the user's specifications is a FAILURE.
-A story that precisely matches specifications but is less polished is a SUCCESS.
+📖 BRANCHING NARRATIVE FORMAT (CRITICAL):
+You MUST create an interactive story with the following structure:
+- 1 START node (beginning of the story)
+- 4-6 MIDDLE nodes (story progression with choices)
+- 2-3 ENDING nodes (different possible conclusions)
+
+Each node must be formatted EXACTLY as follows:
+
+NODE: node_key
+TITLE: Optional title for this scene
+CONTENT:
+The story content for this node goes here. ${wordCountsPerNode[storyLength as keyof typeof wordCountsPerNode]}. Make it engaging and descriptive.
+CHOICES:
+- CHOICE: Choice text here -> target_node_key
+- CHOICE: Another choice text -> another_target_node_key
+END_NODE
+
+CRITICAL RULES:
+- Use simple, memorable node_key names: start, forest_path, cave_entrance, victory_ending, etc.
+- START node must have is_start_node=true
+- ENDING nodes must have is_ending_node=true and NO choices
+- All other nodes must have 2-3 CHOICES
+- Each CHOICE must link to a valid node_key
+- Ensure all nodes are reachable from START
+- Create meaningful choices that reflect character decisions
+
+EXAMPLE STRUCTURE:
+NODE: start
+CONTENT:
+${heroName} stood at the edge of an ancient forest. Two paths lay ahead - one shimmering with golden light, the other mysterious and shadowed.
+CHOICES:
+- CHOICE: Take the golden path -> golden_path
+- CHOICE: Follow the shadowed trail -> shadow_trail
+END_NODE
+
+NODE: golden_path
+CONTENT:
+The golden path led to a sparkling meadow...
+CHOICES:
+- CHOICE: Investigate the meadow -> meadow_discovery
+- CHOICE: Continue to the mountain -> mountain_climb
+END_NODE
+
+NODE: shadow_trail
+CONTENT:
+The shadowed trail wound through dense trees...
+CHOICES:
+- CHOICE: Enter the cave -> cave_entrance
+- CHOICE: Climb a tree to see ahead -> tree_view
+END_NODE
+
+NODE: victory_ending
+CONTENT:
+${heroName} succeeded in their quest and returned home triumphant!
+END_NODE
 
 WRITING STYLE REQUIREMENT:
 ${selectedStyle.prompt}
@@ -345,35 +399,8 @@ CRITICAL REQUIREMENT FOR TITLE:
 - Generate a unique, creative, and captivating title that reflects the specific story and theme
 - The title MUST be original and avoid generic patterns like "The Adventures of [name]"
 - Use imaginative language that captures the essence of the story's unique elements
-- Start your story with the title on the first line in markdown format: # Your Creative Title Here
+- Start your story with: TITLE: Your Creative Title Here
 - Make the title memorable and age-appropriate`;
-    
-    // Add Guardian Ranch universe context if selected
-    if (storyUniverse === 'guardian-ranch') {
-      systemPrompt += `\n\nGUARDIAN RANCH UNIVERSE:
-This story takes place in the Guardian Ranch universe where:
-- All heroes are animals with unique abilities and brave hearts
-- Doctor Shadow is the recurring villain who captures innocent animals and threatens the peace
-- Guardian Ranch is a sanctuary where rescued animals live safely together
-- The animal heroes work as a team to protect their friends and rescue those in danger
-- Each adventure strengthens the bonds between the animal friends
-- Stories should reference the ongoing battle between good and the forces of Doctor Shadow
-- Include elements of teamwork, courage, and the importance of helping friends in need
-- The tone should be adventurous but reassuring, showing that good always prevails when friends work together`;
-    }
-    
-    systemPrompt += `\n\nThe story should:
-- Be ${wordCounts[storyLength as keyof typeof wordCounts]} long
-- ${ageGuidelines[ageRange as keyof typeof ageGuidelines]}
-- Follow the ${narrativeStructure} narrative structure: ${narrativeDescriptions[narrativeStructure as keyof typeof narrativeDescriptions]}
-- Include vivid descriptions and engaging dialogue
-- Have a clear beginning, middle, and end
-- Teach the moral lesson naturally through the story events
-- Be appropriate for children ages ${ageRange}
-- Include moments of excitement and wonder
-- End with a positive resolution that reinforces the lesson
-
-Write in a warm, friendly tone that captivates young readers.`;
 
     const settingDescription = setting ? `\nSetting: ${setting.replace(/-/g, ' ')} - Make this setting come alive with rich sensory details.` : '';
     const secondaryThemeText = secondaryTheme ? `\n\nSecondary Theme: Also weave in the lesson of "${secondaryTheme.name}" (${secondaryTheme.description}) as a supporting element in the story.` : '';
@@ -538,7 +565,7 @@ Moral Theme: ${theme.name} - ${theme.description}${secondaryThemeText}
 
 Technical Specs:
 - Age Range: ${ageRange}
-- Length: ${wordCounts[storyLength as keyof typeof wordCounts]}
+- Length: ${wordCountsPerNode[storyLength as keyof typeof wordCountsPerNode]}
 - Setting: ${setting ? setting.replace(/-/g, ' ') : 'appropriate to the story type'}
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -564,9 +591,11 @@ If ANY checkbox is unchecked, REWRITE THE STORY.
 - End with the rescued friend safely at Guardian Ranch and the heroes celebrating their teamwork`;
     }
 
-    userPrompt += `\n\nThe story should naturally incorporate the theme of "${theme.name}" (${theme.description}) through the hero's adventure and choices. Use the ${narrativeStructure} structure to create a compelling narrative arc. Make it exciting, magical, and memorable!`;
+    userPrompt += `\n\nThe story should naturally incorporate the theme of "${theme.name}" (${theme.description}) through the hero's adventure and choices. Use the ${narrativeStructure} structure to create a compelling branching narrative. Make it exciting, magical, and memorable!
 
-    console.log("Generating story with AI...");
+REMEMBER: Format your response with the exact NODE structure specified above. Start with TITLE: then list all nodes with NODE:, CONTENT:, CHOICES:, and END_NODE markers.`;
+
+    console.log("Generating interactive story with AI...");
 
     const aiResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
@@ -596,31 +625,93 @@ If ANY checkbox is unchecked, REWRITE THE STORY.
       throw new Error("No story content generated");
     }
 
-    // Extract title from the first line - AI should always provide one now
-    const titleMatch = storyContent.match(/^#\s*(.+)/m);
+    console.log("Parsing interactive story structure...");
+
+    // Extract title
+    const titleMatch = storyContent.match(/TITLE:\s*(.+)/);
     if (!titleMatch) {
       throw new Error("AI did not generate a story title. Please try again.");
     }
     const title = titleMatch[1].trim();
 
-    // Remove title from content if it exists and clean markdown formatting
-    const cleanContent = storyContent
-      .replace(/^#\s*.+\n\n/, "") // Remove title
-      .replace(/\*\*(.*?)\*\*/g, '$1'); // Remove markdown bold formatting
+    // Parse nodes from the structured format
+    interface ParsedNode {
+      node_key: string;
+      title: string | null;
+      content: string;
+      is_start_node: boolean;
+      is_ending_node: boolean;
+      choices: Array<{ choice_text: string; to_node_key: string; choice_order: number }>;
+    }
 
+    const parseNodes = (content: string): ParsedNode[] => {
+      const nodes: ParsedNode[] = [];
+      const nodeMatches = content.matchAll(/NODE:\s*(\w+)([\s\S]*?)END_NODE/g);
+      
+      for (const match of nodeMatches) {
+        const node_key = match[1].trim();
+        const nodeContent = match[2];
+        
+        // Extract title (optional)
+        const titleMatch = nodeContent.match(/TITLE:\s*(.+)/);
+        const nodeTitle = titleMatch ? titleMatch[1].trim() : null;
+        
+        // Extract content
+        const contentMatch = nodeContent.match(/CONTENT:\s*([\s\S]*?)(?:CHOICES:|$)/);
+        if (!contentMatch) continue;
+        const content = contentMatch[1].trim().replace(/\*\*(.*?)\*\*/g, '$1');
+        
+        // Extract choices
+        const choices: Array<{ choice_text: string; to_node_key: string; choice_order: number }> = [];
+        const choiceMatches = nodeContent.matchAll(/CHOICE:\s*(.+?)\s*->\s*(\w+)/g);
+        let choiceOrder = 0;
+        for (const choiceMatch of choiceMatches) {
+          choices.push({
+            choice_text: choiceMatch[1].trim(),
+            to_node_key: choiceMatch[2].trim(),
+            choice_order: choiceOrder++
+          });
+        }
+        
+        nodes.push({
+          node_key,
+          title: nodeTitle,
+          content,
+          is_start_node: node_key === 'start',
+          is_ending_node: choices.length === 0,
+          choices
+        });
+      }
+      
+      return nodes;
+    };
+
+    const parsedNodes = parseNodes(storyContent);
+    
+    if (parsedNodes.length === 0) {
+      throw new Error("Failed to parse story nodes. AI response format invalid.");
+    }
+
+    const startNode = parsedNodes.find(n => n.is_start_node);
+    if (!startNode) {
+      throw new Error("No start node found in story.");
+    }
+
+    console.log(`Parsed ${parsedNodes.length} nodes from story`);
     console.log("Saving story to database...");
 
-    // Save story to database
+    // Save story to database with narrative_type set to interactive
     const { data: story, error: storyError } = await supabase
       .from("stories")
       .insert({
         title,
-        content: cleanContent,
+        content: startNode.content, // Store start node content for backward compatibility
         excerpt: excerpt || null,
         hero_name: heroName,
         story_type: storyType,
         theme_id: themeId,
         narrative_structure: narrativeStructure,
+        narrative_type: 'interactive', // Set to interactive
         story_length: storyLength,
         age_range: ageRange,
         setting: setting || null,
@@ -636,6 +727,79 @@ If ANY checkbox is unchecked, REWRITE THE STORY.
     if (storyError) {
       console.error("Database error:", storyError);
       throw new Error("Failed to save story");
+    }
+
+    console.log("Story created successfully:", story.id);
+
+    // Insert story nodes
+    console.log("Creating story nodes...");
+    const nodeInserts = parsedNodes.map(node => ({
+      story_id: story.id,
+      node_key: node.node_key,
+      title: node.title,
+      content: node.content,
+      is_start_node: node.is_start_node,
+      is_ending_node: node.is_ending_node,
+    }));
+
+    const { data: insertedNodes, error: nodesError } = await supabase
+      .from("story_nodes")
+      .insert(nodeInserts)
+      .select();
+
+    if (nodesError || !insertedNodes) {
+      console.error("Failed to insert story nodes:", nodesError);
+      throw new Error("Failed to create story nodes");
+    }
+
+    console.log(`Created ${insertedNodes.length} story nodes`);
+
+    // Create mapping of node_key to node_id
+    const nodeKeyToId = new Map<string, string>();
+    insertedNodes.forEach(node => {
+      nodeKeyToId.set(node.node_key, node.id);
+    });
+
+    // Insert story choices
+    console.log("Creating story choices...");
+    const choiceInserts: Array<{
+      from_node_id: string;
+      to_node_id: string;
+      choice_text: string;
+      choice_order: number;
+    }> = [];
+
+    parsedNodes.forEach(node => {
+      const fromNodeId = nodeKeyToId.get(node.node_key);
+      if (!fromNodeId) return;
+
+      node.choices.forEach(choice => {
+        const toNodeId = nodeKeyToId.get(choice.to_node_key);
+        if (!toNodeId) {
+          console.warn(`Warning: Choice points to non-existent node: ${choice.to_node_key}`);
+          return;
+        }
+
+        choiceInserts.push({
+          from_node_id: fromNodeId,
+          to_node_id: toNodeId,
+          choice_text: choice.choice_text,
+          choice_order: choice.choice_order,
+        });
+      });
+    });
+
+    if (choiceInserts.length > 0) {
+      const { error: choicesError } = await supabase
+        .from("story_choices")
+        .insert(choiceInserts);
+
+      if (choicesError) {
+        console.error("Failed to insert story choices:", choicesError);
+        throw new Error("Failed to create story choices");
+      }
+
+      console.log(`Created ${choiceInserts.length} story choices`);
     }
 
     console.log("Story created successfully:", story.id);
@@ -703,14 +867,11 @@ If ANY checkbox is unchecked, REWRITE THE STORY.
 
     const styleDescription = artStylePrompts[artStyle] || artStylePrompts['pixar-3d'];
 
-    // Split content into paragraphs for intelligent image placement
-    const paragraphs = cleanContent.split('\n\n').filter((p: string) => p.trim());
-
-    // Generate ONLY 1 hero image automatically
+    // Generate ONLY 1 hero image automatically using start node content
     const imagesToGenerate = [
       {
         type: 'cover',
-        content: paragraphs[0] || cleanContent.substring(0, 200),
+        content: startNode.content,
         description: 'opening scene with hero introduction'
       }
     ];
@@ -781,7 +942,12 @@ If ANY checkbox is unchecked, REWRITE THE STORY.
     console.log("Initial image generation complete");
 
     return new Response(
-      JSON.stringify({ storyId: story.id, title, content: cleanContent }),
+      JSON.stringify({ 
+        storyId: story.id, 
+        title, 
+        nodeCount: parsedNodes.length,
+        choiceCount: choiceInserts.length 
+      }),
       {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       }
