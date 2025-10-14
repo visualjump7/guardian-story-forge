@@ -45,7 +45,6 @@ import { AppHeader } from "@/components/AppHeader";
 import { ImagePromptDialog } from "@/components/ImagePromptDialog";
 import { useAuth } from "@/hooks/useAuth";
 import { FixedFeedbackButton } from "@/components/FixedFeedbackButton";
-import { InteractiveStoryViewer } from "@/components/InteractiveStoryViewer";
 
 interface StoryImage {
   id: string;
@@ -66,7 +65,6 @@ interface Story {
   art_style: string | null;
   created_by: string | null;
   story_universe: string | null;
-  narrative_type: string | null;
   story_themes: {
     name: string;
     emoji: string;
@@ -771,15 +769,12 @@ const StoryView = () => {
               )}
             </div>
           </CardHeader>
-          
-          {/* Always use InteractiveStoryViewer for all stories */}
-          <div className="px-4 py-8">
-            <InteractiveStoryViewer
-              storyId={storyId!}
-              storyTitle={story.title}
-              heroImageUrl={storyImages[0]?.image_url}
-            />
-          </div>
+          <CardContent className="px-[15%] sm:px-[12%] md:px-[15%]">
+            {/* Story Content with Embedded Images */}
+            <div className="prose prose-lg max-w-none">
+              {renderStoryWithImages()}
+            </div>
+          </CardContent>
         </Card>
       </main>
 

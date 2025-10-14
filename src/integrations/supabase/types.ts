@@ -118,7 +118,6 @@ export type Database = {
           is_public: boolean | null
           media_url: string | null
           narrative_structure: string | null
-          narrative_type: string | null
           secondary_theme_id: string | null
           setting: string | null
           story_length: string | null
@@ -143,7 +142,6 @@ export type Database = {
           is_public?: boolean | null
           media_url?: string | null
           narrative_structure?: string | null
-          narrative_type?: string | null
           secondary_theme_id?: string | null
           setting?: string | null
           story_length?: string | null
@@ -168,7 +166,6 @@ export type Database = {
           is_public?: boolean | null
           media_url?: string | null
           narrative_structure?: string | null
-          narrative_type?: string | null
           secondary_theme_id?: string | null
           setting?: string | null
           story_length?: string | null
@@ -190,48 +187,6 @@ export type Database = {
             columns: ["theme_id"]
             isOneToOne: false
             referencedRelation: "story_themes"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      story_choices: {
-        Row: {
-          choice_order: number | null
-          choice_text: string
-          created_at: string | null
-          from_node_id: string
-          id: string
-          to_node_id: string
-        }
-        Insert: {
-          choice_order?: number | null
-          choice_text: string
-          created_at?: string | null
-          from_node_id: string
-          id?: string
-          to_node_id: string
-        }
-        Update: {
-          choice_order?: number | null
-          choice_text?: string
-          created_at?: string | null
-          from_node_id?: string
-          id?: string
-          to_node_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "story_choices_from_node_id_fkey"
-            columns: ["from_node_id"]
-            isOneToOne: false
-            referencedRelation: "story_nodes"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "story_choices_to_node_id_fkey"
-            columns: ["to_node_id"]
-            isOneToOne: false
-            referencedRelation: "story_nodes"
             referencedColumns: ["id"]
           },
         ]
@@ -264,50 +219,6 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "story_images_story_id_fkey"
-            columns: ["story_id"]
-            isOneToOne: false
-            referencedRelation: "stories"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      story_nodes: {
-        Row: {
-          content: string
-          created_at: string | null
-          id: string
-          image_url: string | null
-          is_ending_node: boolean | null
-          is_start_node: boolean | null
-          node_key: string
-          story_id: string
-          title: string | null
-        }
-        Insert: {
-          content: string
-          created_at?: string | null
-          id?: string
-          image_url?: string | null
-          is_ending_node?: boolean | null
-          is_start_node?: boolean | null
-          node_key: string
-          story_id: string
-          title?: string | null
-        }
-        Update: {
-          content?: string
-          created_at?: string | null
-          id?: string
-          image_url?: string | null
-          is_ending_node?: boolean | null
-          is_start_node?: boolean | null
-          node_key?: string
-          story_id?: string
-          title?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "story_nodes_story_id_fkey"
             columns: ["story_id"]
             isOneToOne: false
             referencedRelation: "stories"
@@ -388,54 +299,6 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
-      }
-      user_story_progress: {
-        Row: {
-          completed_at: string | null
-          created_at: string | null
-          current_node_id: string
-          id: string
-          path_history: Json | null
-          story_id: string
-          updated_at: string | null
-          user_id: string
-        }
-        Insert: {
-          completed_at?: string | null
-          created_at?: string | null
-          current_node_id: string
-          id?: string
-          path_history?: Json | null
-          story_id: string
-          updated_at?: string | null
-          user_id: string
-        }
-        Update: {
-          completed_at?: string | null
-          created_at?: string | null
-          current_node_id?: string
-          id?: string
-          path_history?: Json | null
-          story_id?: string
-          updated_at?: string | null
-          user_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "user_story_progress_current_node_id_fkey"
-            columns: ["current_node_id"]
-            isOneToOne: false
-            referencedRelation: "story_nodes"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "user_story_progress_story_id_fkey"
-            columns: ["story_id"]
-            isOneToOne: false
-            referencedRelation: "stories"
-            referencedColumns: ["id"]
-          },
-        ]
       }
     }
     Views: {
