@@ -209,9 +209,9 @@ serve(async (req) => {
 
     // Word count per node based on length
     const wordCountsPerNode = {
-      short: "40-60 words per node, 6 nodes total",
-      medium: "60-90 words per node, 7 nodes total", 
-      long: "90-130 words per node, 8 nodes total"
+      short: "Node 1: 70 words, Nodes 2-3: 50 words each, Nodes 4-5: 50 words each, Nodes 6-7: 40 words each, Nodes 8-11: 60 words each",
+      medium: "Node 1: 100 words, Nodes 2-3: 80 words each, Nodes 4-5: 80 words each, Nodes 6-7: 70 words each, Nodes 8-11: 90 words each", 
+      long: "Node 1: 130 words, Nodes 2-3: 110 words each, Nodes 4-5: 110 words each, Nodes 6-7: 90 words each, Nodes 8-11: 110 words each"
     };
 
     // Vocabulary and complexity based on age
@@ -322,59 +322,77 @@ Your stories are evaluated on:
 4. QUALITY: Is it well-written with good structure?
 
 📖 BRANCHING NARRATIVE FORMAT (CRITICAL):
-You MUST create an interactive story with the following structure:
-- 1 START node (beginning of the story)
-- 4-6 MIDDLE nodes (story progression with choices)
-- 2-3 ENDING nodes (different possible conclusions)
+You MUST create an interactive story with EXACTLY 11 nodes following this structure:
 
-Each node must be formatted EXACTLY as follows:
+**STORY FLOW:**
+- Nodes 1-3: LINEAR (no choices) - Setup and build tension
+- Node 3: FIRST DECISION POINT at ~33% (2 choices leading to different paths)
+- Nodes 4-5: Path continues (no choices)
+- Nodes 6-7: SECOND DECISION POINT at ~66% (2 choices each)
+- Nodes 8-11: ENDING NODES (4 different endings)
 
+**EXACT NODE KEYS YOU MUST USE:**
+1. start (is_start_node=true, no choices)
+2. build_up (no choices)
+3. first_decision (2 choices → path_a OR path_b)
+4. path_a (no choices)
+5. path_b (no choices)
+6. second_decision_a (2 choices → ending_a1 OR ending_a2)
+7. second_decision_b (2 choices → ending_b1 OR ending_b2)
+8. ending_a1 (is_ending_node=true)
+9. ending_a2 (is_ending_node=true)
+10. ending_b1 (is_ending_node=true)
+11. ending_b2 (is_ending_node=true)
+
+**WORD COUNTS (${wordCountsPerNode[storyLength as keyof typeof wordCountsPerNode]}):**
+Follow these exact word counts to maintain proper story pacing and total length.
+
+**NODE FORMAT:**
 NODE: node_key
-TITLE: Optional title for this scene
+TITLE: Optional scene title
 CONTENT:
-The story content for this node goes here. ${wordCountsPerNode[storyLength as keyof typeof wordCountsPerNode]}. Make it engaging and descriptive.
+Story content here with proper word count.
 CHOICES:
-- CHOICE: Choice text here -> target_node_key
-- CHOICE: Another choice text -> another_target_node_key
+- CHOICE: Choice text -> target_node_key
+- CHOICE: Another choice -> another_target_node_key
 END_NODE
 
-CRITICAL RULES:
-- Use simple, memorable node_key names: start, forest_path, cave_entrance, victory_ending, etc.
-- START node must have is_start_node=true
-- ENDING nodes must have is_ending_node=true and NO choices
-- All other nodes must have 2-3 CHOICES
-- Each CHOICE must link to a valid node_key
-- Ensure all nodes are reachable from START
-- Create meaningful choices that reflect character decisions
-
-EXAMPLE STRUCTURE:
+**EXAMPLE:**
 NODE: start
 CONTENT:
-${heroName} stood at the edge of an ancient forest. Two paths lay ahead - one shimmering with golden light, the other mysterious and shadowed.
-CHOICES:
-- CHOICE: Take the golden path -> golden_path
-- CHOICE: Follow the shadowed trail -> shadow_trail
+${heroName} woke up to find something magical had happened overnight. The entire world seemed different, brighter, full of possibility. Little did ${heroName} know, this was just the beginning of an incredible adventure.
 END_NODE
 
-NODE: golden_path
+NODE: build_up
 CONTENT:
-The golden path led to a sparkling meadow...
-CHOICES:
-- CHOICE: Investigate the meadow -> meadow_discovery
-- CHOICE: Continue to the mountain -> mountain_climb
+As ${heroName} explored, strange things kept happening. Objects moved on their own, whispers echoed from nowhere, and a mysterious map appeared showing two paths ahead. The air crackled with anticipation.
 END_NODE
 
-NODE: shadow_trail
+NODE: first_decision
 CONTENT:
-The shadowed trail wound through dense trees...
+${heroName} stood before two glowing doorways. The left door pulsed with golden light and warmth. The right door shimmered with silver moonbeams and mystery. Both seemed to call out. Which path should ${heroName} choose?
 CHOICES:
-- CHOICE: Enter the cave -> cave_entrance
-- CHOICE: Climb a tree to see ahead -> tree_view
+- CHOICE: Step through the golden doorway -> path_a
+- CHOICE: Enter the silver moonlit door -> path_b
 END_NODE
 
-NODE: victory_ending
+NODE: path_a
 CONTENT:
-${heroName} succeeded in their quest and returned home triumphant!
+The golden path led ${heroName} to a sun-drenched valley filled with singing flowers and dancing butterflies. But ahead, two more challenges appeared...
+END_NODE
+
+NODE: second_decision_a
+CONTENT:
+In the heart of the valley, ${heroName} found a crystal fountain. Two riddles were carved in stone. Solving one would determine the journey's end. What should ${heroName} do?
+CHOICES:
+- CHOICE: Solve the riddle of courage -> ending_a1
+- CHOICE: Solve the riddle of wisdom -> ending_a2
+END_NODE
+
+NODE: ending_a1
+CONTENT:
+${heroName} chose courage and became a legendary hero, protecting others with bravery and heart. The end.
+is_ending_node=true
 END_NODE
 
 WRITING STYLE REQUIREMENT:
@@ -593,7 +611,16 @@ If ANY checkbox is unchecked, REWRITE THE STORY.
 
     userPrompt += `\n\nThe story should naturally incorporate the theme of "${theme.name}" (${theme.description}) through the hero's adventure and choices. Use the ${narrativeStructure} structure to create a compelling branching narrative. Make it exciting, magical, and memorable!
 
-REMEMBER: Format your response with the exact NODE structure specified above. Start with TITLE: then list all nodes with NODE:, CONTENT:, CHOICES:, and END_NODE markers.`;
+CRITICAL STRUCTURAL REQUIREMENTS:
+- Create EXACTLY 11 nodes with these exact keys: start, build_up, first_decision, path_a, path_b, second_decision_a, second_decision_b, ending_a1, ending_a2, ending_b1, ending_b2
+- First 3 nodes (start, build_up, first_decision) flow linearly with NO choices except at first_decision
+- first_decision has 2 choices leading to path_a or path_b
+- path_a and path_b are linear (no choices)
+- second_decision_a and second_decision_b each have 2 choices
+- All 4 ending nodes must be different and satisfying conclusions
+- Follow the exact word counts specified earlier
+
+REMEMBER: Format your response with TITLE: first, then all 11 nodes using NODE:, CONTENT:, CHOICES:, and END_NODE markers.`;
 
     console.log("Generating interactive story with AI...");
 
@@ -657,9 +684,12 @@ REMEMBER: Format your response with the exact NODE structure specified above. St
         const nodeTitle = titleMatch ? titleMatch[1].trim() : null;
         
         // Extract content
-        const contentMatch = nodeContent.match(/CONTENT:\s*([\s\S]*?)(?:CHOICES:|$)/);
+        const contentMatch = nodeContent.match(/CONTENT:\s*([\s\S]*?)(?:CHOICES:|is_ending_node|$)/);
         if (!contentMatch) continue;
         const content = contentMatch[1].trim().replace(/\*\*(.*?)\*\*/g, '$1');
+        
+        // Check if explicitly marked as ending node
+        const isEndingNode = /is_ending_node\s*=\s*true/.test(nodeContent);
         
         // Extract choices
         const choices: Array<{ choice_text: string; to_node_key: string; choice_order: number }> = [];
@@ -678,7 +708,7 @@ REMEMBER: Format your response with the exact NODE structure specified above. St
           title: nodeTitle,
           content,
           is_start_node: node_key === 'start',
-          is_ending_node: choices.length === 0,
+          is_ending_node: isEndingNode || (node_key.includes('ending') && choices.length === 0),
           choices
         });
       }
@@ -692,9 +722,25 @@ REMEMBER: Format your response with the exact NODE structure specified above. St
       throw new Error("Failed to parse story nodes. AI response format invalid.");
     }
 
+    // Validate we have exactly 11 nodes
+    const expectedNodeKeys = ['start', 'build_up', 'first_decision', 'path_a', 'path_b', 
+                              'second_decision_a', 'second_decision_b', 
+                              'ending_a1', 'ending_a2', 'ending_b1', 'ending_b2'];
+    
+    if (parsedNodes.length !== 11) {
+      console.warn(`Expected 11 nodes but got ${parsedNodes.length}. Continuing anyway.`);
+    }
+
     const startNode = parsedNodes.find(n => n.is_start_node);
     if (!startNode) {
       throw new Error("No start node found in story.");
+    }
+
+    // Validate expected node keys exist
+    const parsedKeys = parsedNodes.map(n => n.node_key);
+    const missingKeys = expectedNodeKeys.filter(k => !parsedKeys.includes(k));
+    if (missingKeys.length > 0) {
+      console.warn(`Warning: Missing expected node keys: ${missingKeys.join(', ')}`);
     }
 
     console.log(`Parsed ${parsedNodes.length} nodes from story`);

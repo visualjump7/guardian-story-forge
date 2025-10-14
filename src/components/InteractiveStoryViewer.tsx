@@ -52,6 +52,30 @@ export const InteractiveStoryViewer = ({
     }
   }, [nodes, progress, nodesLoading]);
 
+  // Auto-continue for linear nodes (no choices, not an ending)
+  useEffect(() => {
+    if (!currentNode || currentNode.is_ending_node || choices.length > 0 || isTransitioning) return;
+
+    const findNextSequentialNode = (currentKey: string) => {
+      const sequence: Record<string, string> = {
+        'start': 'build_up',
+        'build_up': 'first_decision',
+        'path_a': 'second_decision_a',
+        'path_b': 'second_decision_b'
+      };
+      const nextKey = sequence[currentKey];
+      return nodes.find(n => n.node_key === nextKey);
+    };
+
+    const nextNode = findNextSequentialNode(currentNode.node_key);
+    if (nextNode) {
+      const timer = setTimeout(() => {
+        handleChoiceClick(nextNode.id);
+      }, 2500);
+      return () => clearTimeout(timer);
+    }
+  }, [currentNode, choices, isTransitioning, nodes]);
+
   const handleChoiceClick = async (toNodeId: string) => {
     const nextNode = nodes.find(n => n.id === toNodeId);
     if (!nextNode) return;
