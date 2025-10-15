@@ -68,7 +68,7 @@ export const CreateStep3 = () => {
         continueDisabled={!isContinueEnabled()}
       />
 
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-8">
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-8 scale-[0.65]">
         {STORY_TYPES.map((type) => (
           <ChoiceCard
             key={type.id}

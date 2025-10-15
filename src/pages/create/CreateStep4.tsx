@@ -68,7 +68,7 @@ export const CreateStep4 = () => {
         continueDisabled={!isContinueEnabled()}
       />
 
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-8">
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-8 scale-[0.65]">
         {MISSION_OPTIONS.map((mission) => (
           <ChoiceCard
             key={mission.id}
