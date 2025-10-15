@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useStoryConfig, Mission } from '@/contexts/StoryConfigContext';
-import { HeroImage } from '@/components/create/HeroImage';
 import { StoryMagicTray } from '@/components/create/StoryMagicTray';
 import { ChoiceCard } from '@/components/create/ChoiceCard';
 import { CreateNavBar } from '@/components/create/CreateNavBar';
@@ -129,13 +128,24 @@ export const CreateStep4 = () => {
 
   return (
     <div className="w-full max-w-4xl mx-auto">
-      <HeroImage />
-
       <CreateNavBar
         onBack={handleBack}
         onContinue={handleContinue}
         continueDisabled={!isContinueEnabled()}
       />
+
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-8">
+        {MISSION_OPTIONS.map((mission) => (
+          <ChoiceCard
+            key={mission.id}
+            id={mission.id}
+            label={mission.label}
+            imageSrc={mission.image}
+            selected={selectedMission === mission.id}
+            onSelect={() => handleSelect(mission.id, mission.image)}
+          />
+        ))}
+      </div>
 
       <StoryMagicTray
         slot1={{
@@ -168,7 +178,7 @@ export const CreateStep4 = () => {
         <p className="text-muted-foreground mb-4">
           <span className="bg-primary/10 text-primary px-2 py-1 rounded font-medium">TYPE HERE</span>
           {' '}or{' '}
-          <span className="bg-primary/10 text-primary px-2 py-1 rounded font-medium">CHOOSE BELOW</span>
+          <span className="bg-primary/10 text-primary px-2 py-1 rounded font-medium">CHOOSE ABOVE</span>
         </p>
 
         {/* Custom Mission Description Input */}
@@ -240,19 +250,6 @@ export const CreateStep4 = () => {
             </div>
           )}
         </div>
-      </div>
-
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-8">
-        {MISSION_OPTIONS.map((mission) => (
-          <ChoiceCard
-            key={mission.id}
-            id={mission.id}
-            label={mission.label}
-            imageSrc={mission.image}
-            selected={selectedMission === mission.id}
-            onSelect={() => handleSelect(mission.id, mission.image)}
-          />
-        ))}
       </div>
     </div>
   );

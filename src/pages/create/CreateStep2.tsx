@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useStoryConfig, CharacterType } from '@/contexts/StoryConfigContext';
-import { HeroImage } from '@/components/create/HeroImage';
 import { StoryMagicTray } from '@/components/create/StoryMagicTray';
 import { ChoiceCard } from '@/components/create/ChoiceCard';
 import { CreateNavBar } from '@/components/create/CreateNavBar';
@@ -140,13 +139,24 @@ export const CreateStep2 = () => {
 
   return (
     <div className="w-full">
-      <HeroImage />
-
       <CreateNavBar
         onBack={handleBack}
         onContinue={handleContinue}
         continueDisabled={!isContinueEnabled()}
       />
+
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6 mb-8">
+        {CHARACTER_TYPES.map((type) => (
+          <ChoiceCard
+            key={type.id}
+            id={type.id}
+            label={type.label}
+            imageSrc={type.image}
+            selected={selectedType === type.id}
+            onSelect={() => handleSelect(type.id, type.image)}
+          />
+        ))}
+      </div>
 
       <StoryMagicTray
         slot1={{
@@ -167,7 +177,7 @@ export const CreateStep2 = () => {
         <p className="text-muted-foreground mb-4">
           <span className="bg-primary/10 text-primary px-2 py-1 rounded font-medium">TYPE HERE</span>
           {' '}or{' '}
-          <span className="bg-primary/10 text-primary px-2 py-1 rounded font-medium">CHOOSE BELOW</span>
+          <span className="bg-primary/10 text-primary px-2 py-1 rounded font-medium">CHOOSE ABOVE</span>
         </p>
 
         {/* Custom Character Description Input */}
@@ -212,7 +222,7 @@ export const CreateStep2 = () => {
                   ) : customInput.trim() ? (
                     <span className="text-muted-foreground">Press Enter or click ↵ to confirm</span>
                   ) : (
-                    <span className="text-muted-foreground">Or select a character type below</span>
+                    <span className="text-muted-foreground">Or select a character type above</span>
                   )}
                 </div>
                 <span className={`text-sm ${customInput.length >= 70 ? 'text-amber-500' : 'text-muted-foreground'}`}>
@@ -241,19 +251,6 @@ export const CreateStep2 = () => {
             </div>
           )}
         </div>
-      </div>
-
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
-        {CHARACTER_TYPES.map((type) => (
-          <ChoiceCard
-            key={type.id}
-            id={type.id}
-            label={type.label}
-            imageSrc={type.image}
-            selected={selectedType === type.id}
-            onSelect={() => handleSelect(type.id, type.image)}
-          />
-        ))}
       </div>
     </div>
   );

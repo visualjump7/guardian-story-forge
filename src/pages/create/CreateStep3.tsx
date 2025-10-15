@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useStoryConfig, StoryType } from '@/contexts/StoryConfigContext';
-import { HeroImage } from '@/components/create/HeroImage';
 import { StoryMagicTray } from '@/components/create/StoryMagicTray';
 import { ChoiceCard } from '@/components/create/ChoiceCard';
 import { CreateNavBar } from '@/components/create/CreateNavBar';
@@ -129,13 +128,24 @@ export const CreateStep3 = () => {
 
   return (
     <div className="w-full max-w-4xl mx-auto">
-      <HeroImage />
-
       <CreateNavBar
         onBack={handleBack}
         onContinue={handleContinue}
         continueDisabled={!isContinueEnabled()}
       />
+
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-8">
+        {STORY_TYPES.map((type) => (
+          <ChoiceCard
+            key={type.id}
+            id={type.id}
+            label={type.label}
+            imageSrc={type.image}
+            selected={selectedType === type.id}
+            onSelect={() => handleSelect(type.id, type.image)}
+          />
+        ))}
+      </div>
 
       <StoryMagicTray
         slot1={{
@@ -162,7 +172,7 @@ export const CreateStep3 = () => {
         <p className="text-muted-foreground mb-4">
           <span className="bg-primary/10 text-primary px-2 py-1 rounded font-medium">TYPE HERE</span>
           {' '}or{' '}
-          <span className="bg-primary/10 text-primary px-2 py-1 rounded font-medium">CHOOSE BELOW</span>
+          <span className="bg-primary/10 text-primary px-2 py-1 rounded font-medium">CHOOSE ABOVE</span>
         </p>
 
         {/* Custom Story Type Description Input */}
@@ -234,19 +244,6 @@ export const CreateStep3 = () => {
             </div>
           )}
         </div>
-      </div>
-
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-8">
-        {STORY_TYPES.map((type) => (
-          <ChoiceCard
-            key={type.id}
-            id={type.id}
-            label={type.label}
-            imageSrc={type.image}
-            selected={selectedType === type.id}
-            onSelect={() => handleSelect(type.id, type.image)}
-          />
-        ))}
       </div>
     </div>
   );
