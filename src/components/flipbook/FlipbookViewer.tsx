@@ -71,7 +71,7 @@ export const FlipbookViewer = ({ pages, onPageTurn, onRegenerateImage, canEdit }
           <ChevronLeft className="w-5 h-5 text-[#3d2817]" />
         </Button>
         
-        <div className="font-crimson text-sm text-[#3d2817] px-4 py-2 bg-warmth-50/90 rounded-full backdrop-blur-sm border border-warmth-300">
+        <div className="font-crimson text-sm text-primary px-4 py-2 bg-black/60 rounded-full backdrop-blur-sm border border-primary">
           Page {currentPage + 1} of {pages.length}
         </div>
         

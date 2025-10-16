@@ -52,7 +52,7 @@ export const FlipbookPage = forwardRef<HTMLDivElement, FlipbookPageProps>(
               </p>
             </div>
             <div className="mt-4 text-center flex-shrink-0">
-              <span className="font-crimson text-sm text-clay-300">{pageNumber}</span>
+              <span className="font-crimson text-sm text-primary">{pageNumber}</span>
             </div>
           </div>
         )}
@@ -82,7 +82,7 @@ export const FlipbookPage = forwardRef<HTMLDivElement, FlipbookPageProps>(
 
         {page.type === 'end' && (
           <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-accent/10 to-primary/10">
-            <h2 className="font-crimson font-bold text-5xl md:text-6xl text-[#2c1810]">
+            <h2 className="font-crimson font-bold text-5xl md:text-6xl text-primary">
               {page.text}
             </h2>
           </div>
