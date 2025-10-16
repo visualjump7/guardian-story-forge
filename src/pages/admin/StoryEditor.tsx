@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { AdminLayout } from '@/components/AdminLayout';
+import { AppHeader } from '@/components/AppHeader';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -36,10 +36,10 @@ const ImageSlot = ({
 
   return (
     <div className="space-y-2">
-      <Label>{label}</Label>
+      <Label className="text-sm sm:text-base">{label}</Label>
       <div className="border-2 border-dashed border-gray-700 rounded-lg overflow-hidden">
-        {/* Image Display or Placeholder */}
-        <div className="relative w-full h-48">
+        {/* Image Display - Increase height on mobile for better visibility */}
+        <div className="relative w-full h-56 sm:h-48">
           {displayImage ? (
             <img
               src={displayImage}
@@ -48,25 +48,26 @@ const ImageSlot = ({
             />
           ) : (
             <div className="w-full h-full bg-black flex items-center justify-center">
-              <span className="text-gray-600 text-lg font-medium">Story Image</span>
+              <span className="text-gray-600 text-base sm:text-lg font-medium">Story Image</span>
             </div>
           )}
           
-          {/* Remove button if new file selected */}
+          {/* Remove button - Larger touch target on mobile */}
           {imageInfo.file && (
             <Button
               variant="destructive"
               size="icon"
-              className="absolute top-2 right-2"
+              className="absolute top-2 right-2 h-9 w-9 sm:h-8 sm:w-8"
               onClick={onRemoveImage}
+              type="button"
             >
-              <X className="h-4 w-4" />
+              <X className="h-5 w-5 sm:h-4 sm:w-4" />
             </Button>
           )}
         </div>
 
-        {/* Action Buttons */}
-        <div className="p-3 bg-gray-900 flex gap-2">
+        {/* Action Buttons - Better mobile spacing */}
+        <div className="p-3 bg-gray-900 flex flex-col sm:flex-row gap-2">
           <label className="flex-1">
             <Input
               type="file"
@@ -78,7 +79,7 @@ const ImageSlot = ({
             <Button
               variant="outline"
               size="sm"
-              className="w-full"
+              className="w-full h-10 sm:h-9"
               onClick={() => document.getElementById(`file-${imageType}`)?.click()}
               disabled={uploading}
               type="button"
@@ -90,12 +91,12 @@ const ImageSlot = ({
           <Button
             variant="outline"
             size="sm"
-            className="flex-1 gap-1"
+            className="flex-1 gap-1 h-10 sm:h-9"
             onClick={onGenerateClick}
             disabled={uploading}
             type="button"
           >
-            <Sparkles className="h-3 w-3" />
+            <Sparkles className="h-4 w-4 sm:h-3 sm:w-3" />
             {hasImage ? 'Regenerate' : 'Generate'} AI
           </Button>
         </div>
@@ -420,7 +421,7 @@ export default function StoryEditor() {
           .eq('id', storyId);
       }
       
-      navigate('/admin/stories');
+      navigate('/library');
     } catch (error) {
       console.error('Save error:', error);
       toast.error('Failed to save story');
@@ -431,29 +432,53 @@ export default function StoryEditor() {
 
   if (loading) {
     return (
-      <AdminLayout>
+      <div className="min-h-screen bg-background">
+        <AppHeader 
+          showBackButton={true}
+          backPath="/library"
+          title="Edit Story"
+        />
         <div className="flex items-center justify-center h-96">
           <Loader2 className="h-8 w-8 animate-spin text-primary" />
         </div>
-      </AdminLayout>
+      </div>
     );
   }
 
   return (
-    <AdminLayout>
-      <div className="space-y-6">
-        <div className="flex items-center justify-between">
+    <div className="min-h-screen bg-background">
+      <AppHeader 
+        showBackButton={true}
+        backPath="/library"
+        title={id ? 'Edit Story' : 'Create Story'}
+      />
+      
+      <div className="container mx-auto px-4 py-6 max-w-5xl">
+        {/* Header - Stack on mobile */}
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
           <div>
-            <h1 className="text-3xl font-poppins font-bold">{id ? 'Edit Story' : 'Create New Story'}</h1>
-            <p className="text-muted-foreground">
-              {id ? 'Update story content and media' : 'Create a new featured story for the Guardian collection'}
+            <h1 className="text-2xl sm:text-3xl font-poppins font-bold">
+              {id ? 'Edit Story' : 'Create New Story'}
+            </h1>
+            <p className="text-sm text-muted-foreground mt-1">
+              {id ? 'Update your story content and images' : 'Create a new story for your collection'}
             </p>
           </div>
-          <div className="flex gap-2">
-            <Button variant="outline" onClick={() => navigate('/admin/stories')}>
+          
+          {/* Action Buttons - Full width on mobile */}
+          <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+            <Button 
+              variant="outline" 
+              onClick={() => navigate('/library')}
+              className="w-full sm:w-auto"
+            >
               Cancel
             </Button>
-            <Button onClick={handleSave} disabled={saving || uploading}>
+            <Button 
+              onClick={handleSave} 
+              disabled={saving || uploading}
+              className="w-full sm:w-auto"
+            >
               {saving ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -466,11 +491,11 @@ export default function StoryEditor() {
           </div>
         </div>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Story Details</CardTitle>
+        <Card className="border-border/50">
+          <CardHeader className="px-4 sm:px-6">
+            <CardTitle className="text-lg sm:text-xl">Story Details</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-6">
+          <CardContent className="space-y-6 px-4 sm:px-6 pb-6">
             {/* Title */}
             <div className="space-y-2">
               <Label htmlFor="title">Title</Label>
@@ -540,7 +565,7 @@ export default function StoryEditor() {
                 value={formData.content}
                 onChange={(e) => setFormData({ ...formData, content: e.target.value })}
                 placeholder="Write the full story here..."
-                className="min-h-[300px] font-serif"
+                className="min-h-[300px] sm:min-h-[400px] font-serif text-sm"
               />
             </div>
 
@@ -635,7 +660,7 @@ export default function StoryEditor() {
           </CardContent>
         </Card>
       </div>
-
+      
       {/* Image Generation Dialog */}
       {generatingImage.type && (
         <ImagePromptDialog
@@ -651,6 +676,6 @@ export default function StoryEditor() {
           isGenerating={isGenerating}
         />
       )}
-    </AdminLayout>
+    </div>
   );
 }
