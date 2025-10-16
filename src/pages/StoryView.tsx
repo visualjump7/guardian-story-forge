@@ -18,13 +18,13 @@ import {
   BookmarkPlus, 
   BookmarkCheck, 
   Share2, 
-  Volume2, 
   Loader2, 
   Palette,
   Library,
   Sparkles,
   Download,
-  BookOpen
+  BookOpen,
+  Pencil
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -41,7 +41,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { ShareDialog } from "@/components/ShareDialog";
-import { AudioPlayer } from "@/components/AudioPlayer";
 import { AppHeader } from "@/components/AppHeader";
 import { ImagePromptDialog } from "@/components/ImagePromptDialog";
 import { useAuth } from "@/hooks/useAuth";
@@ -90,7 +89,6 @@ const StoryView = () => {
   const [userId, setUserId] = useState<string | null>(null);
   const [profile, setProfile] = useState<any>(null);
   const [generatingImage, setGeneratingImage] = useState(false);
-  const [isGeneratingAudio, setIsGeneratingAudio] = useState(false);
   const [isShareDialogOpen, setIsShareDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [imageToDelete, setImageToDelete] = useState<string | null>(null);
@@ -328,26 +326,6 @@ const StoryView = () => {
   };
 
 
-  const handleGenerateAudio = async () => {
-    if (!storyId) return;
-
-    setIsGeneratingAudio(true);
-    try {
-      const { data, error } = await supabase.functions.invoke("generate-story-audio", {
-        body: { storyId },
-      });
-
-      if (error) throw error;
-
-      // Reload story to get new audio
-      await loadStory();
-      toast.success("Audio narration generated!");
-    } catch (error: any) {
-      toast.error(error.message || "Failed to generate audio");
-    } finally {
-      setIsGeneratingAudio(false);
-    }
-  };
 
   const handleOpenRegenerateDialog = (imageId: string, index: number) => {
     setImageToRegenerate({ id: imageId, index });
@@ -534,6 +512,17 @@ const StoryView = () => {
         isAdmin={isAdmin}
         rightContent={
           <>
+            {story.created_by === userId && (
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={() => navigate(`/admin/story-editor/${storyId}`)} 
+                className="text-white border-white/30 hover:bg-white/10 gap-2"
+              >
+                <Pencil className="w-4 h-4" />
+                Edit Story
+              </Button>
+            )}
             <Button variant="outline" size="sm" onClick={() => navigate(`/story/${storyId}/flipbook`)} className="text-white border-white/30 hover:bg-white/10 gap-2">
               <BookOpen className="w-4 h-4" />
               Flipbook View
@@ -704,39 +693,6 @@ const StoryView = () => {
                 </Button>
               </div>
             )}
-
-            {/* Minimal Audio Controls */}
-            <div className="w-full mt-6">
-              {!story.audio_url ? (
-                <div className="flex justify-center">
-                  <Button
-                    onClick={handleGenerateAudio}
-                    disabled={isGeneratingAudio}
-                    size="default"
-                    variant="outline"
-                    className="gap-2"
-                  >
-                    {isGeneratingAudio ? (
-                      <>
-                        <Loader2 className="h-4 w-4 animate-spin" />
-                        Generating Narration...
-                      </>
-                    ) : (
-                      <>
-                        <Volume2 className="h-4 w-4" />
-                        Generate Narration
-                      </>
-                    )}
-                  </Button>
-                </div>
-              ) : (
-                <div className="flex justify-center">
-                  <div className="w-full max-w-md">
-                    <AudioPlayer audioUrl={story.audio_url} title={story.title} />
-                  </div>
-                </div>
-              )}
-            </div>
 
             <CardTitle className="text-4xl font-bold text-center mt-8">
               {story.title}
