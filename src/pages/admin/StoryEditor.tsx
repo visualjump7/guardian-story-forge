@@ -8,8 +8,101 @@ import { Textarea } from '@/components/ui/textarea';
 import { supabase } from '@/integrations/supabase/client';
 import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'sonner';
-import { Loader2, X } from 'lucide-react';
+import { Loader2, X, Sparkles } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
+import { ImagePromptDialog } from '@/components/ImagePromptDialog';
+
+interface ImageSlotProps {
+  label: string;
+  imageType: 'cover' | 'mid-scene' | 'ending';
+  imageInfo: { preview: string | null; file: File | null; existingUrl: string | null };
+  onImageSelect: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onRemoveImage: () => void;
+  onGenerateClick: () => void;
+  uploading: boolean;
+}
+
+const ImageSlot = ({ 
+  label, 
+  imageType, 
+  imageInfo, 
+  onImageSelect, 
+  onRemoveImage, 
+  onGenerateClick,
+  uploading 
+}: ImageSlotProps) => {
+  const hasImage = imageInfo.preview || imageInfo.existingUrl;
+  const displayImage = imageInfo.preview || imageInfo.existingUrl;
+
+  return (
+    <div className="space-y-2">
+      <Label>{label}</Label>
+      <div className="border-2 border-dashed border-gray-700 rounded-lg overflow-hidden">
+        {/* Image Display or Placeholder */}
+        <div className="relative w-full h-48">
+          {displayImage ? (
+            <img
+              src={displayImage}
+              alt={`${label} preview`}
+              className="w-full h-full object-cover"
+            />
+          ) : (
+            <div className="w-full h-full bg-black flex items-center justify-center">
+              <span className="text-gray-600 text-lg font-medium">Story Image</span>
+            </div>
+          )}
+          
+          {/* Remove button if new file selected */}
+          {imageInfo.file && (
+            <Button
+              variant="destructive"
+              size="icon"
+              className="absolute top-2 right-2"
+              onClick={onRemoveImage}
+            >
+              <X className="h-4 w-4" />
+            </Button>
+          )}
+        </div>
+
+        {/* Action Buttons */}
+        <div className="p-3 bg-gray-900 flex gap-2">
+          <label className="flex-1">
+            <Input
+              type="file"
+              accept="image/*"
+              onChange={onImageSelect}
+              className="hidden"
+              id={`file-${imageType}`}
+            />
+            <Button
+              variant="outline"
+              size="sm"
+              className="w-full"
+              onClick={() => document.getElementById(`file-${imageType}`)?.click()}
+              disabled={uploading}
+              type="button"
+            >
+              Upload
+            </Button>
+          </label>
+          
+          <Button
+            variant="outline"
+            size="sm"
+            className="flex-1 gap-1"
+            onClick={onGenerateClick}
+            disabled={uploading}
+            type="button"
+          >
+            <Sparkles className="h-3 w-3" />
+            {hasImage ? 'Regenerate' : 'Generate'} AI
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 export default function StoryEditor() {
   const { id } = useParams<{ id: string }>();
@@ -18,8 +111,23 @@ export default function StoryEditor() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
-  const [imagePreview, setImagePreview] = useState<string | null>(null);
-  const [imageFile, setImageFile] = useState<File | null>(null);
+  
+  const [imageData, setImageData] = useState<{
+    cover: { preview: string | null; file: File | null; existingUrl: string | null };
+    'mid-scene': { preview: string | null; file: File | null; existingUrl: string | null };
+    ending: { preview: string | null; file: File | null; existingUrl: string | null };
+  }>({
+    cover: { preview: null, file: null, existingUrl: null },
+    'mid-scene': { preview: null, file: null, existingUrl: null },
+    ending: { preview: null, file: null, existingUrl: null }
+  });
+
+  const [generatingImage, setGeneratingImage] = useState<{
+    type: 'cover' | 'mid-scene' | 'ending' | null;
+    isOpen: boolean;
+  }>({ type: null, isOpen: false });
+
+  const [isGenerating, setIsGenerating] = useState(false);
   
   const [formData, setFormData] = useState({
     title: '',
@@ -32,6 +140,7 @@ export default function StoryEditor() {
     cover_image_url: '',
     media_url: '',
     content_type: 'text',
+    art_style: 'pixar-3d',
   });
 
   useEffect(() => {
@@ -69,16 +178,36 @@ export default function StoryEditor() {
       cover_image_url: data.cover_image_url || '',
       media_url: data.media_url || '',
       content_type: data.content_type || 'text',
+      art_style: data.art_style || 'pixar-3d',
     });
 
-    if (data.cover_image_url) {
-      setImagePreview(data.cover_image_url);
+    // Load existing story images
+    const { data: imagesData } = await supabase
+      .from('story_images')
+      .select('*')
+      .eq('story_id', id)
+      .order('created_at', { ascending: true });
+
+    if (imagesData) {
+      const newImageData = { ...imageData };
+      
+      imagesData.forEach(img => {
+        if (img.image_type === 'cover' || img.image_type === 'mid-scene' || img.image_type === 'ending') {
+          newImageData[img.image_type] = {
+            preview: img.image_url,
+            file: null,
+            existingUrl: img.image_url
+          };
+        }
+      });
+      
+      setImageData(newImageData);
     }
 
     setLoading(false);
   };
 
-  const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageSelect = (imageType: 'cover' | 'mid-scene' | 'ending', e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
@@ -94,27 +223,33 @@ export default function StoryEditor() {
       return;
     }
 
-    setImageFile(file);
-    
     // Create preview
     const reader = new FileReader();
     reader.onloadend = () => {
-      setImagePreview(reader.result as string);
+      setImageData(prev => ({
+        ...prev,
+        [imageType]: {
+          ...prev[imageType],
+          file: file,
+          preview: reader.result as string
+        }
+      }));
     };
     reader.readAsDataURL(file);
   };
 
-  const handleImageUpload = async (storyId: string) => {
-    if (!imageFile) return null;
+  const handleImageUpload = async (storyId: string, imageType: 'cover' | 'mid-scene' | 'ending') => {
+    const imageInfo = imageData[imageType];
+    if (!imageInfo.file) return imageInfo.existingUrl;
 
     setUploading(true);
     try {
-      const fileExt = imageFile.name.split('.').pop();
-      const fileName = `${storyId}-cover.${fileExt}`;
+      const fileExt = imageInfo.file.name.split('.').pop();
+      const fileName = `${storyId}-${imageType}.${fileExt}`;
       
       const { error: uploadError } = await supabase.storage
         .from('featured-story-covers')
-        .upload(fileName, imageFile, {
+        .upload(fileName, imageInfo.file, {
           cacheControl: '3600',
           upsert: true
         });
@@ -125,26 +260,82 @@ export default function StoryEditor() {
         .from('featured-story-covers')
         .getPublicUrl(fileName);
 
+      // Save to story_images table
+      await supabase
+        .from('story_images')
+        .upsert({
+          story_id: storyId,
+          image_type: imageType,
+          image_url: publicUrl,
+          is_selected: true
+        }, {
+          onConflict: 'story_id,image_type'
+        });
+
       setUploading(false);
       return publicUrl;
     } catch (error) {
       console.error('Upload error:', error);
-      toast.error('Failed to upload image');
+      toast.error(`Failed to upload ${imageType} image`);
       setUploading(false);
-      return null;
+      return imageInfo.existingUrl;
     }
   };
 
-  const handleRemoveImage = () => {
-    setImageFile(null);
-    setImagePreview(formData.cover_image_url || null);
+  const handleRemoveImage = (imageType: 'cover' | 'mid-scene' | 'ending') => {
+    setImageData(prev => ({
+      ...prev,
+      [imageType]: {
+        ...prev[imageType],
+        file: null,
+        preview: prev[imageType].existingUrl
+      }
+    }));
+  };
+
+  const handleGenerateImage = async (imageType: 'cover' | 'mid-scene' | 'ending', customizations: string) => {
+    if (!id) {
+      toast.error('Please save the story first before generating images');
+      return;
+    }
+
+    setIsGenerating(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('generate-story-image', {
+        body: {
+          storyId: id,
+          imageType: imageType,
+          customizations: customizations
+        }
+      });
+
+      if (error) throw error;
+
+      if (data?.imageUrl) {
+        setImageData(prev => ({
+          ...prev,
+          [imageType]: {
+            preview: data.imageUrl,
+            file: null,
+            existingUrl: data.imageUrl
+          }
+        }));
+        
+        toast.success(`${imageType} image generated successfully`);
+      }
+    } catch (error) {
+      console.error('Generate error:', error);
+      toast.error(`Failed to generate ${imageType} image`);
+    } finally {
+      setIsGenerating(false);
+      setGeneratingImage({ type: null, isOpen: false });
+    }
   };
 
   const handleSave = async () => {
     setSaving(true);
     try {
       let storyId = id;
-      let coverImageUrl = formData.cover_image_url;
 
       // Create mode: insert new story
       if (!id) {
@@ -160,6 +351,7 @@ export default function StoryEditor() {
             story_type: formData.story_type,
             media_url: formData.media_url,
             content_type: formData.content_type,
+            art_style: formData.art_style,
             is_featured: true,
             created_by: null,
           })
@@ -168,19 +360,6 @@ export default function StoryEditor() {
 
         if (insertError) throw insertError;
         storyId = newStory.id;
-
-        // Upload image if selected
-        if (imageFile) {
-          const uploadedUrl = await handleImageUpload(storyId);
-          if (uploadedUrl) {
-            coverImageUrl = uploadedUrl;
-            // Update the story with the cover image
-            await supabase
-              .from('stories')
-              .update({ cover_image_url: coverImageUrl })
-              .eq('id', storyId);
-          }
-        }
 
         // Log admin activity
         await supabase.from('admin_activity_log').insert({
@@ -194,14 +373,6 @@ export default function StoryEditor() {
         toast.success('Story created successfully');
       } else {
         // Edit mode: update existing story
-        // Upload new image if selected
-        if (imageFile) {
-          const uploadedUrl = await handleImageUpload(storyId);
-          if (uploadedUrl) {
-            coverImageUrl = uploadedUrl;
-          }
-        }
-
         const { error } = await supabase
           .from('stories')
           .update({
@@ -212,9 +383,9 @@ export default function StoryEditor() {
             story_universe: formData.story_universe,
             age_range: formData.age_range,
             story_type: formData.story_type,
-            cover_image_url: coverImageUrl,
             media_url: formData.media_url,
             content_type: formData.content_type,
+            art_style: formData.art_style,
           })
           .eq('id', storyId);
 
@@ -230,6 +401,23 @@ export default function StoryEditor() {
         });
 
         toast.success('Story updated successfully');
+      }
+
+      // Upload all images if selected
+      const uploadPromises = (['cover', 'mid-scene', 'ending'] as const).map(async (type) => {
+        const uploadedUrl = await handleImageUpload(storyId!, type);
+        return { type, url: uploadedUrl };
+      });
+
+      const uploadResults = await Promise.all(uploadPromises);
+
+      // Update cover_image_url specifically for the cover
+      const coverResult = uploadResults.find(r => r.type === 'cover');
+      if (coverResult?.url) {
+        await supabase
+          .from('stories')
+          .update({ cover_image_url: coverResult.url })
+          .eq('id', storyId);
       }
       
       navigate('/admin/stories');
@@ -305,39 +493,43 @@ export default function StoryEditor() {
               />
             </div>
 
-            {/* Cover Image Upload */}
+            {/* Image Slots Section */}
             <div className="space-y-2">
-              <Label>Cover Image</Label>
-              <div className="flex flex-col gap-4">
-                {imagePreview && (
-                  <div className="relative w-full max-w-md">
-                    <img
-                      src={imagePreview}
-                      alt="Cover preview"
-                      className="w-full h-48 object-cover rounded-lg border"
-                    />
-                    {imageFile && (
-                      <Button
-                        variant="destructive"
-                        size="icon"
-                        className="absolute top-2 right-2"
-                        onClick={handleRemoveImage}
-                      >
-                        <X className="h-4 w-4" />
-                      </Button>
-                    )}
-                  </div>
-                )}
-                <div className="flex items-center gap-2">
-                  <Input
-                    type="file"
-                    accept="image/*"
-                    onChange={handleImageSelect}
-                    className="max-w-xs"
-                  />
-                  <span className="text-sm text-muted-foreground">Max 5MB</span>
-                </div>
+              <Label className="text-lg font-semibold">Story Images</Label>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <ImageSlot
+                  label="Cover Image"
+                  imageType="cover"
+                  imageInfo={imageData.cover}
+                  onImageSelect={(e) => handleImageSelect('cover', e)}
+                  onRemoveImage={() => handleRemoveImage('cover')}
+                  onGenerateClick={() => setGeneratingImage({ type: 'cover', isOpen: true })}
+                  uploading={uploading}
+                />
+                
+                <ImageSlot
+                  label="Middle Scene"
+                  imageType="mid-scene"
+                  imageInfo={imageData['mid-scene']}
+                  onImageSelect={(e) => handleImageSelect('mid-scene', e)}
+                  onRemoveImage={() => handleRemoveImage('mid-scene')}
+                  onGenerateClick={() => setGeneratingImage({ type: 'mid-scene', isOpen: true })}
+                  uploading={uploading}
+                />
+                
+                <ImageSlot
+                  label="Ending Scene"
+                  imageType="ending"
+                  imageInfo={imageData.ending}
+                  onImageSelect={(e) => handleImageSelect('ending', e)}
+                  onRemoveImage={() => handleRemoveImage('ending')}
+                  onGenerateClick={() => setGeneratingImage({ type: 'ending', isOpen: true })}
+                  uploading={uploading}
+                />
               </div>
+              <p className="text-sm text-muted-foreground">
+                Max 5MB per image. AI generation requires story to be saved first.
+              </p>
             </div>
 
             {/* Story Content */}
@@ -443,6 +635,22 @@ export default function StoryEditor() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Image Generation Dialog */}
+      {generatingImage.type && (
+        <ImagePromptDialog
+          open={generatingImage.isOpen}
+          onOpenChange={(open) => setGeneratingImage({ ...generatingImage, isOpen: open })}
+          onGenerate={(customizations) => handleGenerateImage(generatingImage.type!, customizations)}
+          storyTitle={formData.title}
+          heroName={formData.hero_name}
+          artStyle={formData.art_style}
+          imageType={generatingImage.type}
+          storyExcerpt={formData.excerpt}
+          imageCount={0}
+          isGenerating={isGenerating}
+        />
+      )}
     </AdminLayout>
   );
 }
