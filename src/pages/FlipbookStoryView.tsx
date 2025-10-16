@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Loader2, BookOpen, Download, Share2, ArrowLeft } from "lucide-react";
+import { Loader2, BookOpen, Download, Share2, ArrowLeft, Pencil } from "lucide-react";
 import { CinematicBackground } from "@/components/cinematic/CinematicBackground";
 import { LanternIcon } from "@/components/cinematic/LanternIcon";
 import { ActionButton } from "@/components/cinematic/ActionButton";
@@ -12,6 +12,11 @@ import { generateFlipbookPages, FlipbookPage } from "@/utils/pageGeneration";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { ShareDialog } from "@/components/ShareDialog";
 import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 
 interface StoryImage {
   id: string;
@@ -43,6 +48,21 @@ const FlipbookStoryView = () => {
   const [isShareDialogOpen, setIsShareDialogOpen] = useState(false);
   const [isDownloadingPdf, setIsDownloadingPdf] = useState(false);
   const [creatorName, setCreatorName] = useState("Unknown Author");
+  const [canEdit, setCanEdit] = useState(false);
+  
+  // Edit story state
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [editFormData, setEditFormData] = useState({
+    title: '',
+    content: '',
+    hero_name: ''
+  });
+  const [isSaving, setIsSaving] = useState(false);
+  
+  // Regenerate image state
+  const [isRegenerateDialogOpen, setIsRegenerateDialogOpen] = useState(false);
+  const [pageToRegenerate, setPageToRegenerate] = useState<number | null>(null);
+  const [isRegenerating, setIsRegenerating] = useState(false);
 
   useEffect(() => {
     loadStory();
@@ -69,6 +89,7 @@ const FlipbookStoryView = () => {
     }
 
     setStory(storyData);
+    setCanEdit(session.user.id === storyData.created_by);
 
     // Load creator profile
     if (storyData.created_by) {
@@ -96,6 +117,75 @@ const FlipbookStoryView = () => {
     const flipbookPages = generateFlipbookPages(storyData, storyImages, creatorName);
     setPages(flipbookPages);
     setLoading(false);
+  };
+
+  const handleSaveStoryEdit = async () => {
+    if (!story) return;
+    
+    setIsSaving(true);
+    try {
+      const { error } = await supabase
+        .from('stories')
+        .update({
+          title: editFormData.title,
+          content: editFormData.content,
+          hero_name: editFormData.hero_name
+        })
+        .eq('id', story.id);
+
+      if (error) throw error;
+
+      toast.success('Story updated!');
+      setIsEditDialogOpen(false);
+      loadStory();
+    } catch (error: any) {
+      console.error('Error saving story:', error);
+      toast.error(error.message || 'Failed to save changes');
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleRegenerateImage = async () => {
+    if (pageToRegenerate === null || !story) return;
+    
+    const page = pages[pageToRegenerate];
+    if (!page.imageUrl) return;
+
+    setIsRegenerating(true);
+    toast.loading('Regenerating illustration...', { id: 'regen' });
+
+    try {
+      const { data: imageData } = await supabase
+        .from('story_images')
+        .select('id')
+        .eq('story_id', story.id)
+        .eq('image_url', page.imageUrl)
+        .single();
+
+      if (!imageData) throw new Error('Image not found');
+
+      await supabase
+        .from('story_images')
+        .delete()
+        .eq('id', imageData.id);
+
+      const { error } = await supabase.functions.invoke('generate-story-image', {
+        body: { storyId: story.id }
+      });
+
+      if (error) throw error;
+
+      toast.success('Illustration regenerated!', { id: 'regen' });
+      loadStory();
+    } catch (error: any) {
+      console.error('Error regenerating image:', error);
+      toast.error(error.message || 'Failed to regenerate', { id: 'regen' });
+    } finally {
+      setIsRegenerating(false);
+      setIsRegenerateDialogOpen(false);
+      setPageToRegenerate(null);
+    }
   };
 
   const handleDownloadPdf = async () => {
@@ -207,6 +297,23 @@ const FlipbookStoryView = () => {
                 Read Story
               </ActionButton>
               
+              {canEdit && (
+                <ActionButton
+                  icon={Pencil}
+                  onClick={() => {
+                    setEditFormData({
+                      title: story.title,
+                      content: story.content,
+                      hero_name: story.hero_name || ''
+                    });
+                    setIsEditDialogOpen(true);
+                  }}
+                  variant="secondary"
+                >
+                  Edit Story
+                </ActionButton>
+              )}
+              
               <ActionButton
                 icon={Download}
                 onClick={handleDownloadPdf}
@@ -238,13 +345,44 @@ const FlipbookStoryView = () => {
             </div>
 
             {isMobile ? (
-              <FlatPageSlider pages={pages} />
+              <FlatPageSlider 
+                pages={pages}
+                onRegenerateImage={(pageIndex) => {
+                  setPageToRegenerate(pageIndex);
+                  setIsRegenerateDialogOpen(true);
+                }}
+                canEdit={canEdit}
+              />
             ) : (
-              <FlipbookViewer pages={pages} />
+              <FlipbookViewer 
+                pages={pages}
+                onRegenerateImage={(pageIndex) => {
+                  setPageToRegenerate(pageIndex);
+                  setIsRegenerateDialogOpen(true);
+                }}
+                canEdit={canEdit}
+              />
             )}
 
             {/* Action Buttons Below Book */}
             <div className="flex flex-wrap justify-center gap-4 pt-8">
+              {canEdit && (
+                <ActionButton
+                  icon={Pencil}
+                  onClick={() => {
+                    setEditFormData({
+                      title: story.title,
+                      content: story.content,
+                      hero_name: story.hero_name || ''
+                    });
+                    setIsEditDialogOpen(true);
+                  }}
+                  variant="secondary"
+                >
+                  Edit Story
+                </ActionButton>
+              )}
+              
               <ActionButton
                 icon={Download}
                 onClick={handleDownloadPdf}
@@ -273,6 +411,95 @@ const FlipbookStoryView = () => {
         storyTitle={story.title}
         coverImageUrl={story.cover_image_url || undefined}
       />
+
+      {/* Edit Story Dialog */}
+      <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="font-crimson text-2xl">Edit Story</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="title">Title</Label>
+              <Input
+                id="title"
+                value={editFormData.title}
+                onChange={(e) => setEditFormData({ ...editFormData, title: e.target.value })}
+                placeholder="Story title"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="hero_name">Hero Name</Label>
+              <Input
+                id="hero_name"
+                value={editFormData.hero_name}
+                onChange={(e) => setEditFormData({ ...editFormData, hero_name: e.target.value })}
+                placeholder="Hero's name (optional)"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="content">Story Content</Label>
+              <Textarea
+                id="content"
+                value={editFormData.content}
+                onChange={(e) => setEditFormData({ ...editFormData, content: e.target.value })}
+                placeholder="Story content"
+                className="min-h-[300px] font-crimson"
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setIsEditDialogOpen(false)}
+              disabled={isSaving}
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handleSaveStoryEdit}
+              disabled={isSaving}
+            >
+              {isSaving ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  Saving...
+                </>
+              ) : (
+                'Save Changes'
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Regenerate Image Dialog */}
+      <AlertDialog open={isRegenerateDialogOpen} onOpenChange={setIsRegenerateDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="font-crimson">Regenerate Illustration?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Generate a new illustration for this scene? The current image will be replaced.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={isRegenerating}>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleRegenerateImage}
+              disabled={isRegenerating}
+            >
+              {isRegenerating ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  Regenerating...
+                </>
+              ) : (
+                'Regenerate'
+              )}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };

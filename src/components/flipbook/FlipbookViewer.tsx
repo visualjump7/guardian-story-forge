@@ -8,9 +8,11 @@ import { cn } from "@/lib/utils";
 interface FlipbookViewerProps {
   pages: PageData[];
   onPageTurn?: (page: number) => void;
+  onRegenerateImage?: (pageIndex: number) => void;
+  canEdit?: boolean;
 }
 
-export const FlipbookViewer = ({ pages, onPageTurn }: FlipbookViewerProps) => {
+export const FlipbookViewer = ({ pages, onPageTurn, onRegenerateImage, canEdit }: FlipbookViewerProps) => {
   const [currentPage, setCurrentPage] = useState(0);
   const [isFlipping, setIsFlipping] = useState(false);
 
@@ -42,28 +44,17 @@ export const FlipbookViewer = ({ pages, onPageTurn }: FlipbookViewerProps) => {
           {/* Book shadow */}
           <div className="absolute inset-0 bg-black/20 blur-xl translate-y-8 rounded-lg" />
           
-          {/* Book spread container */}
-          <div className="relative w-full h-full flex shadow-2xl rounded-lg overflow-hidden">
-            {/* Left page */}
-            <div className={cn(
-              "w-1/2 h-full transition-all duration-600 ease-in-out origin-right",
-              isFlipping && "animate-[pageFlipLeft_0.6s_ease-in-out]"
-            )}>
-              {currentPage > 0 && (
-                <FlipbookPage page={pages[currentPage - 1]} pageNumber={currentPage} />
-              )}
-            </div>
-            
-            {/* Center spine shadow */}
-            <div className="w-1 bg-gradient-to-r from-black/30 via-black/10 to-transparent" />
-            
-            {/* Right page */}
-            <div className={cn(
-              "w-1/2 h-full transition-all duration-600 ease-in-out origin-left",
-              isFlipping && "animate-[pageFlipRight_0.6s_ease-in-out]"
-            )}>
-              <FlipbookPage page={pages[currentPage]} pageNumber={currentPage + 1} />
-            </div>
+          {/* Single page container */}
+          <div className={cn(
+            "relative w-full h-full shadow-2xl rounded-lg overflow-hidden transition-all duration-600 ease-in-out",
+            isFlipping && "animate-[pageFlip_0.6s_ease-in-out]"
+          )}>
+            <FlipbookPage 
+              page={pages[currentPage]} 
+              pageNumber={currentPage + 1}
+              onRegenerateImage={() => onRegenerateImage?.(currentPage)}
+              canEdit={canEdit}
+            />
           </div>
         </div>
       </div>

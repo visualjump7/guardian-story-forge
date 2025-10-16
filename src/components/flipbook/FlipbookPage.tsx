@@ -1,14 +1,18 @@
 import { forwardRef } from "react";
 import { FlipbookPage as PageData } from "@/utils/pageGeneration";
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { RefreshCw } from "lucide-react";
 
 interface FlipbookPageProps {
   page: PageData;
   pageNumber: number;
+  onRegenerateImage?: () => void;
+  canEdit?: boolean;
 }
 
 export const FlipbookPage = forwardRef<HTMLDivElement, FlipbookPageProps>(
-  ({ page, pageNumber }, ref) => {
+  ({ page, pageNumber, onRegenerateImage, canEdit }, ref) => {
     return (
       <div
         ref={ref}
@@ -18,13 +22,24 @@ export const FlipbookPage = forwardRef<HTMLDivElement, FlipbookPageProps>(
         )}
       >
         {page.type === 'cover' && (
-          <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-warmth-200 to-warmth-100">
+          <div className="relative w-full h-full flex items-center justify-center bg-gradient-to-br from-warmth-200 to-warmth-100">
             {page.imageUrl && (
               <img
                 src={page.imageUrl}
                 alt="Cover"
                 className="w-full h-full object-cover"
               />
+            )}
+            {canEdit && onRegenerateImage && page.imageUrl && (
+              <Button
+                onClick={onRegenerateImage}
+                size="icon"
+                variant="secondary"
+                className="absolute top-4 right-4 opacity-70 hover:opacity-100 transition-opacity"
+                aria-label="Regenerate cover image"
+              >
+                <RefreshCw className="w-4 h-4" />
+              </Button>
             )}
           </div>
         )}
@@ -43,13 +58,24 @@ export const FlipbookPage = forwardRef<HTMLDivElement, FlipbookPageProps>(
         )}
 
         {page.type === 'illustration' && (
-          <div className="w-full h-full p-6 md:p-8 flex items-center justify-center bg-gradient-to-br from-warmth-200 to-warmth-100">
+          <div className="relative w-full h-full p-6 md:p-8 flex items-center justify-center bg-gradient-to-br from-warmth-200 to-warmth-100">
             {page.imageUrl && (
               <img
                 src={page.imageUrl}
                 alt="Illustration"
                 className="max-w-full max-h-full object-contain rounded-lg shadow-xl"
               />
+            )}
+            {canEdit && onRegenerateImage && page.imageUrl && (
+              <Button
+                onClick={onRegenerateImage}
+                size="icon"
+                variant="secondary"
+                className="absolute top-4 right-4 opacity-70 hover:opacity-100 transition-opacity"
+                aria-label="Regenerate illustration"
+              >
+                <RefreshCw className="w-4 h-4" />
+              </Button>
             )}
           </div>
         )}

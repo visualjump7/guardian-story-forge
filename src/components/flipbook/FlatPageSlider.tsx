@@ -8,9 +8,11 @@ import { cn } from "@/lib/utils";
 interface FlatPageSliderProps {
   pages: PageData[];
   onPageChange?: (page: number) => void;
+  onRegenerateImage?: (pageIndex: number) => void;
+  canEdit?: boolean;
 }
 
-export const FlatPageSlider = ({ pages, onPageChange }: FlatPageSliderProps) => {
+export const FlatPageSlider = ({ pages, onPageChange, onRegenerateImage, canEdit }: FlatPageSliderProps) => {
   const [currentPage, setCurrentPage] = useState(0);
 
   const goToNextPage = () => {
@@ -39,7 +41,12 @@ export const FlatPageSlider = ({ pages, onPageChange }: FlatPageSliderProps) => 
         >
           {pages.map((page, index) => (
             <div key={index} className="min-w-full h-full">
-              <FlipbookPage page={page} pageNumber={index + 1} />
+              <FlipbookPage 
+                page={page} 
+                pageNumber={index + 1}
+                onRegenerateImage={() => onRegenerateImage?.(index)}
+                canEdit={canEdit}
+              />
             </div>
           ))}
         </div>
