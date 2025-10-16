@@ -196,7 +196,10 @@ NEGATIVE ELEMENTS TO AVOID:
 - No noisy or grainy surfaces
 - No horror, gritty, or uncanny realism
 - No overexposed whites or clipped highlights
-- No washed-out or cold blue tones`,
+- No washed-out or cold blue tones
+- No text, letters, words, titles, labels, captions, signs, logos, or written language of any kind
+- No speech bubbles, thought bubbles, or dialogue
+- No numbers, symbols, or characters that resemble text`,
       'ghibli-2d': 'soft watercolor 2D illustration in Studio Ghibli style with gentle brushstrokes and dreamy atmosphere',
       'watercolor': 'gentle watercolor children\'s book illustration with soft edges and delicate color blending',
       'classic-disney': 'traditional hand-drawn 2D animation in classic Disney style with expressive characters and detailed backgrounds',
@@ -224,23 +227,26 @@ NEGATIVE ELEMENTS TO AVOID:
     console.log("Generating core prompt for type:", imageType);
     let corePrompt = '';
     
+    // Strong no-text directive to appear at start of every prompt
+    const noTextDirective = "⚠️ ABSOLUTE REQUIREMENT: This illustration must contain ZERO text, letters, words, numbers, labels, titles, captions, signs, logos, speech bubbles, thought bubbles, dialogue, or any form of written language whatsoever. Create ONLY pure visual illustration without any textual elements. ⚠️\n\n";
+    
     if (imageType === 'cover') {
-      corePrompt = `Create a child-friendly cover illustration in ${styleDescription}. Feature ${story.hero_name} as the main character in a ${story.story_type} setting. Scene: ${contentForImage.substring(0, 200)}. Art style: colorful, family-friendly, high-quality with expressive characters and magical atmosphere.${environmentGuidance} CRITICAL: NO TEXT, WORDS, LABELS, TITLES, OR CAPTIONS should appear anywhere in the image. Create a pure visual illustration only.`;
+      corePrompt = `${noTextDirective}Create a child-friendly cover illustration in ${styleDescription}. Feature ${story.hero_name} as the main character in a ${story.story_type} setting. Scene: ${contentForImage.substring(0, 200)}. Art style: colorful, family-friendly, high-quality with expressive characters and magical atmosphere.${environmentGuidance}\n\nFINAL REMINDER: NO TEXT OR WORDS should appear anywhere in this image.`;
     } else if (imageType === 'early-scene') {
-      corePrompt = `Create an early adventure scene illustration in ${styleDescription} for the children's story. Feature ${story.hero_name} in this moment: ${contentForImage}. Show the beginning of the journey with excitement and anticipation. Child-friendly, colorful, high-quality illustration suitable for ages 8-10.${environmentGuidance} CRITICAL: NO TEXT, WORDS, LABELS, TITLES, OR CAPTIONS should appear anywhere in the image. Create a pure visual illustration only.`;
+      corePrompt = `${noTextDirective}Create an early adventure scene illustration in ${styleDescription} for the children's story. Feature ${story.hero_name} in this moment: ${contentForImage}. Show the beginning of the journey with excitement and anticipation. Child-friendly, colorful, high-quality illustration suitable for ages 8-10.${environmentGuidance}\n\nFINAL REMINDER: NO TEXT OR WORDS should appear anywhere in this image.`;
     } else if (imageType === 'mid-scene') {
-      corePrompt = `Create a mid-story scene illustration in ${styleDescription} for the children's story. Feature ${story.hero_name} in this key moment: ${contentForImage}. Show the action and emotion of this pivotal scene. Child-friendly, colorful, high-quality illustration suitable for ages 8-10.${environmentGuidance} CRITICAL: NO TEXT, WORDS, LABELS, TITLES, OR CAPTIONS should appear anywhere in the image. Create a pure visual illustration only.`;
+      corePrompt = `${noTextDirective}Create a mid-story scene illustration in ${styleDescription} for the children's story. Feature ${story.hero_name} in this key moment: ${contentForImage}. Show the action and emotion of this pivotal scene. Child-friendly, colorful, high-quality illustration suitable for ages 8-10.${environmentGuidance}\n\nFINAL REMINDER: NO TEXT OR WORDS should appear anywhere in this image.`;
     } else if (imageType === 'climax') {
-      corePrompt = `Create a climactic scene illustration in ${styleDescription} for the children's story. Feature ${story.hero_name} at the story's peak moment: ${contentForImage}. Show the tension, excitement, or emotional high point with dramatic visuals. Child-friendly, colorful, high-quality illustration suitable for ages 8-10.${environmentGuidance} CRITICAL: NO TEXT, WORDS, LABELS, TITLES, OR CAPTIONS should appear anywhere in the image. Create a pure visual illustration only.`;
+      corePrompt = `${noTextDirective}Create a climactic scene illustration in ${styleDescription} for the children's story. Feature ${story.hero_name} at the story's peak moment: ${contentForImage}. Show the tension, excitement, or emotional high point with dramatic visuals. Child-friendly, colorful, high-quality illustration suitable for ages 8-10.${environmentGuidance}\n\nFINAL REMINDER: NO TEXT OR WORDS should appear anywhere in this image.`;
     } else {
-      corePrompt = `Create a resolution ending illustration in ${styleDescription} for the children's story. Feature ${story.hero_name} in the conclusion: ${contentForImage}. Capture the emotional resolution and sense of completion with warmth and satisfaction. Child-friendly, colorful, high-quality illustration suitable for ages 8-10.${environmentGuidance} CRITICAL: NO TEXT, WORDS, LABELS, TITLES, OR CAPTIONS should appear anywhere in the image. Create a pure visual illustration only.`;
+      corePrompt = `${noTextDirective}Create a resolution ending illustration in ${styleDescription} for the children's story. Feature ${story.hero_name} in the conclusion: ${contentForImage}. Capture the emotional resolution and sense of completion with warmth and satisfaction. Child-friendly, colorful, high-quality illustration suitable for ages 8-10.${environmentGuidance}\n\nFINAL REMINDER: NO TEXT OR WORDS should appear anywhere in this image.`;
     }
 
     // Append customizations if provided
     let imagePrompt = corePrompt;
     if (customizations && customizations.trim()) {
       console.log("Appending user customizations to core prompt");
-      imagePrompt = `${corePrompt} ${customizations.trim()}`;
+      imagePrompt = `${corePrompt}\n\nAdditional details (NO TEXT IN IMAGE): ${customizations.trim()}\n\nFINAL REMINDER: This image must contain zero text, letters, or words of any kind.`;
     }
 
     console.log("Generating image with AI...");
