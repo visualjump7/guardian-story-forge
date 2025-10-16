@@ -516,7 +516,7 @@ const StoryView = () => {
               <Button 
                 variant="outline" 
                 size="sm" 
-                onClick={() => navigate(`/admin/story-editor/${storyId}`)} 
+                onClick={() => navigate(`/admin/stories/${storyId}/edit`)} 
                 className="text-white border-white/30 hover:bg-white/10 gap-2"
               >
                 <Pencil className="w-4 h-4" />
