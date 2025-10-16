@@ -68,7 +68,13 @@ export const CreateStep3 = () => {
         continueDisabled={!isContinueEnabled()}
       />
 
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-8 scale-[0.65]">
+      <div className="text-center mb-3 md:mb-4">
+        <h2 className="text-2xl md:text-3xl font-bold text-story-heading" style={{ fontFamily: 'Poppins, sans-serif' }}>
+          What Kind of Story?
+        </h2>
+      </div>
+
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-2 md:gap-3 mb-4">
         {STORY_TYPES.map((type) => (
           <ChoiceCard
             key={type.id}
@@ -98,12 +104,6 @@ export const CreateStep3 = () => {
         }}
         slot3={{ filled: false, active: false, onClick: handleSlot3Click }}
       />
-
-      <div className="text-center mb-8">
-        <h2 className="text-3xl md:text-4xl font-bold text-story-heading" style={{ fontFamily: 'Poppins, sans-serif' }}>
-          What Kind of Story?
-        </h2>
-      </div>
     </div>
   );
 };

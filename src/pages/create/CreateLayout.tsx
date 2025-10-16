@@ -42,7 +42,7 @@ export const CreateLayout = () => {
           showBackButton={false}
           rightContent={<CreateNav profile={profile} isAdmin={isAdmin} />}
         />
-        <main className="container max-w-4xl mx-auto px-4 py-8">
+        <main className="container max-w-4xl mx-auto px-4 py-4 md:py-6">
           <Outlet />
         </main>
         <FixedFeedbackButton />

@@ -29,7 +29,7 @@ export const StoryMagicTray = ({ slot1, slot2, slot3 }: StoryMagicTrayProps) => 
         <div
           onClick={isClickable ? slot.onClick : undefined}
           className={`
-            w-20 h-20 rounded-xl flex items-center justify-center
+            w-16 h-16 md:w-20 md:h-20 rounded-xl flex items-center justify-center
             transition-all duration-300
             ${isClickable ? 'cursor-pointer hover:opacity-75' : ''}
             ${
@@ -60,12 +60,12 @@ export const StoryMagicTray = ({ slot1, slot2, slot3 }: StoryMagicTrayProps) => 
   };
 
   return (
-    <div className="mb-8">
-      <h3 className="text-lg font-semibold text-primary mb-4 text-center">
+    <div className="mb-4 md:mb-6">
+      <h3 className="text-base md:text-lg font-semibold text-primary mb-2 md:mb-3 text-center">
         Your Story Magic
       </h3>
       <div className="flex justify-center items-start">
-        <div className="flex gap-4">
+        <div className="flex gap-3 md:gap-4">
           {renderSlot(slot1, 1)}
           {renderSlot(slot2, 2)}
           {renderSlot(slot3, 3)}

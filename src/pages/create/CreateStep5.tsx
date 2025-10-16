@@ -164,12 +164,12 @@ export const CreateStep5 = () => {
     <div className="w-full max-w-4xl mx-auto min-h-screen flex flex-col">
       <HeroImage />
 
-      <div className="flex flex-col items-center text-center px-4 mt-8">
-        <h1 className="text-4xl md:text-5xl font-bold text-story-heading mb-8">
+      <div className="flex flex-col items-center text-center px-4 mt-4 md:mt-6">
+        <h1 className="text-3xl md:text-4xl font-bold text-story-heading mb-4 md:mb-6">
           Ready to build your story?
         </h1>
 
-        <div className="flex gap-6 items-center justify-center">
+        <div className="flex gap-4 md:gap-6 items-center justify-center">
           <Button
             variant="outline"
             size="lg"
@@ -198,7 +198,7 @@ export const CreateStep5 = () => {
         </div>
       </div>
 
-      <div className="mt-[30px]">
+      <div className="mt-6">
         <StoryMagicTray
           slot1={{
             filled: true,
