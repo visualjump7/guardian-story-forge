@@ -18,21 +18,13 @@ export const FlipbookPage = forwardRef<HTMLDivElement, FlipbookPageProps>(
         )}
       >
         {page.type === 'cover' && (
-          <div className="w-full h-full flex flex-col items-center justify-center p-12 bg-gradient-to-br from-primary/10 to-accent/10">
+          <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-warmth-200 to-warmth-100">
             {page.imageUrl && (
               <img
                 src={page.imageUrl}
                 alt="Cover"
-                className="w-full h-2/3 object-cover rounded-xl mb-8 shadow-lg"
+                className="w-full h-full object-cover"
               />
-            )}
-            <h1 className="font-crimson font-bold text-4xl md:text-5xl text-center text-[#2c1810] mb-4 leading-tight">
-              {page.title}
-            </h1>
-            {page.subtitle && (
-              <p className="font-crimson text-xl text-[#5d3a22] text-center">
-                {page.subtitle}
-              </p>
             )}
           </div>
         )}
