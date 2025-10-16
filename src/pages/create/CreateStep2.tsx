@@ -25,6 +25,7 @@ export const CreateStep2 = () => {
   const navigate = useNavigate();
   const { storyConfig, setCharacterType, clearCharacterType } = useStoryConfig();
   const [selectedType, setSelectedType] = useState<string>(storyConfig.characterType || '');
+  const [animateSlot, setAnimateSlot] = useState(false);
 
   useEffect(() => {
     if (storyConfig.characterType) {
@@ -35,6 +36,9 @@ export const CreateStep2 = () => {
   const handleSelect = (typeId: string, image: string) => {
     setSelectedType(typeId);
     setCharacterType(typeId as CharacterType, image);
+    
+    setAnimateSlot(true);
+    setTimeout(() => setAnimateSlot(false), 800);
   };
 
   const handleSlotClick = () => {
@@ -70,6 +74,19 @@ export const CreateStep2 = () => {
         continueDisabled={!isContinueEnabled()}
       />
 
+      <StoryMagicTray
+        slot1={{
+          filled: !!selectedType,
+          imageSrc: storyConfig.assets.characterTypeIcon || undefined,
+          label: selectedType,
+          active: true,
+          justFilled: animateSlot,
+          onClick: handleSlotClick,
+        }}
+        slot2={{ filled: false, active: false, onClick: handleSlot2Click }}
+        slot3={{ filled: false, active: false, onClick: handleSlot3Click }}
+      />
+
       <div className="text-center mb-3 md:mb-4">
         <h2 className="text-2xl md:text-3xl font-bold text-story-heading font-chewy">
           Who is Your Character?
@@ -88,18 +105,6 @@ export const CreateStep2 = () => {
           />
         ))}
       </div>
-
-      <StoryMagicTray
-        slot1={{
-          filled: !!selectedType,
-          imageSrc: storyConfig.assets.characterTypeIcon || undefined,
-          label: selectedType,
-          active: true,
-          onClick: handleSlotClick,
-        }}
-        slot2={{ filled: false, active: false, onClick: handleSlot2Click }}
-        slot3={{ filled: false, active: false, onClick: handleSlot3Click }}
-      />
     </div>
   );
 };

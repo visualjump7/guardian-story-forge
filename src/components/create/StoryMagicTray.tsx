@@ -6,6 +6,7 @@ interface TraySlot {
   label?: string;
   active?: boolean;
   onClick?: () => void;
+  justFilled?: boolean;
 }
 
 interface StoryMagicTrayProps {
@@ -26,35 +27,42 @@ export const StoryMagicTray = ({ slot1, slot2, slot3 }: StoryMagicTrayProps) => 
           ${slot.active ? 'scale-105' : ''}
         `}
       >
-        <div
-          onClick={isClickable ? slot.onClick : undefined}
-          className={`
-            w-16 h-16 md:w-20 md:h-20 rounded-xl flex items-center justify-center
-            transition-all duration-300
-            ${isClickable ? 'cursor-pointer hover:opacity-75' : ''}
-            ${
-              slot.filled
-                ? 'bg-card border-2 border-story-magic-active animate-scale-in shadow-lg shadow-primary/50'
-                : 'bg-card/50 border-2 border-dashed border-story-magic-empty'
-            }
-            ${slot.active && slot.filled ? 'ring-2 ring-story-magic-active ring-offset-2 ring-offset-background' : ''}
-          `}
-        >
-          {slot.filled && slot.imageSrc ? (
-            <img
-              src={slot.imageSrc}
-              alt={slot.label || 'Story element'}
-              className="w-full h-full object-cover rounded-lg animate-fade-in"
-            />
-          ) : (
-            <Sparkles className="w-8 h-8 text-muted-foreground/30" />
-          )}
-        </div>
-        {slot.label && (
-          <span className="text-xs font-medium text-center text-foreground/80">
-            {slot.label}
-          </span>
+      <div
+        onClick={isClickable ? slot.onClick : undefined}
+        className={`
+          w-16 h-16 md:w-20 md:h-20 rounded-xl flex items-center justify-center
+          transition-all duration-300
+          ${isClickable ? 'cursor-pointer hover:opacity-75' : ''}
+          ${
+            slot.filled
+              ? 'bg-card border-2 border-story-magic-active shadow-lg shadow-primary/50'
+              : 'bg-card/50 border-2 border-dashed border-story-magic-empty'
+          }
+          ${slot.active && slot.filled ? 'ring-2 ring-story-magic-active ring-offset-2 ring-offset-background' : ''}
+          ${slot.justFilled ? 'animate-slot-glow' : ''}
+        `}
+      >
+        {slot.filled && slot.imageSrc ? (
+          <img
+            src={slot.imageSrc}
+            alt={slot.label || 'Story element'}
+            className={`w-full h-full object-cover rounded-lg ${
+              slot.justFilled ? 'animate-slot-fill' : 'animate-fade-in'
+            }`}
+          />
+        ) : (
+          <Sparkles className={`w-8 h-8 text-muted-foreground/30 ${
+            slot.justFilled ? 'animate-sparkle-burst' : ''
+          }`} />
         )}
+      </div>
+      {slot.label && (
+        <span className={`text-xs font-medium text-center text-foreground/80 ${
+          slot.justFilled ? 'animate-fadeInUp' : ''
+        }`}>
+          {slot.label}
+        </span>
+      )}
       </div>
     );
   };

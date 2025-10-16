@@ -112,11 +112,50 @@ export default {
             transform: "translateY(0)",
           },
         },
+        "slot-fill": {
+          "0%": {
+            transform: "scale(0.8) rotate(-5deg)",
+            opacity: "0"
+          },
+          "50%": {
+            transform: "scale(1.15) rotate(2deg)",
+            opacity: "1"
+          },
+          "100%": {
+            transform: "scale(1) rotate(0deg)",
+            opacity: "1"
+          }
+        },
+        "slot-glow": {
+          "0%, 100%": {
+            boxShadow: "0 0 0 0 rgba(247, 191, 57, 0)"
+          },
+          "50%": {
+            boxShadow: "0 0 20px 8px rgba(247, 191, 57, 0.6)"
+          }
+        },
+        "sparkle-burst": {
+          "0%": {
+            transform: "scale(0.8)",
+            opacity: "0"
+          },
+          "50%": {
+            transform: "scale(1.2)",
+            opacity: "1"
+          },
+          "100%": {
+            transform: "scale(1)",
+            opacity: "1"
+          }
+        }
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
         "fadeInUp": "fadeInUp 0.8s ease-out",
+        "slot-fill": "slot-fill 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)",
+        "slot-glow": "slot-glow 0.8s ease-in-out",
+        "sparkle-burst": "sparkle-burst 0.5s ease-out"
       },
     },
   },

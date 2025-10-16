@@ -25,6 +25,7 @@ export const CreateStep3 = () => {
   const navigate = useNavigate();
   const { storyConfig, setStoryType, clearStoryType } = useStoryConfig();
   const [selectedType, setSelectedType] = useState<string>(storyConfig.storyType || '');
+  const [animateSlot, setAnimateSlot] = useState(false);
 
   useEffect(() => {
     setSelectedType(storyConfig.storyType || '');
@@ -33,6 +34,9 @@ export const CreateStep3 = () => {
   const handleSelect = (typeId: string, image: string) => {
     setSelectedType(typeId);
     setStoryType(typeId as StoryType, image);
+    
+    setAnimateSlot(true);
+    setTimeout(() => setAnimateSlot(false), 800);
   };
 
   const handleSlot1Click = () => {
@@ -68,6 +72,25 @@ export const CreateStep3 = () => {
         continueDisabled={!isContinueEnabled()}
       />
 
+      <StoryMagicTray
+        slot1={{
+          filled: !!storyConfig.characterType,
+          imageSrc: storyConfig.assets.characterTypeIcon || undefined,
+          label: storyConfig.characterType || undefined,
+          active: false,
+          onClick: handleSlot1Click,
+        }}
+        slot2={{
+          filled: !!selectedType,
+          imageSrc: storyConfig.assets.storyTypeIcon || undefined,
+          label: selectedType === 'Surprise' ? 'Surprise Me!' : selectedType,
+          active: true,
+          justFilled: animateSlot,
+          onClick: handleSlotClick,
+        }}
+        slot3={{ filled: false, active: false, onClick: handleSlot3Click }}
+      />
+
       <div className="text-center mb-3 md:mb-4">
         <h2 className="text-2xl md:text-3xl font-bold text-story-heading font-chewy">
           What Kind of Story?
@@ -86,24 +109,6 @@ export const CreateStep3 = () => {
           />
         ))}
       </div>
-
-      <StoryMagicTray
-        slot1={{
-          filled: !!storyConfig.characterType,
-          imageSrc: storyConfig.assets.characterTypeIcon || undefined,
-          label: storyConfig.characterType || undefined,
-          active: false,
-          onClick: handleSlot1Click,
-        }}
-        slot2={{
-          filled: !!selectedType,
-          imageSrc: storyConfig.assets.storyTypeIcon || undefined,
-          label: selectedType === 'Surprise' ? 'Surprise Me!' : selectedType,
-          active: true,
-          onClick: handleSlotClick,
-        }}
-        slot3={{ filled: false, active: false, onClick: handleSlot3Click }}
-      />
     </div>
   );
 };

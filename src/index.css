@@ -91,6 +91,7 @@ All colors MUST be HSL.
 
     /* Story Magic Tray */
     --story-magic-active: 45 93% 58%;
+    --story-magic-active-rgb: 247, 191, 57;
     --story-magic-empty: 45 93% 58%;
 
     /* Story Choice Cards */
