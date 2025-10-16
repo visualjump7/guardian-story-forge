@@ -184,7 +184,9 @@ export const CreateStep5 = () => {
             size="lg"
             onClick={handleGenerateStory}
             disabled={isGenerating}
-            className="text-lg px-8"
+            className={`text-lg px-8 ${
+              !isGenerating ? 'animate-button-pulse' : ''
+            }`}
           >
             {isGenerating ? (
               <>

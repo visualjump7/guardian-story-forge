@@ -66,11 +66,12 @@ export const CreateStep3 = () => {
 
   return (
     <div className="w-full max-w-4xl mx-auto">
-      <CreateNavBar
-        onBack={handleBack}
-        onContinue={handleContinue}
-        continueDisabled={!isContinueEnabled()}
-      />
+    <CreateNavBar
+      onBack={handleBack}
+      onContinue={handleContinue}
+      continueDisabled={!isContinueEnabled()}
+      continuePulse={!!selectedType}
+    />
 
       <StoryMagicTray
         slot1={{

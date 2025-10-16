@@ -147,6 +147,16 @@ export default {
             transform: "scale(1)",
             opacity: "1"
           }
+        },
+        "button-pulse": {
+          "0%, 100%": {
+            transform: "scale(1)",
+            boxShadow: "0 0 0 0 rgba(142, 69, 173, 0.4)"
+          },
+          "50%": {
+            transform: "scale(1.02)",
+            boxShadow: "0 0 20px 4px rgba(142, 69, 173, 0.6)"
+          }
         }
       },
       animation: {
@@ -155,7 +165,8 @@ export default {
         "fadeInUp": "fadeInUp 0.8s ease-out",
         "slot-fill": "slot-fill 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)",
         "slot-glow": "slot-glow 0.8s ease-in-out",
-        "sparkle-burst": "sparkle-burst 0.5s ease-out"
+        "sparkle-burst": "sparkle-burst 0.5s ease-out",
+        "button-pulse": "button-pulse 2.5s ease-in-out infinite"
       },
     },
   },

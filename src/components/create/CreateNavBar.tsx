@@ -8,6 +8,7 @@ interface CreateNavBarProps {
   continueLabel?: string;
   continueDisabled?: boolean;
   showBack?: boolean;
+  continuePulse?: boolean;
 }
 
 export const CreateNavBar = ({
@@ -17,6 +18,7 @@ export const CreateNavBar = ({
   continueLabel = 'Continue >',
   continueDisabled = false,
   showBack = true,
+  continuePulse = false,
 }: CreateNavBarProps) => {
   return (
     <div className="flex flex-col md:flex-row justify-between items-stretch md:items-center gap-2 md:gap-3 mb-3 md:mb-4">
@@ -40,6 +42,8 @@ export const CreateNavBar = ({
             continueDisabled 
               ? 'border border-gray-700 text-gray-400 bg-transparent hover:bg-transparent' 
               : ''
+          } ${
+            continuePulse && !continueDisabled ? 'animate-button-pulse' : ''
           }`}
         >
           {continueLabel}
