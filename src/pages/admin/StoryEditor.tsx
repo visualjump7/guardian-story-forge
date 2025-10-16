@@ -581,81 +581,22 @@ export default function StoryEditor() {
               />
             </div>
 
-            {/* Video Embedding */}
-            <div className="space-y-4">
-              <div className="flex items-center gap-2">
-                <Label htmlFor="content_type">Content Type</Label>
-              </div>
-              <div className="flex gap-4">
-                <label className="flex items-center gap-2 cursor-pointer">
-                  <input
-                    type="radio"
-                    name="content_type"
-                    value="text"
-                    checked={formData.content_type === 'text'}
-                    onChange={(e) => setFormData({ ...formData, content_type: e.target.value })}
-                  />
-                  <span>Text Story</span>
-                </label>
-                <label className="flex items-center gap-2 cursor-pointer">
-                  <input
-                    type="radio"
-                    name="content_type"
-                    value="video"
-                    checked={formData.content_type === 'video'}
-                    onChange={(e) => setFormData({ ...formData, content_type: e.target.value })}
-                  />
-                  <span>Video Story</span>
-                </label>
-              </div>
-
-              {formData.content_type === 'video' && (
-                <div className="space-y-2">
-                  <Label htmlFor="media_url">Vimeo Video ID</Label>
-                  <Input
-                    id="media_url"
-                    value={formData.media_url}
-                    onChange={(e) => setFormData({ ...formData, media_url: e.target.value })}
-                    placeholder="e.g., 123456789"
-                  />
-                  <p className="text-sm text-muted-foreground">
-                    Enter the Vimeo video ID (the numbers from the video URL)
-                  </p>
-                </div>
-              )}
-            </div>
-
-            {/* Additional Fields */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="story_universe">Universe</Label>
-                <Input
-                  id="story_universe"
-                  value={formData.story_universe}
-                  onChange={(e) => setFormData({ ...formData, story_universe: e.target.value })}
-                  placeholder="e.g., Forest Kingdom"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="age_range">Age Range</Label>
-                <Input
-                  id="age_range"
-                  value={formData.age_range}
-                  onChange={(e) => setFormData({ ...formData, age_range: e.target.value })}
-                  placeholder="e.g., 6-8"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="story_type">Story Type</Label>
-                <Input
-                  id="story_type"
-                  value={formData.story_type}
-                  onChange={(e) => setFormData({ ...formData, story_type: e.target.value })}
-                  placeholder="e.g., Adventure"
-                />
-              </div>
+            {/* Bottom Save Button */}
+            <div className="flex justify-center sm:justify-end pt-4 border-t border-border/50">
+              <Button 
+                onClick={handleSave} 
+                disabled={saving || uploading}
+                className="w-full sm:w-auto sm:min-w-[200px]"
+              >
+                {saving ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    {id ? 'Saving...' : 'Creating...'}
+                  </>
+                ) : (
+                  id ? 'Save Changes' : 'Create Story'
+                )}
+              </Button>
             </div>
           </CardContent>
         </Card>
