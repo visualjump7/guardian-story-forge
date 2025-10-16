@@ -340,7 +340,7 @@ const FlipbookStoryView = () => {
                     });
                     setIsEditDialogOpen(true);
                   }}
-                  variant="secondary"
+                  variant="dark"
                 >
                   Edit Story
                 </ActionButton>
@@ -350,7 +350,7 @@ const FlipbookStoryView = () => {
                 icon={Download}
                 onClick={handleDownloadPdf}
                 loading={isDownloadingPdf}
-                variant="secondary"
+                variant="dark"
               >
                 Download PDF
               </ActionButton>
@@ -358,7 +358,7 @@ const FlipbookStoryView = () => {
               <ActionButton
                 icon={Share2}
                 onClick={() => setIsShareDialogOpen(true)}
-                variant="secondary"
+                variant="dark"
               >
                 Share
               </ActionButton>
@@ -409,7 +409,7 @@ const FlipbookStoryView = () => {
                     });
                     setIsEditDialogOpen(true);
                   }}
-                  variant="secondary"
+                  variant="dark"
                 >
                   Edit Story
                 </ActionButton>
@@ -419,7 +419,7 @@ const FlipbookStoryView = () => {
                 icon={Download}
                 onClick={handleDownloadPdf}
                 loading={isDownloadingPdf}
-                variant="secondary"
+                variant="dark"
               >
                 Download PDF
               </ActionButton>
@@ -427,7 +427,7 @@ const FlipbookStoryView = () => {
               <ActionButton
                 icon={Share2}
                 onClick={() => setIsShareDialogOpen(true)}
-                variant="secondary"
+                variant="dark"
               >
                 Share
               </ActionButton>

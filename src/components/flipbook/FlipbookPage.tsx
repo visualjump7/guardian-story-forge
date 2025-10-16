@@ -45,13 +45,13 @@ export const FlipbookPage = forwardRef<HTMLDivElement, FlipbookPageProps>(
         )}
 
         {page.type === 'content' && (
-          <div className="w-full h-full p-8 md:p-12 flex flex-col">
-            <div className="flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-clay-300 scrollbar-track-transparent">
+          <div className="w-full h-full p-8 md:p-12 flex flex-col justify-between">
+            <div className="flex-1 flex items-start overflow-hidden">
               <p className="font-crimson text-lg md:text-xl leading-relaxed text-[#3d2817] whitespace-pre-wrap text-justify">
                 {page.text}
               </p>
             </div>
-            <div className="mt-4 text-center">
+            <div className="mt-4 text-center flex-shrink-0">
               <span className="font-crimson text-sm text-clay-300">{pageNumber}</span>
             </div>
           </div>

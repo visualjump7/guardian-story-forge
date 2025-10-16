@@ -32,8 +32,8 @@ export function generateFlipbookPages(
     subtitle: `By ${creatorName}`
   });
   
-  // 2. Split content into pages (approximately 300-350 words per page)
-  const contentPages = paginateContent(story.content, 300);
+  // 2. Split content into pages (approximately 200 words per page)
+  const contentPages = paginateContent(story.content, 200);
   
   // 3. Calculate strategic image positions (25%, 50%, 75% of content)
   const totalContentPages = contentPages.length;
