@@ -6,12 +6,22 @@
 const INAPPROPRIATE_WORDS = [
   // Common profanity
   'damn', 'hell', 'crap', 'suck', 'stupid', 'idiot', 'dumb', 'hate',
+  // Strong profanity
+  'fuck', 'shit', 'ass', 'asshole', 'bitch', 'bastard', 'piss', 'dick',
+  'cock', 'pussy', 'cunt', 'whore', 'slut', 'fag', 'retard',
+  // Variations and related
+  'fucking', 'fucked', 'fucker', 'shitty', 'shitting', 'bullshit',
+  'asshat', 'dumbass', 'jackass', 'bitching', 'bitchy',
   // Violence-related
   'kill', 'murder', 'death', 'dead', 'die', 'blood', 'knife', 'gun', 'weapon',
   // Scary/intense
   'terror', 'horror', 'nightmare', 'demon', 'devil', 'evil',
   // Inappropriate themes
-  'sexy', 'drugs', 'alcohol', 'drunk', 'beer', 'wine'
+  'sexy', 'drugs', 'alcohol', 'drunk', 'beer', 'wine',
+  // Body functions
+  'poop', 'pee', 'fart', 'butt', 'poo', 'wee',
+  // Bullying terms
+  'ugly', 'fat', 'loser', 'dummy', 'freak'
 ];
 
 export interface ValidationResult {
