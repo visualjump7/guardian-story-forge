@@ -72,6 +72,23 @@ All colors MUST be HSL.
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     --transition-bounce: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
 
+    /* Cinematic Flipbook Colors */
+    --warmth-100: 40 40% 98%;
+    --warmth-200: 35 50% 92%;
+    --warmth-300: 30 45% 85%;
+    --warmth-400: 25 60% 70%;
+    --warmth-500: 20 70% 60%;
+    
+    --clay-100: 30 25% 88%;
+    --clay-200: 30 20% 75%;
+    --clay-300: 30 15% 60%;
+    
+    --shadow-elegant: 0 10px 30px -10px hsl(25 70% 60% / 0.3);
+    --shadow-book-page: 0 2px 10px rgba(0,0,0,0.1), inset 0 0 20px rgba(0,0,0,0.05);
+    
+    --gradient-cinematic: radial-gradient(circle at 50% 50%, transparent 40%, rgba(0,0,0,0.4) 100%), linear-gradient(135deg, hsl(40 40% 98%) 0%, hsl(35 50% 92%) 50%, hsl(30 45% 85%) 100%);
+    --gradient-flipbook-action: linear-gradient(135deg, hsl(25 95% 60%) 0%, hsl(35 100% 55%) 100%);
+
     /* Story Magic Tray */
     --story-magic-active: 45 93% 58%;
     --story-magic-empty: 45 93% 58%;

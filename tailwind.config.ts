@@ -16,6 +16,7 @@ export default {
       fontFamily: {
         inter: ['Inter', 'sans-serif'],
         poppins: ['Poppins', 'sans-serif'],
+        crimson: ['Crimson Pro', 'serif'],
         sans: ['Inter', 'sans-serif'],
       },
       colors: {
@@ -67,6 +68,18 @@ export default {
         "story-choice-default": "hsl(var(--story-choice-default))",
         "story-choice-hover": "hsl(var(--story-choice-hover))",
         "story-choice-selected": "hsl(var(--story-choice-selected))",
+        "warmth": {
+          100: "hsl(var(--warmth-100))",
+          200: "hsl(var(--warmth-200))",
+          300: "hsl(var(--warmth-300))",
+          400: "hsl(var(--warmth-400))",
+          500: "hsl(var(--warmth-500))",
+        },
+        "clay": {
+          100: "hsl(var(--clay-100))",
+          200: "hsl(var(--clay-200))",
+          300: "hsl(var(--clay-300))",
+        },
       },
       borderRadius: {
         lg: "var(--radius)",
@@ -90,10 +103,21 @@ export default {
             height: "0",
           },
         },
+        "fadeInUp": {
+          from: {
+            opacity: "0",
+            transform: "translateY(30px)",
+          },
+          to: {
+            opacity: "1",
+            transform: "translateY(0)",
+          },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
+        "fadeInUp": "fadeInUp 0.8s ease-out",
       },
     },
   },

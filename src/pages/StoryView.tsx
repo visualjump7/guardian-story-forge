@@ -14,7 +14,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { 
+import {
   BookmarkPlus, 
   BookmarkCheck, 
   Share2, 
@@ -23,7 +23,8 @@ import {
   Palette,
   Library,
   Sparkles,
-  Download
+  Download,
+  BookOpen
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -533,6 +534,10 @@ const StoryView = () => {
         isAdmin={isAdmin}
         rightContent={
           <>
+            <Button variant="outline" size="sm" onClick={() => navigate(`/story/${storyId}/flipbook`)} className="text-white border-white/30 hover:bg-white/10 gap-2">
+              <BookOpen className="w-4 h-4" />
+              Flipbook View
+            </Button>
             <Button variant="outline" size="sm" onClick={() => navigate("/library")} className="text-white border-white/30 hover:bg-white/10">
               <Library className="w-4 h-4" />
               My Library
