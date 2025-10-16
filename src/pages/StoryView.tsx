@@ -637,27 +637,17 @@ const StoryView = () => {
                   </div>
                 </div>
 
-                {/* Create Additional Images Button */}
+                {/* Edit your Story Button */}
                 {storyImages.length < 3 && (
                   <div className="flex justify-center">
                     <Button
-                      onClick={handleGenerateAdditionalImages}
-                      disabled={isGeneratingAdditionalImages}
+                      onClick={() => navigate(`/admin/stories/${storyId}/edit`)}
                       size="lg"
                       variant="default"
                       className="gap-2 min-w-[280px]"
                     >
-                      {isGeneratingAdditionalImages ? (
-                        <>
-                          <Loader2 className="h-5 w-5 animate-spin" />
-                          <span className="animate-pulse">Building new images...</span>
-                        </>
-                      ) : (
-                        <>
-                          <Palette className="h-5 w-5" />
-                          Create Additional Story Images
-                        </>
-                      )}
+                      <Pencil className="h-5 w-5" />
+                      Edit your Story
                     </Button>
                   </div>
                 )}
