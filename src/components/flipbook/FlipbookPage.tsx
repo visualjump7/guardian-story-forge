@@ -34,11 +34,11 @@ export const FlipbookPage = forwardRef<HTMLDivElement, FlipbookPageProps>(
               <Button
                 onClick={onRegenerateImage}
                 size="icon"
-                variant="secondary"
-                className="absolute top-4 right-4 opacity-70 hover:opacity-100 transition-opacity"
+                variant="outline"
+                className="absolute top-4 right-4 bg-white/90 hover:bg-white transition-opacity border-warmth-300"
                 aria-label="Regenerate cover image"
               >
-                <RefreshCw className="w-4 h-4" />
+                <RefreshCw className="w-4 h-4 text-[#3d2817]" />
               </Button>
             )}
           </div>
@@ -70,11 +70,11 @@ export const FlipbookPage = forwardRef<HTMLDivElement, FlipbookPageProps>(
               <Button
                 onClick={onRegenerateImage}
                 size="icon"
-                variant="secondary"
-                className="absolute top-4 right-4 opacity-70 hover:opacity-100 transition-opacity"
+                variant="outline"
+                className="absolute top-4 right-4 bg-white/90 hover:bg-white transition-opacity border-warmth-300"
                 aria-label="Regenerate illustration"
               >
-                <RefreshCw className="w-4 h-4" />
+                <RefreshCw className="w-4 h-4 text-[#3d2817]" />
               </Button>
             )}
           </div>

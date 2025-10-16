@@ -286,9 +286,9 @@ const FlipbookStoryView = () => {
           onClick={() => navigate(`/story/${storyId}`)}
           variant="outline"
           size="icon"
-          className="rounded-full bg-card/80 backdrop-blur-sm hover:bg-card"
+          className="rounded-full bg-white/90 backdrop-blur-sm hover:bg-white border-warmth-300"
         >
-          <ArrowLeft className="w-5 h-5" />
+          <ArrowLeft className="w-5 h-5 text-[#3d2817]" />
         </Button>
       </div>
 

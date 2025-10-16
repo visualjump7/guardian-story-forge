@@ -66,12 +66,12 @@ export const FlipbookViewer = ({ pages, onPageTurn, onRegenerateImage, canEdit }
           disabled={currentPage === 0 || isFlipping}
           variant="outline"
           size="icon"
-          className="rounded-full bg-card/80 backdrop-blur-sm hover:bg-card"
+          className="rounded-full bg-white/90 backdrop-blur-sm hover:bg-white border-warmth-300"
         >
-          <ChevronLeft className="w-5 h-5" />
+          <ChevronLeft className="w-5 h-5 text-[#3d2817]" />
         </Button>
         
-        <div className="font-crimson text-sm text-[#3d2817] px-4 py-2 bg-warmth-200/50 rounded-full backdrop-blur-sm">
+        <div className="font-crimson text-sm text-[#3d2817] px-4 py-2 bg-warmth-50/90 rounded-full backdrop-blur-sm border border-warmth-300">
           Page {currentPage + 1} of {pages.length}
         </div>
         
@@ -80,9 +80,9 @@ export const FlipbookViewer = ({ pages, onPageTurn, onRegenerateImage, canEdit }
           disabled={currentPage >= pages.length - 1 || isFlipping}
           variant="outline"
           size="icon"
-          className="rounded-full bg-card/80 backdrop-blur-sm hover:bg-card"
+          className="rounded-full bg-white/90 backdrop-blur-sm hover:bg-white border-warmth-300"
         >
-          <ChevronRight className="w-5 h-5" />
+          <ChevronRight className="w-5 h-5 text-[#3d2817]" />
         </Button>
       </div>
     </div>

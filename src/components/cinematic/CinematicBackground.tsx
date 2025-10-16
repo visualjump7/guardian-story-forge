@@ -2,7 +2,7 @@ export const CinematicBackground = () => {
   return (
     <>
       <div className="fixed inset-0 z-[-2] bg-gradient-to-br from-warmth-100 via-warmth-200 to-warmth-300" />
-      <div className="fixed inset-0 z-[-1] bg-[radial-gradient(circle_at_50%_50%,transparent_40%,rgba(0,0,0,0.4)_100%)]" />
+      <div className="fixed inset-0 z-[-1] bg-[radial-gradient(circle_at_50%_50%,transparent_40%,rgba(0,0,0,0.1)_100%)]" />
       <div 
         className="fixed inset-0 z-[-1] opacity-[0.03] mix-blend-multiply pointer-events-none"
         style={{
