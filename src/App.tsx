@@ -17,6 +17,7 @@ import AdminUsers from "./pages/admin/Users";
 import AdminStories from "./pages/admin/Stories";
 import AdminStoryEditor from "./pages/admin/StoryEditor";
 import AdminSettings from "./pages/admin/Settings";
+import AdminLLMSettings from "./pages/admin/LLMSettings";
 import { CreateLayout } from "./pages/create/CreateLayout";
 import CreateStep1 from "./pages/create/CreateStep1";
 import { CreateStep2 } from "./pages/create/CreateStep2";
@@ -52,6 +53,7 @@ const App = () => (
           <Route path="/admin/stories" element={<AdminRoute><AdminStories /></AdminRoute>} />
           <Route path="/admin/stories/new" element={<AdminRoute><AdminStoryEditor /></AdminRoute>} />
           <Route path="/admin/stories/:id/edit" element={<AdminRoute><AdminStoryEditor /></AdminRoute>} />
+          <Route path="/admin/llm-settings" element={<AdminRoute><AdminLLMSettings /></AdminRoute>} />
           <Route path="/admin/settings" element={<AdminRoute><AdminSettings /></AdminRoute>} />
           <Route path="*" element={<NotFound />} />
         </Routes>

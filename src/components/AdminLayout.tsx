@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
-import { Users, BookOpen, LayoutDashboard, Settings, LogOut } from 'lucide-react';
+import { Users, BookOpen, LayoutDashboard, Settings, LogOut, Brain } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
 import { useNavigate } from 'react-router-dom';
@@ -27,6 +27,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
     { path: '/admin/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
     { path: '/admin/users', icon: Users, label: 'Users' },
     { path: '/admin/stories', icon: BookOpen, label: 'Stories' },
+    { path: '/admin/llm-settings', icon: Brain, label: 'LLM Settings' },
     { path: '/admin/settings', icon: Settings, label: 'Settings' },
   ];
 
