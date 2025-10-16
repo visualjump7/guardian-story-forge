@@ -292,7 +292,7 @@ const FlipbookStoryView = () => {
         </Button>
       </div>
 
-      <div className="container mx-auto px-4 py-12 relative z-10">
+      <div className="container mx-auto px-4 py-4 md:py-6 relative z-10">
         {!showBook ? (
           // Initial Landing View
           <div className="max-w-4xl mx-auto text-center space-y-12 animate-[fadeInUp_0.8s_ease-out]">
@@ -366,12 +366,12 @@ const FlipbookStoryView = () => {
           </div>
         ) : (
           // Flipbook View
-          <div className="space-y-8 animate-[fadeInUp_1s_ease-out_0.3s_both]">
-            <div className="text-center">
-              <h2 className="font-crimson font-bold text-3xl md:text-4xl text-[#2c1810] mb-2">
+          <div className="space-y-3 md:space-y-4 animate-[fadeInUp_1s_ease-out_0.3s_both]">
+            <div className="text-center mb-3 md:mb-4">
+              <h2 className="font-crimson font-bold text-2xl md:text-3xl text-primary mb-1">
                 {story.title}
               </h2>
-              <p className="font-crimson text-lg text-[#5d3a22]">
+              <p className="font-crimson text-base md:text-lg text-primary">
                 By {creatorName}
               </p>
             </div>
@@ -397,7 +397,7 @@ const FlipbookStoryView = () => {
             )}
 
             {/* Action Buttons Below Book */}
-            <div className="flex flex-wrap justify-center gap-4 pt-8">
+            <div className="flex flex-wrap justify-center gap-3 pt-4 md:pt-6">
               {canEdit && (
                 <ActionButton
                   icon={Pencil}
