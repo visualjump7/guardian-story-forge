@@ -278,7 +278,7 @@ const FlipbookStoryView = () => {
 
   return (
     <div className="min-h-screen relative overflow-x-hidden">
-      <CinematicBackground />
+      <CinematicBackground backgroundImage={story?.cover_image_url} />
       
       {/* Back Button */}
       <div className="absolute top-4 left-4 z-10">

@@ -1,8 +1,36 @@
-export const CinematicBackground = () => {
+interface CinematicBackgroundProps {
+  backgroundImage?: string | null;
+}
+
+export const CinematicBackground = ({ backgroundImage }: CinematicBackgroundProps = {}) => {
   return (
     <>
-      <div className="fixed inset-0 z-[-2] bg-gradient-to-br from-warmth-100 via-warmth-200 to-warmth-300" />
-      <div className="fixed inset-0 z-[-1] bg-[radial-gradient(circle_at_50%_50%,transparent_40%,rgba(0,0,0,0.1)_100%)]" />
+      {/* Pure black base */}
+      <div className="fixed inset-0 z-[-3] bg-black" />
+      
+      {/* Story cover image - blurred and darkened */}
+      {backgroundImage && (
+        <div 
+          className="fixed inset-0 z-[-2] opacity-50"
+          style={{
+            backgroundImage: `url(${backgroundImage})`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            backgroundRepeat: 'no-repeat',
+            filter: 'blur(40px)',
+          }}
+        />
+      )}
+      
+      {/* Fallback gradient if no image */}
+      {!backgroundImage && (
+        <div className="fixed inset-0 z-[-2] bg-gradient-to-br from-warmth-100 via-warmth-200 to-warmth-300" />
+      )}
+      
+      {/* Dark overlay for extra depth */}
+      <div className="fixed inset-0 z-[-1] bg-black/30" />
+      
+      {/* Subtle noise texture */}
       <div 
         className="fixed inset-0 z-[-1] opacity-[0.03] mix-blend-multiply pointer-events-none"
         style={{
