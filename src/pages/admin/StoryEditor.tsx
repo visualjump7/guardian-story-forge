@@ -67,7 +67,7 @@ const ImageSlot = ({
             ) : (
               <>
                 <Sparkles className="h-4 w-4" />
-                {hasImage ? 'Regenerate' : 'Generate'} AI
+                {hasImage ? 'Regenerate' : 'Generate'} Image
               </>
             )}
           </Button>
