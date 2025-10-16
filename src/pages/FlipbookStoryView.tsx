@@ -10,6 +10,7 @@ import { FlipbookViewer } from "@/components/flipbook/FlipbookViewer";
 import { FlatPageSlider } from "@/components/flipbook/FlatPageSlider";
 import { generateFlipbookPages, FlipbookPage } from "@/utils/pageGeneration";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { sanitizeContent } from "@/utils/contentFilter";
 import { ShareDialog } from "@/components/ShareDialog";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
@@ -124,13 +125,44 @@ const FlipbookStoryView = () => {
     
     setIsSaving(true);
     try {
+      // Sanitize all text fields
+      const titleResult = sanitizeContent(editFormData.title);
+      const contentResult = sanitizeContent(editFormData.content);
+      const heroNameResult = sanitizeContent(editFormData.hero_name);
+      
+      // Combine replaced words from all fields
+      const allReplacedWords = [
+        ...titleResult.replacedWords,
+        ...contentResult.replacedWords,
+        ...heroNameResult.replacedWords
+      ];
+      
+      // Check if any content was modified
+      const wasModified = titleResult.wasModified || 
+                          contentResult.wasModified || 
+                          heroNameResult.wasModified;
+      
+      // Update form with sanitized content
+      const sanitizedFormData = {
+        title: titleResult.sanitizedContent,
+        content: contentResult.sanitizedContent,
+        hero_name: heroNameResult.sanitizedContent
+      };
+      
+      // Update the form state so user sees the changes
+      setEditFormData(sanitizedFormData);
+      
+      // Notify user if content was filtered
+      if (wasModified) {
+        toast.info(
+          `Some words were replaced with *** to keep the story kid-friendly. ${allReplacedWords.length} word(s) filtered.`,
+          { duration: 5000 }
+        );
+      }
+      
       const { error } = await supabase
         .from('stories')
-        .update({
-          title: editFormData.title,
-          content: editFormData.content,
-          hero_name: editFormData.hero_name
-        })
+        .update(sanitizedFormData)
         .eq('id', story.id);
 
       if (error) throw error;

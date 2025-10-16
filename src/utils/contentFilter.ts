@@ -19,6 +19,12 @@ export interface ValidationResult {
   message?: string;
 }
 
+export interface SanitizationResult {
+  sanitizedContent: string;
+  wasModified: boolean;
+  replacedWords: string[];
+}
+
 /**
  * Validates content for appropriateness for children
  * @param content - The user input to validate
@@ -75,5 +81,39 @@ export const validateContent = (content: string): ValidationResult => {
 
   return {
     isValid: true
+  };
+};
+
+/**
+ * Sanitizes content by replacing inappropriate words with ***
+ * @param content - The user input to sanitize
+ * @returns Object with sanitized content and whether changes were made
+ */
+export const sanitizeContent = (content: string): SanitizationResult => {
+  if (!content || !content.trim()) {
+    return {
+      sanitizedContent: content,
+      wasModified: false,
+      replacedWords: []
+    };
+  }
+
+  let sanitized = content;
+  const replacedWords: string[] = [];
+  
+  // Replace each inappropriate word with ***
+  for (const word of INAPPROPRIATE_WORDS) {
+    const regex = new RegExp(`\\b${word}\\b`, 'gi'); // Case-insensitive, global
+    
+    if (regex.test(sanitized)) {
+      replacedWords.push(word);
+      sanitized = sanitized.replace(regex, '***');
+    }
+  }
+
+  return {
+    sanitizedContent: sanitized,
+    wasModified: replacedWords.length > 0,
+    replacedWords
   };
 };
