@@ -71,7 +71,7 @@ export const CreateStep2 = () => {
       />
 
       <div className="text-center mb-3 md:mb-4">
-        <h2 className="text-2xl md:text-3xl font-bold text-story-heading" style={{ fontFamily: 'Poppins, sans-serif' }}>
+        <h2 className="text-2xl md:text-3xl font-bold text-story-heading font-chewy">
           Who is Your Character?
         </h2>
       </div>

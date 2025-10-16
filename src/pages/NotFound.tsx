@@ -33,7 +33,7 @@ const NotFound = () => {
       <AppHeader profile={profile} isAdmin={isAdmin} showBackButton={false} />
       <div className="flex min-h-[calc(100vh-80px)] items-center justify-center">
         <div className="text-center">
-          <h1 className="mb-4 text-4xl font-poppins font-bold">404</h1>
+          <h1 className="mb-4 text-4xl font-chewy">404</h1>
           <p className="mb-4 text-xl text-gray-600">Oops! Page not found</p>
           <a href="/" className="text-blue-500 underline hover:text-blue-700">
             Return to Home

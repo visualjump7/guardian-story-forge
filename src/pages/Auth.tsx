@@ -111,7 +111,7 @@ const Auth = () => {
     >
       <Card className="w-full max-w-md shadow-2xl border-0 bg-black/80">
         <CardHeader className="text-center space-y-4">
-          <CardTitle className="text-3xl font-poppins font-bold text-white">
+          <CardTitle className="text-3xl font-chewy text-white">
             {isLogin ? "Welcome Back!" : "Join Guardian Kids"}
           </CardTitle>
           <CardDescription className="text-base text-gray-300">

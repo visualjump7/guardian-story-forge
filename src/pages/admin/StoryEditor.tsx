@@ -457,7 +457,7 @@ export default function StoryEditor() {
         {/* Header - Stack on mobile */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
           <div>
-            <h1 className="text-2xl sm:text-3xl font-poppins font-bold">
+            <h1 className="text-2xl sm:text-3xl font-chewy">
               {id ? 'Edit Story' : 'Create New Story'}
             </h1>
             <p className="text-sm text-muted-foreground mt-1">

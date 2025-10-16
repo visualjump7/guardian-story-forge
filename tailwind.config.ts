@@ -14,10 +14,9 @@ export default {
     },
     extend: {
       fontFamily: {
-        inter: ['Inter', 'sans-serif'],
-        poppins: ['Poppins', 'sans-serif'],
-        crimson: ['Crimson Pro', 'serif'],
-        sans: ['Inter', 'sans-serif'],
+        chewy: ['Chewy', 'cursive'],
+        fredoka: ['Fredoka', 'sans-serif'],
+        sans: ['Fredoka', 'sans-serif'],
       },
       colors: {
         border: "hsl(var(--border))",

@@ -161,7 +161,7 @@ const Home = () => {
           {/* Centered Content */}
           <div className="relative z-10 w-full flex flex-col items-center text-center gap-6 max-w-3xl mx-auto">
             {/* Title */}
-            <h2 className="text-4xl md:text-5xl font-poppins font-bold text-amber-400">
+            <h2 className="text-4xl md:text-5xl font-chewy text-amber-400">
               Create Your Own Magical Story
             </h2>
             
@@ -195,7 +195,7 @@ const Home = () => {
         {/* Featured Stories */}
         <section className="space-y-6">
           <div className="space-y-2">
-            <h2 className="text-3xl font-poppins font-bold text-foreground flex items-center gap-3">
+            <h2 className="text-3xl font-chewy text-foreground flex items-center gap-3">
               <BookOpen className="w-8 h-8 text-primary" />
               Featured Stories
             </h2>
@@ -237,7 +237,7 @@ const Home = () => {
 
                 {/* Dark Text Section */}
                 <div className="relative bg-gradient-to-t from-black/95 via-black/90 to-transparent p-6 space-y-3">
-                  <h3 className="text-2xl md:text-3xl font-poppins font-bold text-amber-400 line-clamp-2 tracking-tight leading-tight">
+                  <h3 className="text-2xl md:text-3xl font-chewy text-amber-400 line-clamp-2 tracking-tight leading-tight">
                     {story.title}
                   </h3>
                   

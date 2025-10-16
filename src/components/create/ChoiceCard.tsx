@@ -35,7 +35,7 @@ export const ChoiceCard = ({ label, imageSrc, selected, onSelect }: ChoiceCardPr
           className="w-full h-full object-cover"
         />
       </div>
-      <span className="text-sm font-bold text-center text-foreground" style={{ fontFamily: 'Poppins, sans-serif' }}>
+      <span className="text-sm font-bold text-center text-foreground font-fredoka">
         {label}
       </span>
     </button>

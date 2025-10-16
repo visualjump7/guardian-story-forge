@@ -177,7 +177,7 @@ const Library = () => {
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary/5 via-secondary/5 to-accent/5">
         <div className="text-center space-y-4">
           <Sparkles className="w-16 h-16 text-primary animate-spin mx-auto" />
-          <p className="text-xl font-poppins font-bold text-primary">Loading your library...</p>
+          <p className="text-xl font-chewy text-primary">Loading your library...</p>
         </div>
       </div>
     );
@@ -213,7 +213,7 @@ const Library = () => {
               </div>
             </div>
             <div className="space-y-2">
-              <h2 className="text-3xl md:text-4xl font-poppins font-bold text-primary">
+              <h2 className="text-3xl md:text-4xl font-chewy text-primary">
                 Your Library is Empty
               </h2>
               <p className="text-lg text-muted-foreground">
@@ -244,7 +244,7 @@ const Library = () => {
             {/* Header with Counter */}
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-4 border-b-2 border-primary/20">
               <div className="space-y-2">
-                <h2 className="text-4xl md:text-5xl font-poppins font-bold text-primary">
+                <h2 className="text-4xl md:text-5xl font-chewy text-primary">
                   Your Saved Stories
                 </h2>
                 <p className="text-lg text-muted-foreground">
@@ -267,7 +267,7 @@ const Library = () => {
                     )} />
                     <div className="text-center">
                       <div className={cn(
-                        "text-3xl font-bold font-poppins",
+                        "text-3xl font-bold font-chewy",
                         savedStories.length >= 10 ? "text-red-600" : "text-primary"
                       )}>
                         {savedStories.length}/10
@@ -372,7 +372,7 @@ const Library = () => {
 
                   {/* Dark Text Section */}
                   <div className="relative bg-gradient-to-t from-black/95 via-black/90 to-transparent p-6 space-y-3">
-                    <h3 className="text-2xl md:text-3xl font-poppins font-bold text-amber-400 line-clamp-2 tracking-tight leading-tight">
+                    <h3 className="text-2xl md:text-3xl font-chewy text-amber-400 line-clamp-2 tracking-tight leading-tight">
                       {saved.stories.title}
                     </h3>
                     

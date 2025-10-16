@@ -47,7 +47,7 @@ export const CreateNav = ({ profile, isAdmin = false }: CreateNavProps) => {
       </SheetTrigger>
       <SheetContent side="right" className={isMobile ? "w-[280px]" : "w-[300px] sm:w-[400px]"}>
         <SheetHeader>
-          <SheetTitle className={isMobile ? "" : "text-2xl font-poppins"}>Menu</SheetTitle>
+          <SheetTitle className={isMobile ? "" : "text-2xl font-chewy"}>Menu</SheetTitle>
         </SheetHeader>
         <div className={`flex flex-col gap-4 ${isMobile ? 'mt-6' : 'mt-8'}`}>
           {/* Profile Section (Mobile Only) */}

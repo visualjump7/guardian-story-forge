@@ -45,7 +45,7 @@ export const DesktopNav = ({ profile, isAdmin = false }: DesktopNavProps) => {
       </SheetTrigger>
       <SheetContent side="right" className="w-[300px] sm:w-[400px]">
         <SheetHeader>
-          <SheetTitle className="text-2xl font-poppins">Menu</SheetTitle>
+          <SheetTitle className="text-2xl font-chewy">Menu</SheetTitle>
         </SheetHeader>
         <div className="flex flex-col gap-4 mt-8">
           <Button

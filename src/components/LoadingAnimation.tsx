@@ -99,7 +99,7 @@ export const LoadingAnimation = () => {
         <div className="relative z-10 h-8 flex items-center justify-center">
           <p
             key={messageIndex}
-            className="text-xl font-poppins font-semibold bg-gradient-to-r from-primary via-accent to-secondary bg-clip-text text-transparent animate-fade-in"
+            className="text-xl font-chewy bg-gradient-to-r from-primary via-accent to-secondary bg-clip-text text-transparent animate-fade-in"
           >
             {messages[messageIndex]}
           </p>

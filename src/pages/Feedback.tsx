@@ -71,7 +71,7 @@ const Feedback = () => {
       <main className="container mx-auto px-4 py-8">
         <div className="max-w-4xl mx-auto space-y-6">
           <div className="text-center space-y-2">
-            <h1 className="text-3xl md:text-4xl font-poppins font-bold text-foreground">
+            <h1 className="text-3xl md:text-4xl font-chewy text-foreground">
               Beta Feedback
             </h1>
             <p className="text-muted-foreground text-lg flex items-center justify-center gap-2 flex-wrap">

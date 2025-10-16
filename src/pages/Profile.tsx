@@ -168,7 +168,7 @@ const Profile = () => {
                 <User className="w-12 h-12 text-primary-foreground" />
               </div>
             </div>
-            <CardTitle className="text-4xl font-poppins font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+            <CardTitle className="text-4xl font-chewy bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
               Your Profile
             </CardTitle>
             <CardDescription className="text-lg">
@@ -178,7 +178,7 @@ const Profile = () => {
           <CardContent className="space-y-8">
             {/* Personal Information Section */}
             <div className="space-y-4">
-              <h3 className="text-xl font-poppins font-bold">Personal Information</h3>
+              <h3 className="text-xl font-chewy">Personal Information</h3>
               
               <div className="space-y-2">
                 <Label htmlFor="email">Email Address</Label>
@@ -236,7 +236,7 @@ const Profile = () => {
 
             {/* Change Password Section */}
             <div className="space-y-4">
-              <h3 className="text-xl font-poppins font-bold">Change Password</h3>
+              <h3 className="text-xl font-chewy">Change Password</h3>
               
               <div className="space-y-2">
                 <Label htmlFor="newPassword">New Password</Label>

@@ -206,7 +206,7 @@ export default function LLMSettings() {
     <AdminLayout>
       <div className="space-y-6">
         <div>
-          <h1 className="text-3xl font-poppins font-bold">LLM Settings</h1>
+          <h1 className="text-3xl font-chewy">LLM Settings</h1>
           <p className="text-muted-foreground">Manage AI prompts and parameters</p>
         </div>
 
