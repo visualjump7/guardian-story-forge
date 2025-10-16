@@ -723,7 +723,12 @@ If ANY checkbox is unchecked, REWRITE THE STORY.
       try {
         console.log(`Generating ${imageConfig.type} image...`);
         
-        const imagePrompt = `Create a child-friendly illustration in ${styleDescription}. Feature ${heroName} in this ${imageConfig.description}: ${imageConfig.content}. Art style: colorful, family-friendly, high-quality with expressive characters and magical atmosphere.`;
+        // Strong no-text directive
+        const noTextDirective = "🚫 CRITICAL INSTRUCTION: Generate ONLY pure visual illustration with absolutely NO text, letters, words, numbers, titles, labels, captions, signs, logos, speech bubbles, thought bubbles, dialogue, or any written language whatsoever. 🚫\n\n";
+        
+        const negativePrompt = "\n\n❌ EXCLUDE FROM IMAGE: text, letters, words, numbers, labels, titles, captions, subtitles, signs, signage, logos, branding, speech bubbles, thought bubbles, dialogue boxes, written language, characters, symbols, typography, handwriting, print, script, alphabet, numerals ❌";
+        
+        const imagePrompt = `${noTextDirective}Create a child-friendly illustration in ${styleDescription}. Feature ${heroName} in this ${imageConfig.description}: ${imageConfig.content}. Art style: colorful, family-friendly, high-quality with expressive characters and magical atmosphere.${negativePrompt}`;
 
         const imageResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
           method: "POST",
@@ -734,7 +739,14 @@ If ANY checkbox is unchecked, REWRITE THE STORY.
           body: JSON.stringify({
             model: "google/gemini-2.5-flash-image-preview",
             messages: [
-              { role: "user", content: imagePrompt }
+              { 
+                role: "system", 
+                content: "You are an image generation AI. Your images must NEVER contain any text, letters, words, numbers, or written language of any kind. Generate only pure visual illustrations without any textual elements." 
+              },
+              { 
+                role: "user", 
+                content: imagePrompt 
+              }
             ],
             modalities: ["image", "text"]
           }),
