@@ -378,6 +378,42 @@ export type Database = {
         }
         Relationships: []
       }
+      style_presets: {
+        Row: {
+          created_at: string
+          enabled: boolean | null
+          example: string | null
+          id: string
+          name: string
+          prompt_template: string
+          slug: string
+          tags: string[] | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          enabled?: boolean | null
+          example?: string | null
+          id?: string
+          name: string
+          prompt_template: string
+          slug: string
+          tags?: string[] | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          enabled?: boolean | null
+          example?: string | null
+          id?: string
+          name?: string
+          prompt_template?: string
+          slug?: string
+          tags?: string[] | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       user_libraries: {
         Row: {
           id: string

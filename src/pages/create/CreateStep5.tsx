@@ -1,13 +1,19 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useStoryConfig } from '@/contexts/StoryConfigContext';
+import { useStoryConfig, ArtStyle } from '@/contexts/StoryConfigContext';
 import { supabase } from '@/integrations/supabase/client';
-import { HeroImage } from '@/components/create/HeroImage';
 import { StoryMagicTray } from '@/components/create/StoryMagicTray';
+import { ChoiceCard } from '@/components/create/ChoiceCard';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2 } from 'lucide-react';
 import { LibraryLimitDialog } from '@/components/LibraryLimitDialog';
+
+// Import art style images (using existing story images as temporary placeholders)
+import pixarStyleImg from '@/assets/story-adventure.jpg';
+import animeStyleImg from '@/assets/story-space.jpg';
+import illustrationStyleImg from '@/assets/story-magical.jpg';
+import comicStyleImg from '@/assets/story-epic.jpg';
 
 // Mission to Theme UUID mapping
 const MISSION_TO_THEME: Record<string, string> = {
@@ -27,10 +33,39 @@ const MISSION_TO_NARRATIVE: Record<string, string> = {
   'Escape': 'overcoming-monster',
 };
 
+const ART_STYLES = [
+  { 
+    id: 'pixar-3d' as ArtStyle, 
+    label: 'Cinematic Animation', 
+    image: pixarStyleImg,
+    description: 'Pixar / Disney 3D style'
+  },
+  { 
+    id: 'anime' as ArtStyle, 
+    label: 'Anime Vision', 
+    image: animeStyleImg,
+    description: 'Studio quality anime'
+  },
+  { 
+    id: 'illustration' as ArtStyle, 
+    label: 'Artistic Illustration', 
+    image: illustrationStyleImg,
+    description: 'Storybook concept art'
+  },
+  { 
+    id: 'comic-book' as ArtStyle, 
+    label: 'Dynamic Comic', 
+    image: comicStyleImg,
+    description: 'Graphic novel style'
+  },
+];
+
 export const CreateStep5 = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { storyConfig } = useStoryConfig();
+  const { storyConfig, setArtStyle, clearArtStyle, isStep5Complete } = useStoryConfig();
+  const [selectedStyle, setSelectedStyle] = useState<string>(storyConfig.artStyle || '');
+  const [animateSlot, setAnimateSlot] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
   const [showLibraryFullDialog, setShowLibraryFullDialog] = useState(false);
   const [libraryCount, setLibraryCount] = useState(10);
@@ -41,11 +76,24 @@ export const CreateStep5 = () => {
 
   const handleBack = () => navigate('/create/04');
 
+  const handleStyleSelect = (styleId: string, image: string) => {
+    setSelectedStyle(styleId);
+    setArtStyle(styleId as ArtStyle, image);
+    
+    setAnimateSlot(true);
+    setTimeout(() => setAnimateSlot(false), 800);
+  };
+
+  const handleSlot4Click = () => {
+    setSelectedStyle('');
+    clearArtStyle();
+  };
+
   const handleGenerateStory = async () => {
-    if (!storyConfig.characterName || !storyConfig.storyType || !storyConfig.mission) {
+    if (!storyConfig.characterName || !storyConfig.storyType || !storyConfig.mission || !storyConfig.artStyle) {
       toast({
         title: "Incomplete Story Magic",
-        description: "Please complete all steps before generating your story.",
+        description: "Please complete all steps including art style selection before generating your story.",
         variant: "destructive",
       });
       return;
@@ -86,6 +134,7 @@ export const CreateStep5 = () => {
         customStoryTypeDescription: storyConfig.customStoryTypeDescription || 'None',
         mission: narrativeStructure,
         customMissionDescription: storyConfig.customMissionDescription || 'None',
+        artStyle: storyConfig.artStyle,
       });
 
       const { data, error } = await supabase.functions.invoke('generate-story', {
@@ -98,22 +147,11 @@ export const CreateStep5 = () => {
           writingStyle: storyConfig.writingStyle || undefined,
           storyLength: 'medium',
           ageRange: '8-10',
-          artStyle: 'pixar-3d',
+          artStyle: storyConfig.artStyle || 'pixar-3d',
           customCharacterDescription: storyConfig.customCharacterDescription,
           customStoryTypeDescription: storyConfig.customStoryTypeDescription,
           customMissionDescription: storyConfig.customMissionDescription,
         },
-      });
-
-      // Log what we're sending to help debug
-      console.log('Generating story with:', {
-        heroName: storyConfig.characterName,
-        characterType: actualCharacterType,
-        customCharacterDescription: storyConfig.customCharacterDescription || 'None',
-        storyType: actualStoryType,
-        customStoryTypeDescription: storyConfig.customStoryTypeDescription || 'None',
-        mission: narrativeStructure,
-        customMissionDescription: storyConfig.customMissionDescription || 'None',
       });
 
       if (error) {
@@ -162,12 +200,35 @@ export const CreateStep5 = () => {
 
   return (
     <div className="w-full max-w-4xl mx-auto min-h-screen flex flex-col">
-      <HeroImage />
-
-      <div className="flex flex-col items-center text-center px-4 mt-4 md:mt-6">
-        <h1 className="text-3xl md:text-4xl font-bold text-story-heading mb-4 md:mb-6">
-          Ready to build your story?
+      {/* Art Style Selection Section */}
+      <div className="text-center mb-4 mt-6">
+        <h1 className="text-3xl md:text-4xl font-bold text-story-heading mb-2">
+          Choose Your Art Style
         </h1>
+        <p className="text-lg text-muted-foreground">
+          Select the visual style for your story
+        </p>
+      </div>
+
+      {/* Art Style Cards Grid */}
+      <div className="grid grid-cols-2 gap-3 mb-6 px-4">
+        {ART_STYLES.map((style) => (
+          <ChoiceCard
+            key={style.id}
+            id={style.id}
+            label={style.label}
+            imageSrc={style.image}
+            selected={selectedStyle === style.id}
+            onSelect={() => handleStyleSelect(style.id, style.image)}
+          />
+        ))}
+      </div>
+
+      {/* Generate Story Section */}
+      <div className="flex flex-col items-center text-center px-4 mt-4">
+        <h2 className="text-2xl md:text-3xl font-bold text-story-heading mb-4">
+          Ready to build your story?
+        </h2>
 
         <div className="flex gap-4 md:gap-6 items-center justify-center">
           <Button
@@ -183,9 +244,9 @@ export const CreateStep5 = () => {
           <Button
             size="lg"
             onClick={handleGenerateStory}
-            disabled={isGenerating}
+            disabled={isGenerating || !isStep5Complete()}
             className={`text-lg px-8 ${
-              !isGenerating ? 'animate-button-pulse' : ''
+              !isGenerating && isStep5Complete() ? 'animate-button-pulse' : ''
             }`}
           >
             {isGenerating ? (
@@ -200,6 +261,7 @@ export const CreateStep5 = () => {
         </div>
       </div>
 
+      {/* Story Magic Tray - Now with 4 slots */}
       <div className="mt-6">
         <StoryMagicTray
           slot1={{
@@ -222,6 +284,14 @@ export const CreateStep5 = () => {
             label: storyConfig.mission || undefined,
             active: false,
             onClick: handleSlot3Click,
+          }}
+          slot4={{
+            filled: !!selectedStyle,
+            imageSrc: storyConfig.assets.artStyleIcon || undefined,
+            label: selectedStyle ? ART_STYLES.find(s => s.id === selectedStyle)?.label : undefined,
+            active: true,
+            justFilled: animateSlot,
+            onClick: handleSlot4Click,
           }}
         />
       </div>

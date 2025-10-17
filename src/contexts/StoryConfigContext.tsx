@@ -11,6 +11,7 @@ export type WritingStyle =
   | 'action-packed'
   | 'gentle-reassuring'
   | 'Surprise';
+export type ArtStyle = 'pixar-3d' | 'anime' | 'illustration' | 'comic-book';
 
 interface StoryConfig {
   characterName: string;
@@ -18,6 +19,7 @@ interface StoryConfig {
   storyType: StoryType | null;
   mission: Mission | null;
   writingStyle: WritingStyle | null;
+  artStyle: ArtStyle | null;
   customCharacterDescription?: string;
   customStoryTypeDescription?: string;
   customMissionDescription?: string;
@@ -26,6 +28,7 @@ interface StoryConfig {
     storyTypeIcon: string | null;
     missionIcon: string | null;
     writingStyleIcon: string | null;
+    artStyleIcon: string | null;
   };
 }
 
@@ -36,6 +39,7 @@ interface StoryConfigContextType {
   setStoryType: (type: StoryType, icon: string) => void;
   setMission: (mission: Mission, icon: string) => void;
   setWritingStyle: (style: WritingStyle, icon: string) => void;
+  setArtStyle: (style: ArtStyle, icon: string) => void;
   setCustomCharacterDescription: (description: string) => void;
   setCustomStoryTypeDescription: (description: string) => void;
   setCustomMissionDescription: (description: string) => void;
@@ -43,12 +47,14 @@ interface StoryConfigContextType {
   clearStoryType: () => void;
   clearMission: () => void;
   clearWritingStyle: () => void;
+  clearArtStyle: () => void;
   resetConfig: () => void;
   isStep1Complete: () => boolean;
   isStep2Complete: () => boolean;
   isStep3Complete: () => boolean;
   isStep4Complete: () => boolean;
   isStep4_5Complete: () => boolean;
+  isStep5Complete: () => boolean;
 }
 
 const defaultConfig: StoryConfig = {
@@ -57,6 +63,7 @@ const defaultConfig: StoryConfig = {
   storyType: null,
   mission: null,
   writingStyle: null,
+  artStyle: null,
   customCharacterDescription: undefined,
   customStoryTypeDescription: undefined,
   customMissionDescription: undefined,
@@ -65,6 +72,7 @@ const defaultConfig: StoryConfig = {
     storyTypeIcon: null,
     missionIcon: null,
     writingStyleIcon: null,
+    artStyleIcon: null,
   },
 };
 
@@ -171,6 +179,22 @@ export const StoryConfigProvider = ({ children }: { children: ReactNode }) => {
     }));
   };
 
+  const setArtStyle = (style: ArtStyle, icon: string) => {
+    setStoryConfig(prev => ({
+      ...prev,
+      artStyle: style,
+      assets: { ...prev.assets, artStyleIcon: icon },
+    }));
+  };
+
+  const clearArtStyle = () => {
+    setStoryConfig(prev => ({
+      ...prev,
+      artStyle: null,
+      assets: { ...prev.assets, artStyleIcon: null },
+    }));
+  };
+
   const resetConfig = () => {
     setStoryConfig(defaultConfig);
     localStorage.removeItem('storyConfig');
@@ -196,6 +220,10 @@ export const StoryConfigProvider = ({ children }: { children: ReactNode }) => {
     return storyConfig.writingStyle !== null;
   };
 
+  const isStep5Complete = () => {
+    return storyConfig.artStyle !== null;
+  };
+
   return (
     <StoryConfigContext.Provider
       value={{
@@ -205,6 +233,7 @@ export const StoryConfigProvider = ({ children }: { children: ReactNode }) => {
         setStoryType,
         setMission,
         setWritingStyle,
+        setArtStyle,
         setCustomCharacterDescription,
         setCustomStoryTypeDescription,
         setCustomMissionDescription,
@@ -212,12 +241,14 @@ export const StoryConfigProvider = ({ children }: { children: ReactNode }) => {
         clearStoryType,
         clearMission,
         clearWritingStyle,
+        clearArtStyle,
         resetConfig,
         isStep1Complete,
         isStep2Complete,
         isStep3Complete,
         isStep4Complete,
         isStep4_5Complete,
+        isStep5Complete,
       }}
     >
       {children}

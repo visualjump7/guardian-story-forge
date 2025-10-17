@@ -13,9 +13,10 @@ interface StoryMagicTrayProps {
   slot1: TraySlot;
   slot2: TraySlot;
   slot3: TraySlot;
+  slot4?: TraySlot;
 }
 
-export const StoryMagicTray = ({ slot1, slot2, slot3 }: StoryMagicTrayProps) => {
+export const StoryMagicTray = ({ slot1, slot2, slot3, slot4 }: StoryMagicTrayProps) => {
   const renderSlot = (slot: TraySlot, index: number) => {
     const isClickable = !!slot.onClick;
 
@@ -77,6 +78,7 @@ export const StoryMagicTray = ({ slot1, slot2, slot3 }: StoryMagicTrayProps) => 
           {renderSlot(slot1, 1)}
           {renderSlot(slot2, 2)}
           {renderSlot(slot3, 3)}
+          {slot4 && renderSlot(slot4, 4)}
         </div>
       </div>
     </div>
