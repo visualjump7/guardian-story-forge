@@ -60,6 +60,8 @@ export const CreateStep4 = () => {
     return !!selectedMission;
   };
 
+  const hasSelection = !!selectedMission;
+
   const handleBack = () => {
     navigate('/create/03');
   };
@@ -112,6 +114,7 @@ export const CreateStep4 = () => {
             label={mission.label}
             imageSrc={mission.image}
             selected={selectedMission === mission.id}
+            hasSelection={hasSelection}
             onSelect={() => handleSelect(mission.id, mission.image)}
           />
         ))}

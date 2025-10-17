@@ -5,10 +5,11 @@ interface ChoiceCardProps {
   label: string;
   imageSrc: string;
   selected: boolean;
+  hasSelection?: boolean;
   onSelect: () => void;
 }
 
-export const ChoiceCard = ({ label, imageSrc, selected, onSelect }: ChoiceCardProps) => {
+export const ChoiceCard = ({ label, imageSrc, selected, hasSelection, onSelect }: ChoiceCardProps) => {
   return (
     <button
       onClick={onSelect}
@@ -24,7 +25,7 @@ export const ChoiceCard = ({ label, imageSrc, selected, onSelect }: ChoiceCardPr
     >
       <div
         className={cn(
-          'w-full aspect-square rounded-lg overflow-hidden transition-transform duration-300',
+          'w-full aspect-square rounded-lg overflow-hidden transition-transform duration-300 relative',
           'group-hover:scale-105',
           selected && 'ring-2 ring-story-choice-selected ring-offset-2 ring-offset-card'
         )}
@@ -34,8 +35,15 @@ export const ChoiceCard = ({ label, imageSrc, selected, onSelect }: ChoiceCardPr
           alt={label}
           className="w-full h-full object-cover"
         />
+        {/* Dimming overlay for unselected cards */}
+        {hasSelection && !selected && (
+          <div className="absolute inset-0 bg-black/50 transition-opacity duration-300 z-10" />
+        )}
       </div>
-      <span className="text-sm font-bold text-center text-foreground font-fredoka">
+      <span className={cn(
+        "text-sm font-bold text-center text-foreground font-fredoka transition-opacity duration-300",
+        hasSelection && !selected && 'opacity-50'
+      )}>
         {label}
       </span>
     </button>

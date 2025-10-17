@@ -60,6 +60,8 @@ export const CreateStep3 = () => {
     return !!selectedType;
   };
 
+  const hasSelection = !!selectedType;
+
   const handleBack = () => {
     navigate('/create/02');
   };
@@ -106,6 +108,7 @@ export const CreateStep3 = () => {
             label={type.label}
             imageSrc={type.image}
             selected={selectedType === type.id}
+            hasSelection={hasSelection}
             onSelect={() => handleSelect(type.id, type.image)}
           />
         ))}

@@ -76,6 +76,8 @@ export const CreateStep5 = () => {
 
   const handleBack = () => navigate('/create/04');
 
+  const hasSelection = !!selectedStyle;
+
   const handleStyleSelect = (styleId: string, image: string) => {
     setSelectedStyle(styleId);
     setArtStyle(styleId as ArtStyle, image);
@@ -219,6 +221,7 @@ export const CreateStep5 = () => {
             label={style.label}
             imageSrc={style.image}
             selected={selectedStyle === style.id}
+            hasSelection={hasSelection}
             onSelect={() => handleStyleSelect(style.id, style.image)}
           />
         ))}
