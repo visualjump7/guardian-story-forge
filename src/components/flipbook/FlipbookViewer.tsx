@@ -10,9 +10,11 @@ interface FlipbookViewerProps {
   onPageTurn?: (page: number) => void;
   onRegenerateImage?: (pageIndex: number) => void;
   canEdit?: boolean;
+  title?: string;
+  author?: string;
 }
 
-export const FlipbookViewer = ({ pages, onPageTurn, onRegenerateImage, canEdit }: FlipbookViewerProps) => {
+export const FlipbookViewer = ({ pages, onPageTurn, onRegenerateImage, canEdit, title, author }: FlipbookViewerProps) => {
   const [currentPage, setCurrentPage] = useState(0);
   const [isFlipping, setIsFlipping] = useState(false);
 
@@ -55,6 +57,22 @@ export const FlipbookViewer = ({ pages, onPageTurn, onRegenerateImage, canEdit }
               onRegenerateImage={() => onRegenerateImage?.(currentPage)}
               canEdit={canEdit}
             />
+            
+            {/* Title and Byline Overlay */}
+            {(title || author) && (
+              <div className="absolute bottom-4 left-4 z-20 bg-black/70 backdrop-blur-sm px-4 py-3 rounded-lg border border-white/20 max-w-[80%]">
+                {title && (
+                  <h3 className="font-crimson font-bold text-white text-xl md:text-2xl leading-tight">
+                    {title}
+                  </h3>
+                )}
+                {author && (
+                  <p className="font-crimson text-white/90 text-sm md:text-base mt-1">
+                    By {author}
+                  </p>
+                )}
+              </div>
+            )}
           </div>
         </div>
       </div>

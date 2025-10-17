@@ -367,15 +367,6 @@ const FlipbookStoryView = () => {
         ) : (
           // Flipbook View
           <div className="space-y-3 md:space-y-4 animate-[fadeInUp_1s_ease-out_0.3s_both]">
-            <div className="text-center mb-3 md:mb-4">
-              <h2 className="font-crimson font-bold text-2xl md:text-3xl text-primary mb-1">
-                {story.title}
-              </h2>
-              <p className="font-crimson text-base md:text-lg text-primary">
-                By {creatorName}
-              </p>
-            </div>
-
             {isMobile ? (
               <FlatPageSlider 
                 pages={pages}
@@ -388,6 +379,8 @@ const FlipbookStoryView = () => {
             ) : (
               <FlipbookViewer 
                 pages={pages}
+                title={story.title}
+                author={creatorName}
                 onRegenerateImage={(pageIndex) => {
                   setPageToRegenerate(pageIndex);
                   setIsRegenerateDialogOpen(true);
