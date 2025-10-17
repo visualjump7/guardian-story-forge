@@ -58,8 +58,8 @@ export const FlipbookViewer = ({ pages, onPageTurn, onRegenerateImage, canEdit, 
               canEdit={canEdit}
             />
             
-            {/* Title and Byline Overlay */}
-            {(title || author) && (
+            {/* Title and Byline Overlay - Only on Cover Page */}
+            {(title || author) && pages[currentPage]?.type === 'cover' && (
               <div className="absolute bottom-4 left-4 z-20 bg-black/70 backdrop-blur-sm px-4 py-3 rounded-lg border border-white/20 max-w-[80%]">
                 {title && (
                   <h3 className="font-crimson font-bold text-white text-xl md:text-2xl leading-tight">
