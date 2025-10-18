@@ -84,7 +84,28 @@ const ConfigSchema = z.object({
     user_seed: z.string()
   }),
   validators: z.record(z.any()),
-  safety: z.record(z.any())
+  safety: z.record(z.any()),
+  art_policy: z.object({
+    strategy: z.string(),
+    image_model: z.string(),
+    lazy_render: z.boolean(),
+    triggers: z.array(z.string()),
+    continuity: z.record(z.boolean()),
+    band_defaults: z.record(z.object({
+      upfront_images: z.array(z.string()),
+      suggest_pages: z.array(z.string()),
+      max_images_per_story: z.number()
+    })),
+    beats_to_page_windows: z.record(z.tuple([z.number(), z.number()])),
+    image_sizes: z.object({
+      default: z.number(),
+      allowed_custom: z.array(z.number()),
+      thumbnail: z.number(),
+      snap_to_multiple: z.number()
+    }),
+    safety: z.record(z.boolean()),
+    performance: z.record(z.any())
+  }).optional()
 });
 
 export type AgeBandConfig = z.infer<typeof ConfigSchema>;
@@ -315,6 +336,50 @@ export class ConfigManager {
 
   getResponseSchema() {
     return this.getConfig().model.response.response_schema;
+  }
+
+  // Art Policy methods
+  getArtPolicy() {
+    const config = this.getConfig();
+    return config.art_policy || null;
+  }
+
+  getUpfrontImageBeats(band: 'A' | 'B'): string[] {
+    const policy = this.getArtPolicy();
+    if (!policy) return [];
+    return policy.band_defaults[band]?.upfront_images || [];
+  }
+
+  getSuggestedImageBeats(band: 'A' | 'B'): string[] {
+    const policy = this.getArtPolicy();
+    if (!policy) return [];
+    return policy.band_defaults[band]?.suggest_pages || [];
+  }
+
+  getMaxImagesPerStory(band: 'A' | 'B'): number {
+    const policy = this.getArtPolicy();
+    if (!policy) return 10;
+    return policy.band_defaults[band]?.max_images_per_story || 10;
+  }
+
+  getPageWindowForBeat(beat: string): [number, number] | null {
+    const policy = this.getArtPolicy();
+    if (!policy) return null;
+    const window = policy.beats_to_page_windows[beat];
+    if (!window || !Array.isArray(window) || window.length !== 2) return null;
+    return [window[0], window[1]];
+  }
+
+  snapImageSize(requestedSize: number): number {
+    const policy = this.getArtPolicy();
+    if (!policy) return requestedSize;
+    const multiple = policy.image_sizes.snap_to_multiple;
+    return Math.round(requestedSize / multiple) * multiple;
+  }
+
+  getDefaultImageSize(): number {
+    const policy = this.getArtPolicy();
+    return policy?.image_sizes.default || 896;
   }
 }
 

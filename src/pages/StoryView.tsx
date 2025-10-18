@@ -121,7 +121,7 @@ const StoryView = () => {
     
     setProfile(currentUserProfile);
 
-    // Load story
+    // Load story - Filter for JSON-only stories (source_version = 'json_v1')
     const { data: storyData, error } = await supabase
       .from("stories")
       .select(`
@@ -129,11 +129,13 @@ const StoryView = () => {
         story_themes!theme_id(name, emoji)
       `)
       .eq("id", storyId)
+      .eq("source_version", "json_v1")
       .single();
 
     if (error || !storyData) {
-      toast.error("Story not found");
-      navigate("/home");
+      // Legacy story or not found
+      toast.error("Story not found or unavailable in the new format");
+      navigate("/library");
       return;
     }
 

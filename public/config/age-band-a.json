@@ -227,5 +227,55 @@
       { "category": "HARM_CATEGORY_DANGEROUS_CONTENT", "threshold": "BLOCK_LOW_AND_ABOVE" },
       { "category": "HARM_CATEGORY_VIOLENCE", "threshold": "BLOCK_LOW_AND_ABOVE" }
     ]
+  },
+
+  "art_policy": {
+    "strategy": "progressive",
+    "image_model": "google/gemini-2.5-flash",
+    "lazy_render": true,
+    "triggers": ["on_story_loaded", "on_page_visible", "on_user_tap"],
+    "continuity": {
+      "lock_style_and_palette_after_first_image": true,
+      "reuse_character_sheet": true,
+      "allow_background_reuse": true
+    },
+    "band_defaults": {
+      "A": {
+        "upfront_images": ["cover", "hook", "midpoint", "climax"],
+        "suggest_pages": ["inciting", "try1", "try2", "setback", "plan", "resolution", "button"],
+        "max_images_per_story": 12
+      }
+    },
+    "beats_to_page_windows": {
+      "cover": [0, 0],
+      "hook": [1, 2],
+      "inciting": [3, 4],
+      "try1": [5, 6],
+      "try2": [7, 8],
+      "midpoint": [9, 10],
+      "setback": [11, 12],
+      "plan": [13, 14],
+      "climax": [15, 16],
+      "resolution": [17, 18],
+      "button": [19, 20]
+    },
+    "image_sizes": {
+      "default": 896,
+      "allowed_custom": [512, 640, 768, 896, 1024, 1152],
+      "thumbnail": 512,
+      "snap_to_multiple": 64
+    },
+    "safety": {
+      "kid_safe": true,
+      "no_scary_closeups": true,
+      "friendly_expressions": true,
+      "alt_text_required": true
+    },
+    "performance": {
+      "concurrency_limit": 2,
+      "cache_keys": ["band", "image_style", "character_sheet", "palette", "camera"],
+      "prewarm_on_story_loaded": 2,
+      "versions_to_keep": 2
+    }
   }
 }

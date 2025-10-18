@@ -1,0 +1,30 @@
+{
+  "version": "1.1",
+  "app": {
+    "name": "KidsStoryBuilder",
+    "band": "A",
+    "age_range": "5-7"
+  },
+  "model": {
+    "name": "gemini-2.5-flash",
+    "generationConfig": { "temperature": 0.6 }
+  },
+  "bands": {
+    "A": {
+      "words_total": [300, 500],
+      "sentence_len": [8, 12],
+      "pages": 20,
+      "words_per_page": [18, 30],
+      "dialog_ratio_target": 0.40,
+      "safety": { "resolve_fear_within_pages": 2 }
+    }
+  },
+  "art_policy": {
+    "band_defaults": {
+      "A": {
+        "upfront_images": ["cover", "hook", "midpoint", "climax"],
+        "max_images_per_story": 12
+      }
+    }
+  }
+}
