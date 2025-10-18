@@ -11,7 +11,6 @@ import { Loader2, AlertCircle } from 'lucide-react';
 import { LibraryLimitDialog } from '@/components/LibraryLimitDialog';
 import { Switch } from '@/components/ui/switch';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { CharacterLockDialog } from '@/components/create/CharacterLockDialog';
 
 // Import art style images (using existing story images as temporary placeholders)
 import pixarStyleImg from '@/assets/story-adventure.jpg';
@@ -74,8 +73,6 @@ export const CreateStep5 = () => {
   const [isGenerating, setIsGenerating] = useState(false);
   const [showLibraryFullDialog, setShowLibraryFullDialog] = useState(false);
   const [libraryCount, setLibraryCount] = useState(10);
-  const [showCharacterLock, setShowCharacterLock] = useState(false);
-  const [characterSheet, setCharacterSheet] = useState<any>(null);
 
   const handleSlot1Click = () => navigate('/create/02');
   const handleSlot2Click = () => navigate('/create/03');
@@ -105,12 +102,6 @@ export const CreateStep5 = () => {
         description: "Please complete all steps including art style selection before generating your story.",
         variant: "destructive",
       });
-      return;
-    }
-
-    // If no character sheet locked yet, show modal
-    if (!characterSheet) {
-      setShowCharacterLock(true);
       return;
     }
 
@@ -167,7 +158,6 @@ export const CreateStep5 = () => {
           customCharacterDescription: storyConfig.customCharacterDescription,
           customStoryTypeDescription: storyConfig.customStoryTypeDescription,
           customMissionDescription: storyConfig.customMissionDescription,
-          characterSheet: characterSheet,
           selectedBand: selectedBand, // Pass age band
         },
       });
@@ -372,19 +362,6 @@ export const CreateStep5 = () => {
           }}
         />
       </div>
-
-      <CharacterLockDialog
-        open={showCharacterLock}
-        onOpenChange={setShowCharacterLock}
-        characterName={storyConfig.characterName}
-        characterType={storyConfig.characterType || 'Hero'}
-        customDescription={storyConfig.customCharacterDescription}
-        onConfirm={(sheet) => {
-          setCharacterSheet(sheet);
-          setShowCharacterLock(false);
-          setTimeout(() => handleGenerateStory(), 100);
-        }}
-      />
 
       <LibraryLimitDialog
         open={showLibraryFullDialog}
