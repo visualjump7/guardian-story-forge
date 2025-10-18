@@ -1,15 +1,16 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useStoryConfig, ArtStyle } from '@/contexts/StoryConfigContext';
+import { useAgeBand } from '@/contexts/AgeBandContext';
 import { supabase } from '@/integrations/supabase/client';
 import { StoryMagicTray } from '@/components/create/StoryMagicTray';
 import { ChoiceCard } from '@/components/create/ChoiceCard';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2 } from 'lucide-react';
+import { Loader2, AlertCircle } from 'lucide-react';
 import { LibraryLimitDialog } from '@/components/LibraryLimitDialog';
 import { Switch } from '@/components/ui/switch';
-import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { CharacterLockDialog } from '@/components/create/CharacterLockDialog';
 
 // Import art style images (using existing story images as temporary placeholders)
@@ -67,6 +68,7 @@ export const CreateStep5 = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { storyConfig, setArtStyle, clearArtStyle, setGenerationMode, isStep5Complete } = useStoryConfig();
+  const { selectedBand, isConfigLoaded } = useAgeBand();
   const [selectedStyle, setSelectedStyle] = useState<string>(storyConfig.artStyle || '');
   const [animateSlot, setAnimateSlot] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
@@ -166,6 +168,7 @@ export const CreateStep5 = () => {
           customStoryTypeDescription: storyConfig.customStoryTypeDescription,
           customMissionDescription: storyConfig.customMissionDescription,
           characterSheet: characterSheet,
+          selectedBand: selectedBand, // Pass age band
         },
       });
 
@@ -215,6 +218,17 @@ export const CreateStep5 = () => {
 
   return (
     <div className="w-full max-w-4xl mx-auto min-h-screen flex flex-col">
+      {/* Config Warning */}
+      {!isConfigLoaded && (
+        <Alert variant="destructive" className="mx-4 mt-6">
+          <AlertCircle className="h-4 w-4" />
+          <AlertTitle>Configuration Error</AlertTitle>
+          <AlertDescription>
+            Story configs not loaded. Please reload the app.
+          </AlertDescription>
+        </Alert>
+      )}
+
       {/* Art Style Selection Section */}
       <div className="text-center mb-4 mt-6">
         <h1 className="text-3xl md:text-4xl font-bold text-story-heading mb-2">
@@ -307,9 +321,9 @@ export const CreateStep5 = () => {
           <Button
             size="lg"
             onClick={handleGenerateStory}
-            disabled={isGenerating || !isStep5Complete()}
+            disabled={isGenerating || !isStep5Complete() || !isConfigLoaded}
             className={`text-lg px-8 ${
-              !isGenerating && isStep5Complete() ? 'animate-button-pulse' : ''
+              !isGenerating && isStep5Complete() && isConfigLoaded ? 'animate-button-pulse' : ''
             }`}
           >
             {isGenerating ? (

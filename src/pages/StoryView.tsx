@@ -3,7 +3,10 @@ import { useParams, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useAgeBand } from "@/contexts/AgeBandContext";
+import { configManager } from "@/services/configManager";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -24,7 +27,8 @@ import {
   Sparkles,
   Download,
   BookOpen,
-  Pencil
+  Pencil,
+  AlertCircle
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -81,6 +85,7 @@ const StoryView = () => {
   const navigate = useNavigate();
   const isMobile = useIsMobile();
   const { isAdmin } = useAuth();
+  const { isConfigLoaded, selectedBand, activeStoryConfig } = useAgeBand();
   const [story, setStory] = useState<Story | null>(null);
   const [storyImages, setStoryImages] = useState<StoryImage[]>([]);
   const [isSaved, setIsSaved] = useState(false);
@@ -98,6 +103,11 @@ const StoryView = () => {
   const [imageToRegenerate, setImageToRegenerate] = useState<{ id: string; index: number } | null>(null);
   const [isDownloadingPdf, setIsDownloadingPdf] = useState(false);
   const [generationMode, setGenerationMode] = useState<'express' | 'studio'>('express');
+  
+  // Determine max images based on age band
+  const maxImages = activeStoryConfig 
+    ? configManager.getMaxImagesPerStory(selectedBand)
+    : (selectedBand === 'A' ? 12 : 8); // Fallback
 
   useEffect(() => {
     loadStory();
@@ -617,6 +627,17 @@ const StoryView = () => {
       </AlertDialog>
 
       <main className="container mx-auto px-4 py-12 max-w-6xl">
+        {/* Config Warning */}
+        {!isConfigLoaded && (
+          <Alert variant="destructive" className="mb-6">
+            <AlertCircle className="h-4 w-4" />
+            <AlertTitle>Configuration Missing</AlertTitle>
+            <AlertDescription>
+              Age band configuration not loaded. Image generation may fail. Please reload the app.
+            </AlertDescription>
+          </Alert>
+        )}
+
         <Card className="shadow-2xl border-2">
           <CardHeader className="space-y-4">
             {storyImages.length > 0 ? (

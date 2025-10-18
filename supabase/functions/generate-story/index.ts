@@ -35,7 +35,9 @@ const storyRequestSchema = z.object({
   storyUniverse: z.string().max(50, "Story universe must be less than 50 characters").optional(),
   customCharacterDescription: z.string().trim().max(80, "Custom character description must be less than 80 characters").optional(),
   customStoryTypeDescription: z.string().trim().max(80, "Custom story type description must be less than 80 characters").optional(),
-  customMissionDescription: z.string().trim().max(80, "Custom mission description must be less than 80 characters").optional()
+  customMissionDescription: z.string().trim().max(80, "Custom mission description must be less than 80 characters").optional(),
+  selectedBand: z.enum(['A', 'B']).optional(),
+  characterSheet: z.record(z.any()).optional()
 });
 
 serve(async (req) => {
@@ -78,7 +80,9 @@ serve(async (req) => {
       storyUniverse,
       customCharacterDescription,
       customStoryTypeDescription,
-      customMissionDescription
+      customMissionDescription,
+      selectedBand,
+      characterSheet
     } = validation.data;
 
     // Server-side content validation for custom descriptions
@@ -179,6 +183,24 @@ serve(async (req) => {
     if (userError || !user) {
       throw new Error("Unauthorized");
     }
+
+    // Determine age band to use
+    let ageBand: 'A' | 'B';
+    
+    if (selectedBand && (selectedBand === 'A' || selectedBand === 'B')) {
+      ageBand = selectedBand;
+    } else {
+      // Fallback to profile
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('age_band')
+        .eq('id', user.id)
+        .single();
+      
+      ageBand = profile?.age_band === 'A' ? 'A' : 'B';
+    }
+    
+    console.log(`✓ Using age band: ${ageBand}`);
 
     // Check if user's library is full (max 10 stories)
     const { count: libraryCount, error: countError } = await supabase
