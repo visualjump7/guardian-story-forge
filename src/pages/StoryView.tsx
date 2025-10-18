@@ -97,6 +97,7 @@ const StoryView = () => {
   const [regenerateDialogOpen, setRegenerateDialogOpen] = useState(false);
   const [imageToRegenerate, setImageToRegenerate] = useState<{ id: string; index: number } | null>(null);
   const [isDownloadingPdf, setIsDownloadingPdf] = useState(false);
+  const [generationMode, setGenerationMode] = useState<'express' | 'studio'>('express');
 
   useEffect(() => {
     loadStory();
@@ -228,7 +229,11 @@ const StoryView = () => {
     toast.loading("Creating your illustration...", { id: "generate-image" });
     
     try {
-      const { data, error } = await supabase.functions.invoke("generate-story-image", {
+      const imageFunction = generationMode === 'studio' 
+        ? 'generate-story-image-leonardo' 
+        : 'generate-story-image';
+      
+      const { data, error } = await supabase.functions.invoke(imageFunction, {
         body: { 
           storyId,
           customizations: customizations || undefined
@@ -747,6 +752,8 @@ const StoryView = () => {
           storyExcerpt={story.content.split('\n\n').find((p: string) => p.trim()) || story.content.substring(0, 200)}
           imageCount={storyImages.length}
           isGenerating={generatingImage}
+          generationMode={generationMode}
+          onGenerationModeChange={setGenerationMode}
         />
       )}
       <FixedFeedbackButton />

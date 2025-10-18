@@ -6,6 +6,9 @@ verify_jwt = true
 [functions.generate-story-image]
 verify_jwt = true
 
+[functions.generate-story-image-leonardo]
+verify_jwt = true
+
 [functions.generate-story-audio]
 verify_jwt = true
 

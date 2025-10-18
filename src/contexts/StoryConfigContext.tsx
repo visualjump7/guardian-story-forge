@@ -12,6 +12,7 @@ export type WritingStyle =
   | 'gentle-reassuring'
   | 'Surprise';
 export type ArtStyle = 'pixar-3d' | 'anime' | 'illustration' | 'comic-book';
+export type GenerationMode = 'express' | 'studio';
 
 interface StoryConfig {
   characterName: string;
@@ -20,6 +21,7 @@ interface StoryConfig {
   mission: Mission | null;
   writingStyle: WritingStyle | null;
   artStyle: ArtStyle | null;
+  generationMode: GenerationMode;
   customCharacterDescription?: string;
   customStoryTypeDescription?: string;
   customMissionDescription?: string;
@@ -40,6 +42,7 @@ interface StoryConfigContextType {
   setMission: (mission: Mission, icon: string) => void;
   setWritingStyle: (style: WritingStyle, icon: string) => void;
   setArtStyle: (style: ArtStyle, icon: string) => void;
+  setGenerationMode: (mode: GenerationMode) => void;
   setCustomCharacterDescription: (description: string) => void;
   setCustomStoryTypeDescription: (description: string) => void;
   setCustomMissionDescription: (description: string) => void;
@@ -64,6 +67,7 @@ const defaultConfig: StoryConfig = {
   mission: null,
   writingStyle: null,
   artStyle: null,
+  generationMode: 'express',
   customCharacterDescription: undefined,
   customStoryTypeDescription: undefined,
   customMissionDescription: undefined,
@@ -195,6 +199,10 @@ export const StoryConfigProvider = ({ children }: { children: ReactNode }) => {
     }));
   };
 
+  const setGenerationMode = (mode: GenerationMode) => {
+    setStoryConfig(prev => ({ ...prev, generationMode: mode }));
+  };
+
   const resetConfig = () => {
     setStoryConfig(defaultConfig);
     localStorage.removeItem('storyConfig');
@@ -234,6 +242,7 @@ export const StoryConfigProvider = ({ children }: { children: ReactNode }) => {
         setMission,
         setWritingStyle,
         setArtStyle,
+        setGenerationMode,
         setCustomCharacterDescription,
         setCustomStoryTypeDescription,
         setCustomMissionDescription,

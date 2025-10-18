@@ -31,6 +31,7 @@ const storyRequestSchema = z.object({
   ageRange: z.enum(["5-7", "8-10", "11-12"]).default("8-10"),
   setting: z.string().max(100, "Setting must be less than 100 characters").optional(),
   artStyle: z.enum(["pixar-3d", "ghibli-2d", "watercolor", "classic-disney", "modern-cartoon", "anime", "comic-book"]).default("pixar-3d"),
+  generationMode: z.enum(["express", "studio"]).default("express"),
   storyUniverse: z.string().max(50, "Story universe must be less than 50 characters").optional(),
   customCharacterDescription: z.string().trim().max(80, "Custom character description must be less than 80 characters").optional(),
   customStoryTypeDescription: z.string().trim().max(80, "Custom story type description must be less than 80 characters").optional(),
@@ -73,6 +74,7 @@ serve(async (req) => {
       setting,
       secondaryThemeId,
       artStyle,
+      generationMode,
       storyUniverse,
       customCharacterDescription,
       customStoryTypeDescription,
@@ -715,13 +717,18 @@ If ANY checkbox is unchecked, REWRITE THE STORY.
       }
     ];
 
-    console.log("Generating 1 hero image...");
+    console.log("Generating 1 hero image using", generationMode, "mode...");
+
+    // Route to the correct image generation function based on mode
+    const imageFunction = generationMode === 'studio' 
+      ? 'generate-story-image-leonardo'
+      : 'generate-story-image';
 
     for (let i = 0; i < imagesToGenerate.length; i++) {
       const imageConfig = imagesToGenerate[i];
       
       try {
-        console.log(`Generating ${imageConfig.type} image...`);
+        console.log(`Generating ${imageConfig.type} image using ${imageFunction}...`);
         
         // Strong no-text directive
         const noTextDirective = "🚫 CRITICAL INSTRUCTION: Generate ONLY pure visual illustration with absolutely NO text, letters, words, numbers, titles, labels, captions, signs, logos, speech bubbles, thought bubbles, dialogue, or any written language whatsoever. 🚫\n\n";

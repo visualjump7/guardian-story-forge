@@ -8,6 +8,8 @@ import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2 } from 'lucide-react';
 import { LibraryLimitDialog } from '@/components/LibraryLimitDialog';
+import { Switch } from '@/components/ui/switch';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 
 // Import art style images (using existing story images as temporary placeholders)
 import pixarStyleImg from '@/assets/story-adventure.jpg';
@@ -63,7 +65,7 @@ const ART_STYLES = [
 export const CreateStep5 = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { storyConfig, setArtStyle, clearArtStyle, isStep5Complete } = useStoryConfig();
+  const { storyConfig, setArtStyle, clearArtStyle, setGenerationMode, isStep5Complete } = useStoryConfig();
   const [selectedStyle, setSelectedStyle] = useState<string>(storyConfig.artStyle || '');
   const [animateSlot, setAnimateSlot] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
@@ -150,6 +152,7 @@ export const CreateStep5 = () => {
           storyLength: 'medium',
           ageRange: '8-10',
           artStyle: storyConfig.artStyle || 'pixar-3d',
+          generationMode: storyConfig.generationMode,
           customCharacterDescription: storyConfig.customCharacterDescription,
           customStoryTypeDescription: storyConfig.customStoryTypeDescription,
           customMissionDescription: storyConfig.customMissionDescription,
@@ -225,6 +228,53 @@ export const CreateStep5 = () => {
             onSelect={() => handleStyleSelect(style.id, style.image)}
           />
         ))}
+      </div>
+
+      {/* Image Generation Quality Toggle */}
+      <div className="px-4 mb-6">
+        <div className="max-w-2xl mx-auto">
+          <h3 className="text-xl font-bold text-story-heading mb-3 text-center">
+            Image Generation Quality
+          </h3>
+          
+          <div className="flex items-center justify-center gap-4 mb-3">
+            <div className={`flex items-center gap-2 transition-opacity ${
+              storyConfig.generationMode === 'express' ? 'opacity-100' : 'opacity-50'
+            }`}>
+              <span className="text-2xl">🚀</span>
+              <span className="font-semibold">Express</span>
+            </div>
+            
+            <Switch
+              checked={storyConfig.generationMode === 'studio'}
+              onCheckedChange={(checked) => setGenerationMode(checked ? 'studio' : 'express')}
+            />
+            
+            <div className={`flex items-center gap-2 transition-opacity ${
+              storyConfig.generationMode === 'studio' ? 'opacity-100' : 'opacity-50'
+            }`}>
+              <span className="text-2xl">🎨</span>
+              <span className="font-semibold">Studio</span>
+            </div>
+          </div>
+          
+          {storyConfig.generationMode === 'express' && (
+            <Alert>
+              <AlertDescription>
+                <span className="font-medium">Fast generation</span> - Images ready in ~10 seconds using AI-powered creation
+              </AlertDescription>
+            </Alert>
+          )}
+          
+          {storyConfig.generationMode === 'studio' && (
+            <Alert className="border-amber-500 bg-amber-50">
+              <AlertDescription>
+                <span className="font-medium">Premium quality</span> - Studio-grade images with enhanced detail. 
+                Processing takes 1-2 minutes per image.
+              </AlertDescription>
+            </Alert>
+          )}
+        </div>
       </div>
 
       {/* Generate Story Section */}

@@ -100,6 +100,7 @@ export default function StoryEditor() {
   }>({ type: null, isOpen: false });
 
   const [isGenerating, setIsGenerating] = useState(false);
+  const [generationMode, setGenerationMode] = useState<'express' | 'studio'>('express');
   
   const [formData, setFormData] = useState({
     title: '',
@@ -482,6 +483,8 @@ export default function StoryEditor() {
           storyExcerpt={formData.excerpt}
           imageCount={0}
           isGenerating={isGenerating}
+          generationMode={generationMode}
+          onGenerationModeChange={setGenerationMode}
         />
       )}
     </div>

@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Sparkles, Loader2, Info } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Switch } from "@/components/ui/switch";
 
 interface ImagePromptDialogProps {
   open: boolean;
@@ -18,6 +19,8 @@ interface ImagePromptDialogProps {
   storyExcerpt: string;
   imageCount: number;
   isGenerating: boolean;
+  generationMode: 'express' | 'studio';
+  onGenerationModeChange: (mode: 'express' | 'studio') => void;
 }
 
 const artStyleLabels: Record<string, string> = {
@@ -68,7 +71,9 @@ export function ImagePromptDialog({
   imageType,
   storyExcerpt,
   imageCount,
-  isGenerating
+  isGenerating,
+  generationMode,
+  onGenerationModeChange
 }: ImagePromptDialogProps) {
   const [corePrompt, setCorePrompt] = useState("");
   const [customizations, setCustomizations] = useState("");
@@ -159,6 +164,32 @@ export function ImagePromptDialog({
               Character: {heroName}
             </Badge>
           </div>
+
+          {/* Generation Mode Toggle */}
+          <div className="flex items-center justify-between p-4 border rounded-lg bg-muted/30">
+            <Label className="font-medium">Generation Speed</Label>
+            <div className="flex items-center gap-3">
+              <span className={`text-sm ${generationMode === 'express' ? 'font-bold' : 'text-muted-foreground'}`}>
+                🚀 Express
+              </span>
+              <Switch 
+                checked={generationMode === 'studio'}
+                onCheckedChange={(checked) => onGenerationModeChange(checked ? 'studio' : 'express')}
+                disabled={isGenerating}
+              />
+              <span className={`text-sm ${generationMode === 'studio' ? 'font-bold' : 'text-muted-foreground'}`}>
+                🎨 Studio
+              </span>
+            </div>
+          </div>
+
+          {generationMode === 'studio' && (
+            <Alert className="border-amber-500 bg-amber-50">
+              <AlertDescription className="text-sm">
+                Studio mode uses premium Leonardo AI for higher quality images. Generation takes 1-2 minutes.
+              </AlertDescription>
+            </Alert>
+          )}
 
           {/* Customizations Editor */}
           <div className="space-y-2">
