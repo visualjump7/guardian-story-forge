@@ -150,6 +150,7 @@ export type Database = {
           audio_url: string | null
           back_matter: Json | null
           character_archetype: string | null
+          character_sheet: Json | null
           content: string
           content_type: string | null
           cover_image_url: string | null
@@ -168,6 +169,7 @@ export type Database = {
           page_count: number | null
           secondary_theme_id: string | null
           setting: string | null
+          source_version: string | null
           story_json: Json | null
           story_length: string | null
           story_type: string | null
@@ -183,6 +185,7 @@ export type Database = {
           audio_url?: string | null
           back_matter?: Json | null
           character_archetype?: string | null
+          character_sheet?: Json | null
           content: string
           content_type?: string | null
           cover_image_url?: string | null
@@ -201,6 +204,7 @@ export type Database = {
           page_count?: number | null
           secondary_theme_id?: string | null
           setting?: string | null
+          source_version?: string | null
           story_json?: Json | null
           story_length?: string | null
           story_type?: string | null
@@ -216,6 +220,7 @@ export type Database = {
           audio_url?: string | null
           back_matter?: Json | null
           character_archetype?: string | null
+          character_sheet?: Json | null
           content?: string
           content_type?: string | null
           cover_image_url?: string | null
@@ -234,6 +239,7 @@ export type Database = {
           page_count?: number | null
           secondary_theme_id?: string | null
           setting?: string | null
+          source_version?: string | null
           story_json?: Json | null
           story_length?: string | null
           story_type?: string | null
@@ -305,35 +311,81 @@ export type Database = {
       story_images: {
         Row: {
           created_at: string | null
+          full_res_url: string | null
+          generated_by_trigger: string | null
+          generation_prompt: string | null
+          generation_seed: string | null
           id: string
+          image_size_px: number | null
           image_type: string | null
           image_url: string
           is_selected: boolean | null
+          is_suggested: boolean | null
+          is_upfront: boolean | null
           page_beat: string | null
           page_number: number | null
+          previous_version_id: string | null
+          storage_path: string | null
           story_id: string
+          style_lock_data: Json | null
+          thumbnail_storage_path: string | null
+          thumbnail_url: string | null
+          version: number | null
         }
         Insert: {
           created_at?: string | null
+          full_res_url?: string | null
+          generated_by_trigger?: string | null
+          generation_prompt?: string | null
+          generation_seed?: string | null
           id?: string
+          image_size_px?: number | null
           image_type?: string | null
           image_url: string
           is_selected?: boolean | null
+          is_suggested?: boolean | null
+          is_upfront?: boolean | null
           page_beat?: string | null
           page_number?: number | null
+          previous_version_id?: string | null
+          storage_path?: string | null
           story_id: string
+          style_lock_data?: Json | null
+          thumbnail_storage_path?: string | null
+          thumbnail_url?: string | null
+          version?: number | null
         }
         Update: {
           created_at?: string | null
+          full_res_url?: string | null
+          generated_by_trigger?: string | null
+          generation_prompt?: string | null
+          generation_seed?: string | null
           id?: string
+          image_size_px?: number | null
           image_type?: string | null
           image_url?: string
           is_selected?: boolean | null
+          is_suggested?: boolean | null
+          is_upfront?: boolean | null
           page_beat?: string | null
           page_number?: number | null
+          previous_version_id?: string | null
+          storage_path?: string | null
           story_id?: string
+          style_lock_data?: Json | null
+          thumbnail_storage_path?: string | null
+          thumbnail_url?: string | null
+          version?: number | null
         }
         Relationships: [
+          {
+            foreignKeyName: "story_images_previous_version_id_fkey"
+            columns: ["previous_version_id"]
+            isOneToOne: false
+            referencedRelation: "story_images"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "story_images_story_id_fkey"
             columns: ["story_id"]
@@ -447,6 +499,42 @@ export type Database = {
         }
         Relationships: []
       }
+      user_image_usage: {
+        Row: {
+          created_at: string | null
+          id: string
+          images_generated: number | null
+          images_limit: number | null
+          month_year: string
+          updated_at: string | null
+          user_id: string
+          warned_at: string | null
+          warning_threshold: number | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          images_generated?: number | null
+          images_limit?: number | null
+          month_year: string
+          updated_at?: string | null
+          user_id: string
+          warned_at?: string | null
+          warning_threshold?: number | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          images_generated?: number | null
+          images_limit?: number | null
+          month_year?: string
+          updated_at?: string | null
+          user_id?: string
+          warned_at?: string | null
+          warning_threshold?: number | null
+        }
+        Relationships: []
+      }
       user_libraries: {
         Row: {
           id: string
@@ -550,11 +638,25 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_user_image_usage: {
+        Args: { p_user_id: string }
+        Returns: {
+          images_generated: number
+          images_limit: number
+          remaining: number
+          should_warn: boolean
+          warning_threshold: number
+        }[]
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
           _user_id: string
         }
+        Returns: boolean
+      }
+      increment_user_image_usage: {
+        Args: { p_count?: number; p_user_id: string }
         Returns: boolean
       }
       is_admin: {
