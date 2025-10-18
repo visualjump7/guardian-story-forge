@@ -1,0 +1,231 @@
+{
+  "version": "1.1",
+  "app": {
+    "name": "KidsStoryBuilder",
+    "band": "A",
+    "age_range": "5-7",
+    "canvas": { "format": "square", "print_inches": [8, 8], "web_pixels": [2048, 2048], "safe_margin_in": 0.4 },
+    "typography": { "print_font_pt": [18, 22], "web_font_rem": [1.15, 1.25], "line_height": [1.45, 1.5], "max_lines_per_page": 7 },
+    "export": { "web_color_space": "sRGB", "print_color_space": "CMYK_safe", "pdf_bleed_in": 0.125 }
+  },
+
+  "model": {
+    "name": "gemini-2.5-flash",
+    "generationConfig": { "temperature": 0.6, "topP": 0.9, "topK": 40, "candidateCount": 1, "maxOutputTokens": 2200, "stopSequences": ["</END_PAGE>", "</END_STORY>"] },
+    "response": {
+      "response_mime_type": "application/json",
+      "response_schema": {
+        "type": "object",
+        "required": ["meta","pages"],
+        "properties": {
+          "meta": {
+            "type": "object",
+            "required": ["band","pages","target_words_total","words_per_page"],
+            "properties": {
+              "band": { "type": "string" },
+              "pages": { "type": "integer" },
+              "target_words_total": { "type": "array", "items": { "type": "integer" }, "minItems": 2, "maxItems": 2 },
+              "words_per_page": { "type": "array", "items": { "type": "integer" }, "minItems": 2, "maxItems": 2 },
+              "subplot": { "type": ["boolean","object","null"] }
+            }
+          },
+          "pages": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["page","narrative","art_prompt","alt_text"],
+              "properties": {
+                "page": { "type": "integer" },
+                "scene": { "type": ["integer","null"] },
+                "beat": { "type": ["string","null"] },
+                "narrative": { "type": "string" },
+                "dialogue": { "type": "array", "items": { "type": "object", "properties": { "speaker": { "type": "string" }, "line": { "type": "string" } } } },
+                "art_prompt": {
+                  "type": "object",
+                  "required": ["style","content"],
+                  "properties": { "style": { "type": "string" }, "palette": { "type": ["string","null"] }, "camera": { "type": ["string","null"] }, "materials": { "type": ["string","null"] }, "content": { "type": "string" } }
+                },
+                "alt_text": { "type": "string" }
+              }
+            }
+          },
+          "back_matter": {
+            "type": "object",
+            "properties": {
+              "glossary": { "type": "array", "items": { "type": "object", "properties": { "word": { "type": "string" }, "kid_def": { "type": "string" } } } },
+              "reflection_question": { "type": "string" }
+            }
+          }
+        }
+      }
+    }
+  },
+
+  "bands": {
+    "A": {
+      "words_total": [300, 500],
+      "sentence_len": [8, 12],
+      "pages": 20,
+      "words_per_page": [18, 30],
+      "dialog_ratio_target": 0.40,
+      "vocab": { "tier2_per_page": [1, 2] },
+      "safety": { "resolve_fear_within_pages": 2, "graphic_peril": false }
+    }
+  },
+
+  "selectors": {
+    "story_kind": ["Action Adventure","Mystery","Explorers","Fantasy Worlds","Superhero Stories","Fairy Tale","Animal Adventures"],
+    "character_archetype": ["Hero","Creature","Animal","Robot","Warrior","Detective","Princess"],
+    "mission": ["Rescue","Escape","Return to Ranch","Protect","Magical Quest","Explore Unknown","Treasure Hunt"],
+    "image_style": ["3D Animation","Anime","Comic","Black & White","Claymation","Painting","Origami"],
+    "style_picker_visible": true,
+    "style_picker_default_behavior_if_skipped": "auto_map",
+    "style_picker_visible_chips": ["Rhyme & Repeat","Silly & Giggles","Clues & Questions","Wonder & Nature","Surprise me"]
+  },
+
+  "styles": [
+    {
+      "name": "Rhyme & Repeat",
+      "voice": "warm, playful, concrete images",
+      "rhythm": { "sentence_len_range": [8, 12], "dialog_ratio_target": 0.35, "patterning": "refrain every 3-4 pages" },
+      "devices": ["rhyme_light","repetition","onomatopoeia"],
+      "lexicon": { "prefer": ["tap","tumble","twirl"], "avoid": ["very","suddenly"] },
+      "page_rules": { "max_words_per_page": 85 },
+      "learning_support": { "tier2_vocab_per_page": [1, 2] },
+      "do": ["repeat a key phrase exactly at least twice","show actions with vivid verbs before naming feelings"],
+      "dont": ["dense metaphors","introduce three or more new ideas on one page"]
+    },
+    {
+      "name": "Silly & Giggles",
+      "voice": "cheeky, kid POV, quick setup-payoff",
+      "rhythm": { "sentence_len_range": [9, 12], "dialog_ratio_target": 0.5, "pacing": "fast" },
+      "devices": ["rule_of_three","callback_joke","sound_effects"],
+      "lexicon": { "prefer": ["zoom","plop","wiggle"] },
+      "page_rules": { "max_words_per_page": 80 },
+      "learning_support": { "tier2_vocab_per_page": [1, 2] },
+      "do": ["one running gag across the book"],
+      "dont": ["sarcasm or put-down humor"]
+    },
+    {
+      "name": "Clues & Questions",
+      "voice": "curious, encouraging, second-person nudges",
+      "rhythm": { "sentence_len_range": [8, 12], "dialog_ratio_target": 0.4 },
+      "devices": ["question_prompts","clue_recap_boxes"],
+      "structural_rules": { "clues_per_scene": 1, "red_herrings": 1, "solution_pages": [17, 18] },
+      "do": ["ask 'What changed?' at least twice","highlight one visual clue per page in art"],
+      "dont": ["unearned twists"]
+    },
+    {
+      "name": "Wonder & Nature",
+      "voice": "calm, bright, observant",
+      "rhythm": { "sentence_len_range": [8, 12], "dialog_ratio_target": 0.35 },
+      "devices": ["compare_contrast","gentle_factlets"],
+      "learning_support": { "fact_per_2_pages": 1, "kid_glossary": true },
+      "do": ["label key objects in art prompts"],
+      "dont": ["info dumps"]
+    },
+    {
+      "name": "Big Feelings, Small Fixes",
+      "voice": "validating, practical",
+      "rhythm": { "sentence_len_range": [8, 12], "dialog_ratio_target": 0.45 },
+      "devices": ["name_it_to_tame_it","try_again_step"],
+      "coping_toolkit": ["4-count breath","ask-a-helper","positive self-talk"],
+      "do": ["resolve fear within 2 pages","show teamwork"],
+      "dont": ["preachy moralizing"]
+    }
+  ],
+
+  "auto_mapping": {
+    "Action Adventure": [ { "style": "Silly & Giggles", "weight": 0.5 }, { "style": "Rhyme & Repeat", "weight": 0.2 }, { "style": "Big Feelings, Small Fixes", "weight": 0.3 } ],
+    "Mystery": [ { "style": "Clues & Questions", "weight": 0.7 }, { "style": "Silly & Giggles", "weight": 0.3 } ],
+    "Explorers": [ { "style": "Wonder & Nature", "weight": 0.6 }, { "style": "Rhyme & Repeat", "weight": 0.2 }, { "style": "Big Feelings, Small Fixes", "weight": 0.2 } ],
+    "Fantasy Worlds": [ { "style": "Rhyme & Repeat", "weight": 0.5 }, { "style": "Big Feelings, Small Fixes", "weight": 0.5 } ],
+    "Superhero Stories": [ { "style": "Silly & Giggles", "weight": 0.6 }, { "style": "Big Feelings, Small Fixes", "weight": 0.4 } ],
+    "Fairy Tale": [ { "style": "Rhyme & Repeat", "weight": 0.6 }, { "style": "Big Feelings, Small Fixes", "weight": 0.4 } ],
+    "Animal Adventures": [ { "style": "Wonder & Nature", "weight": 0.7 }, { "style": "Silly & Giggles", "weight": 0.3 } ]
+  },
+
+  "image_styles": {
+    "3D Animation": { "palette": "bright", "linework": "soft", "camera": "medium shot", "materials": "digital 3D", "vibe": "pixar-like, kid-safe" },
+    "Anime": { "palette": "vibrant", "linework": "crisp", "camera": "dynamic angles", "materials": "cell-shade", "vibe": "expressive eyes" },
+    "Comic": { "palette": "bold", "linework": "ink", "camera": "panel-esque", "materials": "flat color", "vibe": "speech-bubble friendly" },
+    "Black & White": { "palette": "grayscale", "linework": "pencil", "camera": "close-ups", "materials": "graphite", "vibe": "high contrast" },
+    "Claymation": { "palette": "playful", "linework": "sculpted", "camera": "tabletop", "materials": "polymer clay", "vibe": "handmade" },
+    "Painting": { "palette": "painterly", "linework": "brush", "camera": "wide shots", "materials": "gouache", "vibe": "textured" },
+    "Origami": { "palette": "pastel", "linework": "folded_edges", "camera": "top-down", "materials": "paper craft", "vibe": "geometric" }
+  },
+
+  "randomization": { "strategy": "weighted_uniform", "persist_session_seed": true, "re_roll_on_shuffle": true },
+
+  "output_contract": {
+    "type": "paginated_pages_json",
+    "schema": {
+      "meta": ["band","pages","target_words_total","words_per_page","subplot"],
+      "page_fields": ["page","scene","beat","narrative","dialogue","art_prompt","alt_text"],
+      "back_matter": ["glossary","reflection_question"]
+    }
+  },
+
+  "prompt_templates": {
+    "system": "You are a children's author assistant. Follow safety rules strictly. You write kid-safe, paginated short stories for ages {band}. Return exactly {pages} items in pages[]. Target total words {words_min}-{words_max}; sentences average {sent_min}-{sent_max} words. Keep dialogue present on about {dialog_ratio_target}% of pages. Format: return JSON matching output_contract. Obey words-per-page {wpp_min}-{wpp_max}. No page may exceed 85 words or 7 lines. Safety: no profanity, slurs, sexual content, nudity, suggestive themes, dating/romance, drugs/alcohol/tobacco, self-harm, weapons, graphic violence, medical gore, occult/possession, criminal instruction, or frightening horror. Any fear must resolve within {resolve_fear_within_pages} pages. Positive, cooperative resolution. Enforce concrete-first (name at least one specific action/object per page) and include a motif callback on the final page. Output only valid JSON that conforms to response_schema. Do not include markdown code fences or prose.",
+    "style_addon": "Style: {style_name}. Voice: {voice}. Sentences {style_sentence_min}-{style_sentence_max} words on average. Dialogue ratio target {style_dialog_ratio_target}. Devices: {devices}. Preferred lexicon: {prefer}; avoid: {avoid}. Additional rules: {style_rules_json}",
+    "user_seed": "Main character: {main_character_name}. Story kind: {story_kind}. Character archetype: {character_archetype}. Mission: {mission}. Image style: {image_style}. Band: {band}. Pages: {pages}."
+  },
+
+  "validators": {
+    "common": {
+      "exact_pages_required": true,
+      "total_words_in_range": true,
+      "avg_sentence_len_in_range": true,
+      "max_words_per_page": 85,
+      "max_lines_per_page": 7,
+      "min_dialogue_pages_ratio": 0.30,
+      "has_alt_text_on_each_page": true,
+      "beats_required": ["Hook","Inciting","Try 1","Try 2","Midpoint","Setback","Plan","Climax","Resolution","Button"]
+    },
+    "band_overrides": {
+      "A": {
+        "min_dialogue_pages_ratio": 0.40,
+        "words_total": [300, 500],
+        "words_per_page": [18, 30],
+        "sentence_len": [8, 12]
+      }
+    },
+    "style_specific": {
+      "Rhyme & Repeat": { "require_refrain_repetition": 2 },
+      "Silly & Giggles": { "require_callback_joke_by_page": 20 },
+      "Clues & Questions": { "min_question_marks_total": 6, "require_clue_recap_by_page": 12 },
+      "Wonder & Nature": { "min_factlets_total": 4, "max_factlet_len_words": 12 },
+      "Big Feelings, Small Fixes": { "require_coping_tool_named": true }
+    }
+  },
+
+  "safety": {
+    "policy": "strict_kids_5_7",
+    "block_categories": ["profanity","slurs","sexual_content","nudity_or_body_exposure","romance_beyond_friendship","dating","suggestive_dialogue","drugs_alcohol_tobacco","self_harm_or_violence","weapons_or_fighting_techniques","graphic_medical_or_gore","occult_or_possession_themes","criminal_instruction","frightening_horror","age_inappropriate_social_media_or_chat"],
+    "deny_if_regex": ["SERVER_PROFANITY_REGEX","SERVER_SEXUAL_CONTENT_REGEX","SERVER_GRAPHIC_VIOLENCE_REGEX"],
+    "deny_if_topics": ["sex","dating","drugs","alcohol","tobacco","weapons","crime_howto","self_harm","suicide","graphic_gore","possession_rituals"],
+    "soften_or_redirect_rules": {
+      "fear": "If fear appears, resolve within 2 pages with reassurance and help-seeking.",
+      "conflict": "Keep conflicts non-physical and brief (misunderstandings, small mistakes).",
+      "injury": "Only minor bumps/scrapes; no blood or medical detail."
+    },
+    "safe_alternatives": {
+      "romance": "friendship & teamwork",
+      "fighting": "problem-solving & asking for help",
+      "weapons": "remove; replace with clearly safe tools"
+    },
+    "post_gen_moderation": {
+      "actions": ["regex_scan_blocklists","topic_classification","toxicity_score_check","sexual_content_score_check","violence_score_check"],
+      "thresholds": { "toxicity_max": 0.01, "sexual_content_max": 0.0, "violence_max": 0.02 },
+      "on_violation": "reject_and_regenerate_with_safety_message"
+    },
+    "gemini_safety_settings": [
+      { "category": "HARM_CATEGORY_HATE_SPEECH", "threshold": "BLOCK_LOW_AND_ABOVE" },
+      { "category": "HARM_CATEGORY_HARASSMENT", "threshold": "BLOCK_LOW_AND_ABOVE" },
+      { "category": "HARM_CATEGORY_SEXUAL_CONTENT", "threshold": "BLOCK_LOW_AND_ABOVE" },
+      { "category": "HARM_CATEGORY_DANGEROUS_CONTENT", "threshold": "BLOCK_LOW_AND_ABOVE" },
+      { "category": "HARM_CATEGORY_VIOLENCE", "threshold": "BLOCK_LOW_AND_ABOVE" }
+    ]
+  }
+}

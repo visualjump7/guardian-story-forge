@@ -11,6 +11,7 @@ import logo from "@/assets/guardian-kids-logo.png";
 import bgImage from "@/assets/BG-Sign_In.jpg";
 import { z } from "zod";
 import { FixedFeedbackButton } from "@/components/FixedFeedbackButton";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 // Input validation schemas
 const loginSchema = z.object({
@@ -36,6 +37,7 @@ const Auth = () => {
   const [password, setPassword] = useState("");
   const [displayName, setDisplayName] = useState("");
   const [authorName, setAuthorName] = useState("");
+  const [ageBand, setAgeBand] = useState<'A' | 'B'>('B');
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -81,7 +83,7 @@ const Auth = () => {
           return;
         }
 
-        const { error } = await supabase.auth.signUp({
+        const { data, error } = await supabase.auth.signUp({
           email: validation.data.email,
           password: validation.data.password,
           options: {
@@ -93,6 +95,19 @@ const Auth = () => {
           },
         });
         if (error) throw error;
+        
+        // Update profile with age band
+        if (data.user) {
+          const { error: profileError } = await supabase
+            .from('profiles')
+            .update({ age_band: ageBand })
+            .eq('id', data.user.id);
+          
+          if (profileError) {
+            console.error('Error updating profile:', profileError);
+          }
+        }
+        
         sessionStorage.setItem('showWelcomeVideo', 'true');
         toast.success("Welcome to Guardian Kids! Your account is ready.");
         navigate("/home");
@@ -122,7 +137,7 @@ const Auth = () => {
         </CardHeader>
         <CardContent>
           <form onSubmit={handleAuth} className="space-y-4">
-            {!isLogin && (
+          {!isLogin && (
               <>
                 <div className="space-y-2">
                   <Label htmlFor="displayName" className="text-gray-200">Your Name</Label>
@@ -145,6 +160,33 @@ const Auth = () => {
                     onChange={(e) => setAuthorName(e.target.value)}
                     className="rounded-xl h-12"
                   />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="age-band" className="text-gray-200">
+                    Story Age Range
+                  </Label>
+                  <Select value={ageBand} onValueChange={(value: 'A' | 'B') => setAgeBand(value)}>
+                    <SelectTrigger id="age-band" className="rounded-xl h-12">
+                      <SelectValue placeholder="Select age range" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="A">
+                        <div className="flex flex-col items-start">
+                          <span className="font-semibold">Little Storytellers</span>
+                          <span className="text-xs text-muted-foreground">Ages 5-7</span>
+                        </div>
+                      </SelectItem>
+                      <SelectItem value="B">
+                        <div className="flex flex-col items-start">
+                          <span className="font-semibold">Young Adventurers</span>
+                          <span className="text-xs text-muted-foreground">Ages 8-10</span>
+                        </div>
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <p className="text-xs text-gray-400">
+                    This determines the complexity and style of stories
+                  </p>
                 </div>
               </>
             )}

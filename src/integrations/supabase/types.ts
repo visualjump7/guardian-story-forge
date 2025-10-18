@@ -73,6 +73,7 @@ export type Database = {
       }
       profiles: {
         Row: {
+          age_band: string | null
           author_name: string | null
           avatar_url: string | null
           created_at: string | null
@@ -82,6 +83,7 @@ export type Database = {
           suspended_at: string | null
         }
         Insert: {
+          age_band?: string | null
           author_name?: string | null
           avatar_url?: string | null
           created_at?: string | null
@@ -91,6 +93,7 @@ export type Database = {
           suspended_at?: string | null
         }
         Update: {
+          age_band?: string | null
           author_name?: string | null
           avatar_url?: string | null
           created_at?: string | null
@@ -145,76 +148,100 @@ export type Database = {
           age_range: string | null
           art_style: string | null
           audio_url: string | null
+          back_matter: Json | null
+          character_archetype: string | null
           content: string
           content_type: string | null
           cover_image_url: string | null
           created_at: string | null
           created_by: string | null
           excerpt: string | null
+          has_subplot: boolean | null
           hero_name: string | null
           id: string
           is_featured: boolean | null
           is_public: boolean | null
           media_url: string | null
+          mission: string | null
           narrative_structure: string | null
           narrative_type: string | null
+          page_count: number | null
           secondary_theme_id: string | null
           setting: string | null
+          story_json: Json | null
           story_length: string | null
           story_type: string | null
           story_universe: string | null
           theme_id: string | null
           title: string
+          word_count: number | null
+          writing_style: string | null
         }
         Insert: {
           age_range?: string | null
           art_style?: string | null
           audio_url?: string | null
+          back_matter?: Json | null
+          character_archetype?: string | null
           content: string
           content_type?: string | null
           cover_image_url?: string | null
           created_at?: string | null
           created_by?: string | null
           excerpt?: string | null
+          has_subplot?: boolean | null
           hero_name?: string | null
           id?: string
           is_featured?: boolean | null
           is_public?: boolean | null
           media_url?: string | null
+          mission?: string | null
           narrative_structure?: string | null
           narrative_type?: string | null
+          page_count?: number | null
           secondary_theme_id?: string | null
           setting?: string | null
+          story_json?: Json | null
           story_length?: string | null
           story_type?: string | null
           story_universe?: string | null
           theme_id?: string | null
           title: string
+          word_count?: number | null
+          writing_style?: string | null
         }
         Update: {
           age_range?: string | null
           art_style?: string | null
           audio_url?: string | null
+          back_matter?: Json | null
+          character_archetype?: string | null
           content?: string
           content_type?: string | null
           cover_image_url?: string | null
           created_at?: string | null
           created_by?: string | null
           excerpt?: string | null
+          has_subplot?: boolean | null
           hero_name?: string | null
           id?: string
           is_featured?: boolean | null
           is_public?: boolean | null
           media_url?: string | null
+          mission?: string | null
           narrative_structure?: string | null
           narrative_type?: string | null
+          page_count?: number | null
           secondary_theme_id?: string | null
           setting?: string | null
+          story_json?: Json | null
           story_length?: string | null
           story_type?: string | null
           story_universe?: string | null
           theme_id?: string | null
           title?: string
+          word_count?: number | null
+          writing_style?: string | null
         }
         Relationships: [
           {
@@ -282,6 +309,8 @@ export type Database = {
           image_type: string | null
           image_url: string
           is_selected: boolean | null
+          page_beat: string | null
+          page_number: number | null
           story_id: string
         }
         Insert: {
@@ -290,6 +319,8 @@ export type Database = {
           image_type?: string | null
           image_url: string
           is_selected?: boolean | null
+          page_beat?: string | null
+          page_number?: number | null
           story_id: string
         }
         Update: {
@@ -298,6 +329,8 @@ export type Database = {
           image_type?: string | null
           image_url?: string
           is_selected?: boolean | null
+          page_beat?: string | null
+          page_number?: number | null
           story_id?: string
         }
         Relationships: [

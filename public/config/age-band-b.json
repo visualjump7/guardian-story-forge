@@ -1,0 +1,244 @@
+{
+  "version": "1.1",
+  "app": {
+    "name": "KidsStoryBuilder",
+    "band": "B",
+    "age_range": "8-10",
+    "canvas": { "format": "square", "print_inches": [8, 8], "web_pixels": [2048, 2048], "safe_margin_in": 0.4 },
+    "typography": { "print_font_pt": [18, 22], "web_font_rem": [1.15, 1.25], "line_height": [1.45, 1.5], "max_lines_per_page": 7 },
+    "export": { "web_color_space": "sRGB", "print_color_space": "CMYK_safe", "pdf_bleed_in": 0.125 }
+  },
+
+  "model": {
+    "name": "gemini-2.5-flash",
+    "generationConfig": { "temperature": 0.7, "topP": 0.9, "topK": 40, "candidateCount": 1, "maxOutputTokens": 2200, "stopSequences": ["</END_PAGE>", "</END_STORY>"] },
+    "response": {
+      "response_mime_type": "application/json",
+      "response_schema": {
+        "type": "object",
+        "required": ["meta","pages"],
+        "properties": {
+          "meta": {
+            "type": "object",
+            "required": ["band","pages","target_words_total","words_per_page"],
+            "properties": {
+              "band": { "type": "string" },
+              "pages": { "type": "integer" },
+              "target_words_total": { "type": "array", "items": { "type": "integer" }, "minItems": 2, "maxItems": 2 },
+              "words_per_page": { "type": "array", "items": { "type": "integer" }, "minItems": 2, "maxItems": 2 },
+              "subplot": { "type": ["boolean","object","null"] }
+            }
+          },
+          "pages": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["page","narrative","art_prompt","alt_text"],
+              "properties": {
+                "page": { "type": "integer" },
+                "scene": { "type": ["integer","null"] },
+                "beat": { "type": ["string","null"] },
+                "narrative": { "type": "string" },
+                "dialogue": { "type": "array", "items": { "type": "object", "properties": { "speaker": { "type": "string" }, "line": { "type": "string" } } } },
+                "art_prompt": {
+                  "type": "object",
+                  "required": ["style","content"],
+                  "properties": { "style": { "type": "string" }, "palette": { "type": ["string","null"] }, "camera": { "type": ["string","null"] }, "materials": { "type": ["string","null"] }, "content": { "type": "string" } }
+                },
+                "alt_text": { "type": "string" }
+              }
+            }
+          },
+          "back_matter": {
+            "type": "object",
+            "properties": {
+              "glossary": { "type": "array", "items": { "type": "object", "properties": { "word": { "type": "string" }, "kid_def": { "type": "string" } } } },
+              "reflection_question": { "type": "string" }
+            }
+          }
+        }
+      }
+    }
+  },
+
+  "bands": {
+    "B": {
+      "words_total": [500, 700],
+      "sentence_len": [10, 16],
+      "pages": 22,
+      "words_per_page": [24, 38],
+      "dialog_ratio_target": 0.35,
+      "vocab": { "tier2_per_page": [2, 3] },
+      "subplot": { "enabled": true, "window_pages": [10, 14], "must_resolve_by": 20 },
+      "safety": { "resolve_fear_within_pages": 2, "graphic_peril": false }
+    }
+  },
+
+  "selectors": {
+    "story_kind": ["Action Adventure","Mystery","Explorers","Fantasy Worlds","Superhero Stories","Fairy Tale","Animal Adventures"],
+    "character_archetype": ["Hero","Creature","Animal","Robot","Warrior","Detective","Princess"],
+    "mission": ["Rescue","Escape","Return to Ranch","Protect","Magical Quest","Explore Unknown","Treasure Hunt"],
+    "image_style": ["3D Animation","Anime","Comic","Black & White","Claymation","Painting","Origami"],
+    "style_picker_visible": true,
+    "style_picker_default_behavior_if_skipped": "auto_map",
+    "style_picker_visible_chips": ["Cinematic Action","Buddy Ensemble","Detective Puzzle","Lyrical Wonder","Comedy Diary","Spooky (Friendly)","Surprise me"]
+  },
+
+  "styles": [
+    {
+      "name": "Cinematic Action",
+      "voice": "brisk, sensory, show-don't-tell",
+      "rhythm": { "sentence_len_range": [10, 16], "dialog_ratio_target": 0.35, "pacing": "fast" },
+      "devices": ["active_camera_verbs","onomatopoeia","time_checks"],
+      "lexicon": { "prefer": ["dash","skid","vault","scan"], "avoid": ["very","suddenly"] },
+      "page_rules": { "max_words_per_page": 85 },
+      "do": ["lead with concrete action beats","end some pages on mini-cliffhangers"],
+      "dont": ["long internal monologues"]
+    },
+    {
+      "name": "Buddy Ensemble",
+      "voice": "warm, banter-forward, teamwork-first",
+      "rhythm": { "sentence_len_range": [10, 16], "dialog_ratio_target": 0.45 },
+      "devices": ["running_gag","role_cards(planner/scout/comic)","callback"],
+      "lexicon": { "prefer": ["plan","trade","signal"], "avoid": ["bicker","threaten"] },
+      "page_rules": { "max_words_per_page": 85 },
+      "do": ["distinct speech tics for 3–4 characters","clear turn-taking in dialogue"],
+      "dont": ["confusing crosstalk"]
+    },
+    {
+      "name": "Detective Puzzle",
+      "voice": "curious, logical, encouraging",
+      "rhythm": { "sentence_len_range": [10, 16], "dialog_ratio_target": 0.40 },
+      "devices": ["clue_chains","question_prompts","recap_cards"],
+      "structural_rules": { "clues_per_scene": 2, "red_herrings": 1, "solution_pages": [18, 20] },
+      "do": ["ask 'What changed?' and 'What matches?'","plant fair clues in text and art"],
+      "dont": ["unearned twists"]
+    },
+    {
+      "name": "Lyrical Wonder",
+      "voice": "image-rich, curious, lightly poetic",
+      "rhythm": { "sentence_len_range": [10, 16], "dialog_ratio_target": 0.30, "pacing": "moderate" },
+      "devices": ["metaphor_sparingly","compare_contrast","echo_phrase"],
+      "learning_support": { "fact_per_3_pages": 1, "kid_glossary": true },
+      "do": ["pair concrete images with one gentle factlet","end with a motif callback"],
+      "dont": ["dense poetry or opaque symbolism"]
+    },
+    {
+      "name": "Comedy Diary",
+      "voice": "first-person, witty, school-life satire (kid-safe)",
+      "rhythm": { "sentence_len_range": [11, 16], "dialog_ratio_target": 0.45 },
+      "devices": ["asides_in_parens","list_jokes","rule_of_three"],
+      "lexicon": { "prefer": ["cringe","hack","oops"], "avoid": ["insults","put-downs"] },
+      "page_rules": { "max_words_per_page": 85 },
+      "do": ["sprinkle 'diary' time stamps or headers","use visual gags in art prompts"],
+      "dont": ["mean sarcasm or humiliation humor"]
+    },
+    {
+      "name": "Spooky (Friendly)",
+      "voice": "playful eerie, reassuring, never gruesome",
+      "rhythm": { "sentence_len_range": [10, 16], "dialog_ratio_target": 0.35 },
+      "devices": ["misdirection_to_silly","sound_effects","cozy_resolution"],
+      "safety": { "no_gore": true, "no_possession": true, "no_rituals": true },
+      "do": ["turn scares into jokes within 2 pages","use friendly ghosts/dragons"],
+      "dont": ["horror tropes, threats, or lasting fear"]
+    }
+  ],
+
+  "auto_mapping": {
+    "Action Adventure": [ { "style": "Cinematic Action", "weight": 0.55 }, { "style": "Buddy Ensemble", "weight": 0.25 }, { "style": "Comedy Diary", "weight": 0.20 } ],
+    "Mystery": [ { "style": "Detective Puzzle", "weight": 0.70 }, { "style": "Buddy Ensemble", "weight": 0.20 }, { "style": "Comedy Diary", "weight": 0.10 } ],
+    "Explorers": [ { "style": "Lyrical Wonder", "weight": 0.50 }, { "style": "Buddy Ensemble", "weight": 0.25 }, { "style": "Cinematic Action", "weight": 0.25 } ],
+    "Fantasy Worlds": [ { "style": "Lyrical Wonder", "weight": 0.40 }, { "style": "Buddy Ensemble", "weight": 0.30 }, { "style": "Cinematic Action", "weight": 0.30 } ],
+    "Superhero Stories": [ { "style": "Cinematic Action", "weight": 0.60 }, { "style": "Buddy Ensemble", "weight": 0.25 }, { "style": "Comedy Diary", "weight": 0.15 } ],
+    "Fairy Tale": [ { "style": "Lyrical Wonder", "weight": 0.45 }, { "style": "Buddy Ensemble", "weight": 0.30 }, { "style": "Comedy Diary", "weight": 0.25 } ],
+    "Animal Adventures": [ { "style": "Lyrical Wonder", "weight": 0.50 }, { "style": "Buddy Ensemble", "weight": 0.30 }, { "style": "Comedy Diary", "weight": 0.20 } ]
+  },
+
+  "image_styles": {
+    "3D Animation": { "palette": "bright", "linework": "soft", "camera": "medium shot", "materials": "digital 3D", "vibe": "pixar-like, kid-safe" },
+    "Anime": { "palette": "vibrant", "linework": "crisp", "camera": "dynamic angles", "materials": "cell-shade", "vibe": "expressive eyes" },
+    "Comic": { "palette": "bold", "linework": "ink", "camera": "panel-esque", "materials": "flat color", "vibe": "speech-bubble friendly" },
+    "Black & White": { "palette": "grayscale", "linework": "pencil", "camera": "close-ups", "materials": "graphite", "vibe": "high contrast" },
+    "Claymation": { "palette": "playful", "linework": "sculpted", "camera": "tabletop", "materials": "polymer clay", "vibe": "handmade" },
+    "Painting": { "palette": "painterly", "linework": "brush", "camera": "wide shots", "materials": "gouache", "vibe": "textured" },
+    "Origami": { "palette": "pastel", "linework": "folded_edges", "camera": "top-down", "materials": "paper craft", "vibe": "geometric" }
+  },
+
+  "randomization": { "strategy": "weighted_uniform", "persist_session_seed": true, "re_roll_on_shuffle": true },
+
+  "output_contract": {
+    "type": "paginated_pages_json",
+    "schema": {
+      "meta": ["band","pages","target_words_total","words_per_page","subplot"],
+      "page_fields": ["page","scene","beat","narrative","dialogue","art_prompt","alt_text"],
+      "back_matter": ["glossary","reflection_question"]
+    }
+  },
+
+  "prompt_templates": {
+    "system": "You are a children's author assistant. Follow safety rules strictly. You write kid-safe, paginated short stories for ages {band}. Return exactly {pages} items in pages[]. Include a light subplot between pages {subplot_start}-{subplot_end} and resolve it by page {subplot_resolve_by}. Target total words {words_min}-{words_max}; sentences average {sent_min}-{sent_max} words. Keep dialogue present on about {dialog_ratio_target}% of pages. Format: return JSON matching output_contract. Obey words-per-page {wpp_min}-{wpp_max}. No page may exceed 85 words or 7 lines. Safety: no profanity, slurs, sexual content, nudity, suggestive themes, dating/romance beyond friendly crushes, drugs/alcohol/tobacco, self-harm, weapons usage or instruction, graphic violence, medical gore, occult/possession, criminal instruction, or frightening horror. Any spooky content must be playful and resolve within {resolve_fear_within_pages} pages. Positive, cooperative resolution. Enforce concrete-first (name at least one specific action/object per page) and include a motif callback on the final page. Output only valid JSON that conforms to response_schema. Do not include markdown code fences or prose.",
+    "style_addon": "Style: {style_name}. Voice: {voice}. Sentences {style_sentence_min}-{style_sentence_max} words on average. Dialogue ratio target {style_dialog_ratio_target}. Devices: {devices}. Preferred lexicon: {prefer}; avoid: {avoid}. Additional rules: {style_rules_json}",
+    "user_seed": "Main character: {main_character_name}. Story kind: {story_kind}. Character archetype: {character_archetype}. Mission: {mission}. Image style: {image_style}. Band: {band}. Pages: {pages}."
+  },
+
+  "validators": {
+    "common": {
+      "exact_pages_required": true,
+      "total_words_in_range": true,
+      "avg_sentence_len_in_range": true,
+      "max_words_per_page": 85,
+      "max_lines_per_page": 7,
+      "min_dialogue_pages_ratio": 0.30,
+      "has_alt_text_on_each_page": true,
+      "beats_required": ["Hook","Inciting","Try 1","Try 2","Midpoint","Setback","Plan","Climax","Resolution","Button"]
+    },
+    "band_overrides": {
+      "B": {
+        "min_dialogue_pages_ratio": 0.35,
+        "words_total": [500, 700],
+        "words_per_page": [24, 38],
+        "sentence_len": [10, 16],
+        "subplot_required": true,
+        "subplot_window_pages": [10, 14],
+        "subplot_resolve_by": 20
+      }
+    },
+    "style_specific": {
+      "Cinematic Action": { "require_cliffhanger_pages": [6, 12] },
+      "Buddy Ensemble": { "min_distinct_speakers": 3 },
+      "Detective Puzzle": { "min_question_marks_total": 6, "require_clue_recap_by_page": 14 },
+      "Lyrical Wonder": { "min_factlets_total": 3, "max_factlet_len_words": 16 },
+      "Comedy Diary": { "require_diary_stamp_pages": [1, 11], "forbid_put_down_humor": true },
+      "Spooky (Friendly)": { "require_spook_to_silly_within_pages": 2, "forbid_occult_terms": true }
+    }
+  },
+
+  "safety": {
+    "policy": "strict_kids_8_10",
+    "block_categories": ["profanity","slurs","sexual_content","nudity_or_body_exposure","romance_beyond_friendly_crush","dating","suggestive_dialogue","drugs_alcohol_tobacco","self_harm_or_violence","weapons_or_fighting_instruction","graphic_medical_or_gore","occult_or_possession_themes","criminal_instruction","frightening_horror","age_inappropriate_social_media_or_chat"],
+    "deny_if_regex": ["SERVER_PROFANITY_REGEX","SERVER_SEXUAL_CONTENT_REGEX","SERVER_GRAPHIC_VIOLENCE_REGEX"],
+    "deny_if_topics": ["sex","dating","drugs","alcohol","tobacco","weapons","crime_howto","self_harm","suicide","graphic_gore","possession_rituals"],
+    "soften_or_redirect_rules": {
+      "fear": "If spooky content appears, make it playful and resolve within 2 pages with reassurance.",
+      "conflict": "Keep conflicts verbal or puzzle-based; no real-world violence.",
+      "injury": "Only minor bumps/scrapes; no blood or medical detail."
+    },
+    "safe_alternatives": {
+      "romance": "friendship, teamwork, crush-as-comedy only",
+      "fighting": "problem-solving, games, or teamwork plans",
+      "weapons": "remove; use tools that are clearly safe and supervised"
+    },
+    "post_gen_moderation": {
+      "actions": ["regex_scan_blocklists","topic_classification","toxicity_score_check","sexual_content_score_check","violence_score_check"],
+      "thresholds": { "toxicity_max": 0.01, "sexual_content_max": 0.0, "violence_max": 0.02 },
+      "on_violation": "reject_and_regenerate_with_safety_message"
+    },
+    "gemini_safety_settings": [
+      { "category": "HARM_CATEGORY_HATE_SPEECH", "threshold": "BLOCK_LOW_AND_ABOVE" },
+      { "category": "HARM_CATEGORY_HARASSMENT", "threshold": "BLOCK_LOW_AND_ABOVE" },
+      { "category": "HARM_CATEGORY_SEXUAL_CONTENT", "threshold": "BLOCK_LOW_AND_ABOVE" },
+      { "category": "HARM_CATEGORY_DANGEROUS_CONTENT", "threshold": "BLOCK_LOW_AND_ABOVE" },
+      { "category": "HARM_CATEGORY_VIOLENCE", "threshold": "BLOCK_LOW_AND_ABOVE" }
+    ]
+  }
+}
