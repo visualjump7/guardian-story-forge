@@ -271,16 +271,16 @@ export const CreateStep5 = () => {
           </div>
           
           {storyConfig.generationMode === 'express' && (
-            <Alert className="bg-slate-100 text-slate-900 border-slate-200">
-              <AlertDescription className="text-slate-900">
+            <Alert className="bg-slate-800 text-white border-slate-700">
+              <AlertDescription className="text-white text-base">
                 <span className="font-medium">Fast generation</span> - Images ready in ~10 seconds using AI-powered creation
               </AlertDescription>
             </Alert>
           )}
           
           {storyConfig.generationMode === 'studio' && (
-            <Alert className="border-amber-500 bg-amber-50 text-amber-900">
-              <AlertDescription className="text-amber-900">
+            <Alert className="bg-slate-800 text-white border-slate-700">
+              <AlertDescription className="text-white text-base">
                 <span className="font-medium">Premium quality</span> - Studio-grade images with enhanced detail. 
                 Processing takes 1-2 minutes per image.
               </AlertDescription>
