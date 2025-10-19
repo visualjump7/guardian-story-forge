@@ -230,7 +230,7 @@ export const CreateStep5 = () => {
       </div>
 
       {/* Art Style Cards Grid */}
-      <div className="grid grid-cols-2 gap-3 mb-6 px-4">
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-2 md:gap-3 mb-4">
         {ART_STYLES.map((style) => (
           <ChoiceCard
             key={style.id}
@@ -255,8 +255,7 @@ export const CreateStep5 = () => {
             <div className={`flex items-center gap-2 transition-opacity ${
               storyConfig.generationMode === 'express' ? 'opacity-100' : 'opacity-50'
             }`}>
-              <span className="text-2xl">🚀</span>
-              <span className="font-semibold">Express</span>
+              <span className="font-semibold">Built for Speed</span>
             </div>
             
             <Switch
@@ -267,22 +266,21 @@ export const CreateStep5 = () => {
             <div className={`flex items-center gap-2 transition-opacity ${
               storyConfig.generationMode === 'studio' ? 'opacity-100' : 'opacity-50'
             }`}>
-              <span className="text-2xl">🎨</span>
-              <span className="font-semibold">Studio</span>
+              <span className="font-semibold">Big Time Studio</span>
             </div>
           </div>
           
           {storyConfig.generationMode === 'express' && (
-            <Alert>
-              <AlertDescription>
+            <Alert className="bg-slate-100 text-slate-900 border-slate-200">
+              <AlertDescription className="text-slate-900">
                 <span className="font-medium">Fast generation</span> - Images ready in ~10 seconds using AI-powered creation
               </AlertDescription>
             </Alert>
           )}
           
           {storyConfig.generationMode === 'studio' && (
-            <Alert className="border-amber-500 bg-amber-50">
-              <AlertDescription>
+            <Alert className="border-amber-500 bg-amber-50 text-amber-900">
+              <AlertDescription className="text-amber-900">
                 <span className="font-medium">Premium quality</span> - Studio-grade images with enhanced detail. 
                 Processing takes 1-2 minutes per image.
               </AlertDescription>
