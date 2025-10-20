@@ -13,10 +13,7 @@ import { Switch } from '@/components/ui/switch';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
 // Import art style images (using existing story images as temporary placeholders)
-import pixarStyleImg from '@/assets/story-adventure.jpg';
-import animeStyleImg from '@/assets/story-space.jpg';
-import illustrationStyleImg from '@/assets/story-magical.jpg';
-import comicStyleImg from '@/assets/story-epic.jpg';
+import comingSoonImg from '@/assets/coming-soon.jpg';
 
 // Mission to Theme UUID mapping
 const MISSION_TO_THEME: Record<string, string> = {
@@ -40,26 +37,38 @@ const ART_STYLES = [
   { 
     id: 'pixar-3d' as ArtStyle, 
     label: 'Cinematic Animation', 
-    image: pixarStyleImg,
-    description: 'Pixar / Disney 3D style'
+    image: comingSoonImg,
+    description: 'Coming Soon'
   },
   { 
     id: 'anime' as ArtStyle, 
     label: 'Anime Vision', 
-    image: animeStyleImg,
-    description: 'Studio quality anime'
+    image: comingSoonImg,
+    description: 'Coming Soon'
   },
   { 
     id: 'illustration' as ArtStyle, 
-    label: 'Artistic Illustration', 
-    image: illustrationStyleImg,
-    description: 'Storybook concept art'
+    label: 'Illustrations', 
+    image: comingSoonImg,
+    description: 'Coming Soon'
   },
   { 
     id: 'comic-book' as ArtStyle, 
-    label: 'Dynamic Comic', 
-    image: comicStyleImg,
-    description: 'Graphic novel style'
+    label: 'Comic Book', 
+    image: comingSoonImg,
+    description: 'Coming Soon'
+  },
+  { 
+    id: 'watercolor' as ArtStyle, 
+    label: 'Watercolor Dreams', 
+    image: comingSoonImg,
+    description: 'Coming Soon'
+  },
+  { 
+    id: 'sketch' as ArtStyle, 
+    label: 'Pencil Sketch', 
+    image: comingSoonImg,
+    description: 'Coming Soon'
   },
 ];
 
