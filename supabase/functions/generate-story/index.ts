@@ -795,7 +795,12 @@ If ANY checkbox is unchecked, REWRITE THE STORY.
 
           const leonardoResult = await supabase.functions.invoke(
             'generate-story-image-leonardo',
-            { body: leonardoBody }
+            { 
+              body: leonardoBody,
+              headers: {
+                Authorization: authHeader
+              }
+            }
           );
 
           if (leonardoResult.error) {
