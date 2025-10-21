@@ -241,9 +241,13 @@
     },
     "band_defaults": {
       "A": {
-        "upfront_images": ["cover", "hook", "midpoint", "climax"],
-        "suggest_pages": ["inciting", "try1", "try2", "setback", "plan", "resolution", "button"],
-        "max_images_per_story": 12
+        "upfront_images": ["cover", "hook", "midpoint", "climax", "resolution"],
+        "suggest_pages": ["inciting", "try1", "try2", "setback", "plan", "button"],
+        "max_images_per_story": 12,
+        "image_sizes": {
+          "cover": { "width": 1024, "height": 576, "aspect": "16:9" },
+          "scene": { "width": 1024, "height": 1024, "aspect": "1:1" }
+        }
       }
     },
     "beats_to_page_windows": {

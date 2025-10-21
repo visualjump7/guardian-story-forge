@@ -11,6 +11,7 @@ import { Loader2, AlertCircle } from 'lucide-react';
 import { LibraryLimitDialog } from '@/components/LibraryLimitDialog';
 import { Switch } from '@/components/ui/switch';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { LoadingAnimation } from '@/components/LoadingAnimation';
 
 // Import art style images (using existing story images as temporary placeholders)
 import comingSoonImg from '@/assets/coming-soon.jpg';
@@ -335,6 +336,9 @@ export const CreateStep5 = () => {
           </Button>
         </div>
       </div>
+
+      {/* Enhanced Loading Animation */}
+      {isGenerating && <LoadingAnimation />}
 
       {/* Story Magic Tray - Now with 4 slots */}
       <div className="mt-6">

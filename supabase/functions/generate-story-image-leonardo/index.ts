@@ -151,6 +151,25 @@ serve(async (req) => {
 
     console.log("Calling Leonardo AI API...");
 
+    // Determine image dimensions based on type
+    let width = 1024;
+    let height = 1024;
+    let aspectRatio = '1:1';
+
+    if (imageType === 'cover') {
+      // Cover images should be 16:9 (landscape)
+      width = 1024;
+      height = 576;
+      aspectRatio = '16:9';
+    } else {
+      // Scene images are square 1:1
+      width = 1024;
+      height = 1024;
+      aspectRatio = '1:1';
+    }
+
+    console.log(`Generating ${imageType} image at ${width}x${height} (${aspectRatio})`);
+
     // Initiate Leonardo AI generation
     const leonardoResponse = await fetch("https://cloud.leonardo.ai/api/rest/v1/generations", {
       method: "POST",
@@ -162,8 +181,8 @@ serve(async (req) => {
         prompt: imagePrompt,
         negative_prompt: negativePrompt,
         modelId: "aa77f04e-3eec-4034-9c07-d0f619684628", // Leonardo Kino XL model
-        width: 1024,
-        height: 1024,
+        width: width,
+        height: height,
         num_images: 1,
         public: false
       })
@@ -240,7 +259,11 @@ serve(async (req) => {
         story_id: storyId,
         image_url: imageUrl,
         is_selected: isFirstImage,
-        image_type: imageType
+        image_type: imageType,
+        image_size_px: width,
+        width_px: width,
+        height_px: height,
+        aspect_ratio: aspectRatio
       });
 
     if (insertError) {

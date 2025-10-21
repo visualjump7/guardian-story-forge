@@ -310,11 +310,13 @@ export type Database = {
       }
       story_images: {
         Row: {
+          aspect_ratio: string | null
           created_at: string | null
           full_res_url: string | null
           generated_by_trigger: string | null
           generation_prompt: string | null
           generation_seed: string | null
+          height_px: number | null
           id: string
           image_size_px: number | null
           image_type: string | null
@@ -331,13 +333,16 @@ export type Database = {
           thumbnail_storage_path: string | null
           thumbnail_url: string | null
           version: number | null
+          width_px: number | null
         }
         Insert: {
+          aspect_ratio?: string | null
           created_at?: string | null
           full_res_url?: string | null
           generated_by_trigger?: string | null
           generation_prompt?: string | null
           generation_seed?: string | null
+          height_px?: number | null
           id?: string
           image_size_px?: number | null
           image_type?: string | null
@@ -354,13 +359,16 @@ export type Database = {
           thumbnail_storage_path?: string | null
           thumbnail_url?: string | null
           version?: number | null
+          width_px?: number | null
         }
         Update: {
+          aspect_ratio?: string | null
           created_at?: string | null
           full_res_url?: string | null
           generated_by_trigger?: string | null
           generation_prompt?: string | null
           generation_seed?: string | null
+          height_px?: number | null
           id?: string
           image_size_px?: number | null
           image_type?: string | null
@@ -377,6 +385,7 @@ export type Database = {
           thumbnail_storage_path?: string | null
           thumbnail_url?: string | null
           version?: number | null
+          width_px?: number | null
         }
         Relationships: [
           {

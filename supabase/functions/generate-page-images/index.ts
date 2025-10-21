@@ -115,6 +115,23 @@ serve(async (req) => {
           const artPrompt = page?.art_prompt;
           if (!artPrompt) return { success: false, pageNumber: pageIdx, error: "No art prompt" };
 
+          // Determine dimensions based on image type
+          let width = 896;
+          let height = 896;
+          let aspectRatio = '1:1';
+
+          if (page.beat === 'cover' || pageIdx === 0) {
+            // Cover images should be 16:9
+            width = 1024;
+            height = 576;
+            aspectRatio = '16:9';
+          } else {
+            // Scene images from config or default
+            width = 1024;
+            height = 1024;
+            aspectRatio = '1:1';
+          }
+
           let imagePrompt = `${artPolicy.safety.kid_safe ? 'Kid-safe, friendly, ' : ''}`;
           imagePrompt += `Style: ${styleLock.style}, Palette: ${styleLock.palette}, Camera: ${styleLock.camera}. `;
           imagePrompt += `Character: ${characterSheet}. `;
@@ -160,7 +177,10 @@ serve(async (req) => {
             generated_by_trigger: trigger,
             generation_prompt: imagePrompt,
             style_lock_data: styleLock,
-            image_size_px: 896,
+            image_size_px: width,
+            width_px: width,
+            height_px: height,
+            aspect_ratio: aspectRatio,
             version: 1
           });
 

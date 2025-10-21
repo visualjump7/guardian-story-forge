@@ -730,96 +730,173 @@ If ANY checkbox is unchecked, REWRITE THE STORY.
     // Split content into paragraphs for intelligent image placement
     const paragraphs = cleanContent.split('\n\n').filter((p: string) => p.trim());
 
-    // Generate ONLY 1 hero image automatically
+    // Generate 5 images automatically (cover + 4 scene images)
     const imagesToGenerate = [
       {
         type: 'cover',
+        position: 0,
         content: paragraphs[0] || cleanContent.substring(0, 200),
-        description: 'opening scene with hero introduction'
+        description: 'Cover image with hero introduction',
+        label: 'Cover'
+      },
+      {
+        type: 'hook',
+        position: 0.15,
+        content: paragraphs[Math.floor(paragraphs.length * 0.15)] || paragraphs[0],
+        description: 'Opening scene showing the adventure beginning',
+        label: 'Opening Scene'
+      },
+      {
+        type: 'midpoint',
+        position: 0.50,
+        content: paragraphs[Math.floor(paragraphs.length * 0.50)] || paragraphs[0],
+        description: 'Midpoint scene at the heart of the adventure',
+        label: 'Midpoint'
+      },
+      {
+        type: 'climax',
+        position: 0.75,
+        content: paragraphs[Math.floor(paragraphs.length * 0.75)] || paragraphs[0],
+        description: 'Climax scene with the most dramatic moment',
+        label: 'Climax'
+      },
+      {
+        type: 'resolution',
+        position: 0.90,
+        content: paragraphs[Math.floor(paragraphs.length * 0.90)] || paragraphs[0],
+        description: 'Resolution scene showing the ending',
+        label: 'Resolution'
       }
     ];
 
-    console.log("Generating 1 hero image using", generationMode, "mode...");
+    console.log(`🎨 Generating 5 images using ${generationMode} mode...`);
 
     // Route to the correct image generation function based on mode
     const imageFunction = generationMode === 'studio' 
       ? 'generate-story-image-leonardo'
       : 'generate-story-image';
 
+    const generatedImages: Array<{ type: string; success: boolean }> = [];
+
     for (let i = 0; i < imagesToGenerate.length; i++) {
       const imageConfig = imagesToGenerate[i];
       
       try {
-        console.log(`Generating ${imageConfig.type} image using ${imageFunction}...`);
+        console.log(`🖼️  Generating image ${i + 1}/5: ${imageConfig.label} (${imageConfig.type})`);
         
-        // Strong no-text directive
-        const noTextDirective = "🚫 CRITICAL INSTRUCTION: Generate ONLY pure visual illustration with absolutely NO text, letters, words, numbers, titles, labels, captions, signs, logos, speech bubbles, thought bubbles, dialogue, or any written language whatsoever. 🚫\n\n";
-        
-        const negativePrompt = "\n\n❌ EXCLUDE FROM IMAGE: text, letters, words, numbers, labels, titles, captions, subtitles, signs, signage, logos, branding, speech bubbles, thought bubbles, dialogue boxes, written language, characters, symbols, typography, handwriting, print, script, alphabet, numerals ❌";
-        
-        const imagePrompt = `${noTextDirective}Create a child-friendly illustration in ${styleDescription}. Feature ${heroName} in this ${imageConfig.description}: ${imageConfig.content}. Art style: colorful, family-friendly, high-quality with expressive characters and magical atmosphere.${negativePrompt}`;
+        if (imageFunction === 'generate-story-image-leonardo') {
+          // Use Leonardo AI for studio mode
+          const leonardoBody = {
+            storyId: story.id,
+            customizations: imageConfig.content,
+            imageType: imageConfig.type,
+            artStyle: artStyle
+          };
 
-        const imageResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-          method: "POST",
-          headers: {
-            "Authorization": `Bearer ${LOVABLE_API_KEY}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            model: "google/gemini-2.5-flash-image-preview",
-            messages: [
-              { 
-                role: "system", 
-                content: "You are an image generation AI. Your images must NEVER contain any text, letters, words, numbers, or written language of any kind. Generate only pure visual illustrations without any textual elements." 
-              },
-              { 
-                role: "user", 
-                content: imagePrompt 
-              }
-            ],
-            modalities: ["image", "text"]
-          }),
-        });
+          const leonardoResult = await supabase.functions.invoke(
+            'generate-story-image-leonardo',
+            { body: leonardoBody }
+          );
 
-        if (imageResponse.ok) {
-          const imageData = await imageResponse.json();
-          const imageUrl = imageData.choices?.[0]?.message?.images?.[0]?.image_url?.url;
-
-          if (imageUrl) {
-            await supabase
-              .from("story_images")
-              .insert({
-                story_id: story.id,
-                image_url: imageUrl,
-                image_type: imageConfig.type,
-                is_selected: i === 0 // First image is selected as cover
-              });
+          if (leonardoResult.error) {
+            console.error(`❌ Failed to generate ${imageConfig.label}:`, leonardoResult.error);
+            generatedImages.push({ type: imageConfig.type, success: false });
+          } else {
+            console.log(`✅ Successfully generated ${imageConfig.label}`);
+            generatedImages.push({ type: imageConfig.type, success: true });
             
-            if (i === 0) {
-              // Update story cover_image_url for backward compatibility
+            // Update cover_image_url for first image
+            if (i === 0 && leonardoResult.data?.imageUrl) {
               await supabase
                 .from("stories")
-                .update({ cover_image_url: imageUrl })
+                .update({ cover_image_url: leonardoResult.data.imageUrl })
                 .eq("id", story.id);
             }
-            
-            console.log(`${imageConfig.type} image generated successfully`);
           }
         } else {
-          console.error(`Failed to generate ${imageConfig.type} image:`, await imageResponse.text());
+          // Use Lovable AI for express mode
+          const noTextDirective = "🚫 CRITICAL INSTRUCTION: Generate ONLY pure visual illustration with absolutely NO text, letters, words, numbers, titles, labels, captions, signs, logos, speech bubbles, thought bubbles, dialogue, or any written language whatsoever. 🚫\n\n";
+          
+          const negativePrompt = "\n\n❌ EXCLUDE FROM IMAGE: text, letters, words, numbers, labels, titles, captions, subtitles, signs, signage, logos, branding, speech bubbles, thought bubbles, dialogue boxes, written language, characters, symbols, typography, handwriting, print, script, alphabet, numerals ❌";
+          
+          const imagePrompt = `${noTextDirective}Create a child-friendly illustration in ${styleDescription}. Feature ${heroName} in this ${imageConfig.description}: ${imageConfig.content}. Art style: colorful, family-friendly, high-quality with expressive characters and magical atmosphere.${negativePrompt}`;
+
+          const imageResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+            method: "POST",
+            headers: {
+              "Authorization": `Bearer ${LOVABLE_API_KEY}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              model: "google/gemini-2.5-flash-image-preview",
+              messages: [
+                { 
+                  role: "system", 
+                  content: "You are an image generation AI. Your images must NEVER contain any text, letters, words, numbers, or written language of any kind. Generate only pure visual illustrations without any textual elements." 
+                },
+                { 
+                  role: "user", 
+                  content: imagePrompt 
+                }
+              ],
+              modalities: ["image", "text"]
+            }),
+          });
+
+          if (imageResponse.ok) {
+            const imageData = await imageResponse.json();
+            const imageUrl = imageData.choices?.[0]?.message?.images?.[0]?.image_url?.url;
+
+            if (imageUrl) {
+              // Determine dimensions based on image type
+              const width = imageConfig.type === 'cover' ? 1024 : 1024;
+              const height = imageConfig.type === 'cover' ? 576 : 1024;
+              const aspectRatio = imageConfig.type === 'cover' ? '16:9' : '1:1';
+
+              await supabase
+                .from("story_images")
+                .insert({
+                  story_id: story.id,
+                  image_url: imageUrl,
+                  image_type: imageConfig.type,
+                  is_selected: i === 0,
+                  width_px: width,
+                  height_px: height,
+                  aspect_ratio: aspectRatio
+                });
+              
+              if (i === 0) {
+                // Update story cover_image_url for backward compatibility
+                await supabase
+                  .from("stories")
+                  .update({ cover_image_url: imageUrl })
+                  .eq("id", story.id);
+              }
+              
+              console.log(`✅ Successfully generated ${imageConfig.label}`);
+              generatedImages.push({ type: imageConfig.type, success: true });
+            } else {
+              console.error(`❌ No image URL returned for ${imageConfig.label}`);
+              generatedImages.push({ type: imageConfig.type, success: false });
+            }
+          } else {
+            console.error(`❌ Failed to generate ${imageConfig.label}:`, await imageResponse.text());
+            generatedImages.push({ type: imageConfig.type, success: false });
+          }
         }
         
-        // Small delay between generations to avoid rate limits
+        // Add delay between generations to avoid rate limits
         if (i < imagesToGenerate.length - 1) {
-          await new Promise(resolve => setTimeout(resolve, 200));
+          await new Promise(resolve => setTimeout(resolve, 2000));
         }
       } catch (imageError) {
-        console.error(`Failed to generate ${imageConfig.type} image:`, imageError);
-        // Continue with next image even if one fails
+        console.error(`❌ Error generating ${imageConfig.label}:`, imageError);
+        generatedImages.push({ type: imageConfig.type, success: false });
       }
     }
 
-    console.log("Initial image generation complete");
+    const successfulImages = generatedImages.filter(img => img.success);
+    console.log(`🎉 Initial image generation complete: ${successfulImages.length}/5 images generated successfully`);
 
     return new Response(
       JSON.stringify({ storyId: story.id, title, content: cleanContent }),
