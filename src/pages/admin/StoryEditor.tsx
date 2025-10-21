@@ -14,7 +14,9 @@ import { ImagePromptDialog } from '@/components/ImagePromptDialog';
 
 interface ImageSlotProps {
   label: string;
-  imageType: 'cover' | 'mid-scene' | 'ending';
+  description?: string;
+  imageKey: string;
+  aspectRatio?: string;
   imageInfo: { existingUrl: string | null };
   onGenerateClick: () => void;
   isGenerating: boolean;
@@ -22,20 +24,31 @@ interface ImageSlotProps {
 
 const ImageSlot = ({ 
   label, 
-  imageType, 
+  description,
+  imageKey,
+  aspectRatio = '1:1',
   imageInfo, 
   onGenerateClick,
   isGenerating
 }: ImageSlotProps) => {
   const hasImage = imageInfo.existingUrl;
   const displayImage = imageInfo.existingUrl;
+  const isCover = aspectRatio === '16:9';
 
   return (
     <div className="space-y-2">
-      <Label className="text-sm sm:text-base">{label}</Label>
-      <div className="border-2 border-dashed border-gray-700 rounded-lg overflow-hidden">
+      <div className="flex items-center justify-between">
+        <Label className="text-sm sm:text-base font-semibold">{label}</Label>
+        <span className="text-xs px-2 py-1 rounded bg-muted text-muted-foreground">
+          {aspectRatio}
+        </span>
+      </div>
+      {description && (
+        <p className="text-xs text-muted-foreground">{description}</p>
+      )}
+      <div className="border-2 border-dashed border-border rounded-lg overflow-hidden">
         {/* Image Display */}
-        <div className="relative w-full h-56 sm:h-48">
+        <div className={`relative w-full ${isCover ? 'h-48 sm:h-56' : 'h-48'}`}>
           {displayImage ? (
             <img
               src={displayImage}
@@ -43,18 +56,18 @@ const ImageSlot = ({
               className="w-full h-full object-cover"
             />
           ) : (
-            <div className="w-full h-full bg-black flex items-center justify-center">
-              <span className="text-gray-600 text-base sm:text-lg font-medium">Story Image</span>
+            <div className="w-full h-full bg-muted flex items-center justify-center">
+              <span className="text-muted-foreground text-sm font-medium">{label}</span>
             </div>
           )}
         </div>
 
-        {/* AI Generation Button Only */}
-        <div className="p-3 bg-gray-900">
+        {/* AI Generation Button */}
+        <div className="p-3 bg-card border-t">
           <Button
             variant="outline"
             size="sm"
-            className="w-full gap-2 h-10 sm:h-9"
+            className="w-full gap-2"
             onClick={onGenerateClick}
             disabled={isGenerating}
             type="button"
@@ -67,7 +80,7 @@ const ImageSlot = ({
             ) : (
               <>
                 <Sparkles className="h-4 w-4" />
-                {hasImage ? 'Regenerate' : 'Generate'} Image
+                {hasImage ? 'Regenerate' : 'Generate'}
               </>
             )}
           </Button>
@@ -84,18 +97,27 @@ export default function StoryEditor() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   
-  const [imageData, setImageData] = useState<{
-    cover: { existingUrl: string | null };
-    'mid-scene': { existingUrl: string | null };
-    ending: { existingUrl: string | null };
-  }>({
-    cover: { existingUrl: null },
-    'mid-scene': { existingUrl: null },
-    ending: { existingUrl: null }
-  });
+  type ImageType = 'cover' | 'hook' | 'inciting' | 'try1' | 'try2' | 'midpoint' | 'setback' | 'plan' | 'climax' | 'resolution';
+
+  const IMAGE_SLOTS: Array<{ key: ImageType; label: string; description: string; aspectRatio: string }> = [
+    { key: 'cover', label: 'Cover Image', description: 'Main cover (16:9)', aspectRatio: '16:9' },
+    { key: 'hook', label: 'Hook', description: 'Opening scene', aspectRatio: '1:1' },
+    { key: 'inciting', label: 'Inciting Event', description: 'Adventure begins', aspectRatio: '1:1' },
+    { key: 'try1', label: 'Try #1', description: 'First attempt', aspectRatio: '1:1' },
+    { key: 'try2', label: 'Try #2', description: 'Second attempt', aspectRatio: '1:1' },
+    { key: 'midpoint', label: 'Midpoint', description: 'Turning point', aspectRatio: '1:1' },
+    { key: 'setback', label: 'Setback', description: 'Challenge/failure', aspectRatio: '1:1' },
+    { key: 'plan', label: 'Plan', description: 'New strategy', aspectRatio: '1:1' },
+    { key: 'climax', label: 'Climax', description: 'Final moment', aspectRatio: '1:1' },
+    { key: 'resolution', label: 'Resolution', description: 'Happy ending', aspectRatio: '1:1' }
+  ];
+
+  const [imageData, setImageData] = useState<Record<string, { existingUrl: string | null }>>(
+    Object.fromEntries(IMAGE_SLOTS.map(slot => [slot.key, { existingUrl: null }]))
+  );
 
   const [generatingImage, setGeneratingImage] = useState<{
-    type: 'cover' | 'mid-scene' | 'ending' | null;
+    type: ImageType | null;
     isOpen: boolean;
   }>({ type: null, isOpen: false });
 
@@ -165,8 +187,9 @@ export default function StoryEditor() {
       const newImageData = { ...imageData };
       
       imagesData.forEach(img => {
-        if (img.image_type === 'cover' || img.image_type === 'mid-scene' || img.image_type === 'ending') {
-          newImageData[img.image_type] = {
+        const imageType = img.image_type;
+        if (IMAGE_SLOTS.some(slot => slot.key === imageType)) {
+          newImageData[imageType] = {
             existingUrl: img.image_url
           };
         }
@@ -179,7 +202,7 @@ export default function StoryEditor() {
   };
 
 
-  const handleGenerateImage = async (imageType: 'cover' | 'mid-scene' | 'ending', customizations: string) => {
+  const handleGenerateImage = async (imageType: ImageType, customizations: string) => {
     if (!id) {
       toast.error('Please save the story first before generating images');
       return;
@@ -187,7 +210,7 @@ export default function StoryEditor() {
 
     setIsGenerating(true);
     try {
-      const { data, error } = await supabase.functions.invoke('generate-story-image', {
+      const { data, error } = await supabase.functions.invoke('generate-story-image-leonardo', {
         body: {
           storyId: id,
           imageType: imageType,
@@ -205,11 +228,13 @@ export default function StoryEditor() {
           }
         }));
         
-        toast.success(`${imageType} image generated successfully`);
+        const slotLabel = IMAGE_SLOTS.find(s => s.key === imageType)?.label || imageType;
+        toast.success(`${slotLabel} generated successfully`);
       }
     } catch (error) {
       console.error('Generate error:', error);
-      toast.error(`Failed to generate ${imageType} image`);
+      const slotLabel = IMAGE_SLOTS.find(s => s.key === imageType)?.label || imageType;
+      toast.error(`Failed to generate ${slotLabel}`);
     } finally {
       setIsGenerating(false);
       setGeneratingImage({ type: null, isOpen: false });
@@ -393,36 +418,40 @@ export default function StoryEditor() {
             </div>
 
             {/* Image Slots Section */}
-            <div className="space-y-2">
-              <Label className="text-lg font-semibold">Story Images</Label>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <ImageSlot
-                  label="Cover Image"
-                  imageType="cover"
-                  imageInfo={imageData.cover}
-                  onGenerateClick={() => setGeneratingImage({ type: 'cover', isOpen: true })}
-                  isGenerating={isGenerating && generatingImage.type === 'cover'}
-                />
-                
-                <ImageSlot
-                  label="Middle Scene"
-                  imageType="mid-scene"
-                  imageInfo={imageData['mid-scene']}
-                  onGenerateClick={() => setGeneratingImage({ type: 'mid-scene', isOpen: true })}
-                  isGenerating={isGenerating && generatingImage.type === 'mid-scene'}
-                />
-                
-                <ImageSlot
-                  label="Ending Scene"
-                  imageType="ending"
-                  imageInfo={imageData.ending}
-                  onGenerateClick={() => setGeneratingImage({ type: 'ending', isOpen: true })}
-                  isGenerating={isGenerating && generatingImage.type === 'ending'}
-                />
+            <div className="space-y-4">
+              <div>
+                <Label className="text-lg font-semibold">Story Images</Label>
+                <p className="text-sm text-muted-foreground mt-1">
+                  Generate images for key story beats. AI generation requires story to be saved first.
+                </p>
               </div>
-              <p className="text-sm text-muted-foreground">
-                AI generation requires story to be saved first. Generate unique images tailored to your story.
-              </p>
+              
+              {/* Cover Image - Full Width */}
+              <ImageSlot
+                label={IMAGE_SLOTS[0].label}
+                description={IMAGE_SLOTS[0].description}
+                imageKey={IMAGE_SLOTS[0].key}
+                aspectRatio={IMAGE_SLOTS[0].aspectRatio}
+                imageInfo={imageData[IMAGE_SLOTS[0].key]}
+                onGenerateClick={() => setGeneratingImage({ type: IMAGE_SLOTS[0].key, isOpen: true })}
+                isGenerating={isGenerating && generatingImage.type === IMAGE_SLOTS[0].key}
+              />
+              
+              {/* Scene Images - 3x3 Grid */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {IMAGE_SLOTS.slice(1).map(slot => (
+                  <ImageSlot
+                    key={slot.key}
+                    label={slot.label}
+                    description={slot.description}
+                    imageKey={slot.key}
+                    aspectRatio={slot.aspectRatio}
+                    imageInfo={imageData[slot.key]}
+                    onGenerateClick={() => setGeneratingImage({ type: slot.key, isOpen: true })}
+                    isGenerating={isGenerating && generatingImage.type === slot.key}
+                  />
+                ))}
+              </div>
             </div>
 
             {/* Story Content */}

@@ -15,7 +15,7 @@ interface ImagePromptDialogProps {
   storyTitle: string;
   heroName: string;
   artStyle: string;
-  imageType: 'cover' | 'early-scene' | 'mid-scene' | 'climax' | 'ending';
+  imageType: 'cover' | 'hook' | 'inciting' | 'try1' | 'try2' | 'midpoint' | 'setback' | 'plan' | 'climax' | 'resolution';
   storyExcerpt: string;
   imageCount: number;
   isGenerating: boolean;
@@ -39,24 +39,49 @@ const imageTypeLabels: Record<string, { label: string; description: string; icon
     description: 'The main cover image for your story',
     icon: '🎨'
   },
-  'early-scene': { 
-    label: 'Early Scene', 
-    description: 'Beginning of the adventure',
+  'hook': { 
+    label: 'Hook Scene', 
+    description: 'Opening scene that grabs attention',
     icon: '🌅'
   },
-  'mid-scene': { 
-    label: 'Mid Scene', 
-    description: 'A key moment in the story',
+  'inciting': { 
+    label: 'Inciting Event', 
+    description: 'The moment adventure begins',
+    icon: '🚀'
+  },
+  'try1': { 
+    label: 'First Attempt', 
+    description: 'First try to solve the problem',
+    icon: '💪'
+  },
+  'try2': { 
+    label: 'Second Attempt', 
+    description: 'Second try with more effort',
     icon: '⚡'
+  },
+  'midpoint': { 
+    label: 'Midpoint', 
+    description: 'Major turning point',
+    icon: '🔄'
+  },
+  'setback': { 
+    label: 'Setback', 
+    description: 'Challenge or failure moment',
+    icon: '😰'
+  },
+  'plan': { 
+    label: 'New Plan', 
+    description: 'New strategy or help arrives',
+    icon: '💡'
   },
   'climax': { 
     label: 'Climax Scene', 
     description: 'The peak dramatic moment',
     icon: '🌟'
   },
-  'ending': { 
-    label: 'Ending Scene', 
-    description: 'The story\'s resolution',
+  'resolution': { 
+    label: 'Resolution', 
+    description: 'Happy ending scene',
     icon: '🌈'
   }
 };
@@ -98,14 +123,24 @@ export function ImagePromptDialog({
 
       if (imageType === 'cover') {
         generatedPrompt = `Create a child-friendly cover illustration in ${styleDescription}. Feature ${heroName} as the main character. Scene: ${storyExcerpt}. Art style: colorful, family-friendly, high-quality with expressive characters and magical atmosphere.`;
-      } else if (imageType === 'early-scene') {
-        generatedPrompt = `Create an early adventure scene in ${styleDescription}. Feature ${heroName} in this moment: ${storyExcerpt}. Show the beginning of the journey with excitement and anticipation. Child-friendly, colorful illustration.`;
-      } else if (imageType === 'mid-scene') {
-        generatedPrompt = `Create a mid-story scene in ${styleDescription}. Feature ${heroName} in this key moment: ${storyExcerpt}. Show the action and emotion. Child-friendly, colorful illustration.`;
+      } else if (imageType === 'hook') {
+        generatedPrompt = `Create an opening scene in ${styleDescription}. Show ${heroName} at the beginning of the story. Scene: ${storyExcerpt}. Child-friendly, inviting illustration.`;
+      } else if (imageType === 'inciting') {
+        generatedPrompt = `Create the moment when adventure begins in ${styleDescription}. Show ${heroName} discovering the problem. Scene: ${storyExcerpt}. Exciting, curious illustration.`;
+      } else if (imageType === 'try1') {
+        generatedPrompt = `Create a scene of the first attempt in ${styleDescription}. Feature ${heroName} trying to solve the problem. Scene: ${storyExcerpt}. Active, determined illustration.`;
+      } else if (imageType === 'try2') {
+        generatedPrompt = `Create a scene of the second attempt in ${styleDescription}. Show ${heroName} trying harder. Scene: ${storyExcerpt}. Energetic, persistent illustration.`;
+      } else if (imageType === 'midpoint') {
+        generatedPrompt = `Create a major turning point in ${styleDescription}. Show ${heroName} at a pivotal moment. Scene: ${storyExcerpt}. Dramatic, transformative illustration.`;
+      } else if (imageType === 'setback') {
+        generatedPrompt = `Create a challenge or setback in ${styleDescription}. Show ${heroName} facing difficulty. Scene: ${storyExcerpt}. Tense but hopeful illustration.`;
+      } else if (imageType === 'plan') {
+        generatedPrompt = `Create a scene of new strategy in ${styleDescription}. Show ${heroName} with renewed hope. Scene: ${storyExcerpt}. Optimistic, clever illustration.`;
       } else if (imageType === 'climax') {
         generatedPrompt = `Create a climactic scene in ${styleDescription}. Feature ${heroName} at the peak moment: ${storyExcerpt}. Show the tension and excitement with dramatic visuals. Child-friendly, colorful illustration.`;
       } else {
-        generatedPrompt = `Create a resolution scene in ${styleDescription}. Feature ${heroName} in the conclusion: ${storyExcerpt}. Capture the emotional resolution with warmth. Child-friendly, colorful illustration.`;
+        generatedPrompt = `Create a happy ending scene in ${styleDescription}. Show ${heroName} celebrating or at peace. Scene: ${storyExcerpt}. Joyful, satisfying illustration.`;
       }
 
       setCorePrompt(generatedPrompt);
@@ -148,7 +183,7 @@ export function ImagePromptDialog({
               <div className="space-y-1">
                 <p className="font-medium">{typeInfo.label} - {typeInfo.description}</p>
                 <p className="text-xs text-muted-foreground">
-                  This will be image {imageCount + 1} of 5 in "{storyTitle}"
+                  This will be image for "{storyTitle}"
                 </p>
               </div>
             </AlertDescription>

@@ -10,6 +10,10 @@ const corsHeaders = {
 // Input validation schema
 const imageRequestSchema = z.object({
   storyId: z.string().uuid("Invalid story ID format"),
+  imageType: z.enum([
+    'cover', 'hook', 'inciting', 'try1', 'try2', 
+    'midpoint', 'setback', 'plan', 'climax', 'resolution'
+  ]).optional(),
   customizations: z.string().max(500, "Customizations must be less than 500 characters").optional()
 });
 
@@ -37,8 +41,11 @@ serve(async (req) => {
       );
     }
 
-    const { storyId, customizations } = validation.data;
+    const { storyId, customizations, imageType: requestedImageType } = validation.data;
     console.log("Story ID received:", storyId);
+    if (requestedImageType) {
+      console.log("Requested image type:", requestedImageType);
+    }
 
     // Initialize Supabase client
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
@@ -92,20 +99,31 @@ serve(async (req) => {
     const imageCount = existingImages?.length || 0;
     const paragraphs = story.content.split('\n\n').filter((p: string) => p.trim());
     
-    let imageType: 'cover' | 'early-scene' | 'mid-scene' | 'climax' | 'ending' = 'cover';
+    type ImageType = 'cover' | 'hook' | 'inciting' | 'try1' | 'try2' | 'midpoint' | 'setback' | 'plan' | 'climax' | 'resolution';
+    let imageType: ImageType = requestedImageType as ImageType || 'cover';
     let contentForImage = paragraphs[0] || story.content.substring(0, 200);
 
-    if (imageCount === 0) {
-      imageType = 'cover';
-      contentForImage = paragraphs[0];
-    } else if (imageCount === 1) {
-      imageType = 'early-scene';
-      const targetIndex = Math.floor(paragraphs.length * 0.25);
-      contentForImage = paragraphs[targetIndex] || paragraphs[0];
-    } else if (imageCount === 2) {
-      imageType = 'mid-scene';
-      const targetIndex = Math.floor(paragraphs.length * 0.50);
-      contentForImage = paragraphs[targetIndex] || paragraphs[0];
+    // If no imageType was explicitly requested, use auto-detection
+    if (!requestedImageType) {
+      if (imageCount === 0) {
+        imageType = 'cover';
+        contentForImage = paragraphs[0];
+      } else if (imageCount === 1) {
+        imageType = 'hook';
+        const targetIndex = Math.floor(paragraphs.length * 0.10);
+        contentForImage = paragraphs[targetIndex] || paragraphs[0];
+      } else if (imageCount === 2) {
+        imageType = 'midpoint';
+        const targetIndex = Math.floor(paragraphs.length * 0.50);
+        contentForImage = paragraphs[targetIndex] || paragraphs[0];
+      } else if (imageCount === 3) {
+        imageType = 'climax';
+        const targetIndex = Math.floor(paragraphs.length * 0.80);
+        contentForImage = paragraphs[targetIndex] || paragraphs[0];
+      } else if (imageCount === 4) {
+        imageType = 'resolution';
+        contentForImage = paragraphs[paragraphs.length - 1] || paragraphs[0];
+      }
     }
 
     console.log("Generating image type:", imageType);
@@ -129,17 +147,24 @@ serve(async (req) => {
 
     const styleDescription = artStylePrompts[story.art_style || 'pixar-3d'] || artStylePrompts['pixar-3d'];
 
-    // Generate core prompt
+    // Generate core prompt based on beat type
     let corePrompt = '';
     const noTextDirective = 'CRITICAL: This illustration must contain ZERO text, letters, words, numbers, or written language of any kind.';
     
-    if (imageType === 'cover') {
-      corePrompt = `${noTextDirective} Create a child-friendly cover illustration in ${styleDescription}. Feature ${story.hero_name} as the main character. Scene: ${contentForImage}. Colorful, family-friendly, high-quality with expressive characters and magical atmosphere.`;
-    } else if (imageType === 'early-scene') {
-      corePrompt = `${noTextDirective} Create an early adventure scene in ${styleDescription}. Feature ${story.hero_name} in this moment: ${contentForImage}. Show the beginning of the journey. Child-friendly, colorful illustration.`;
-    } else {
-      corePrompt = `${noTextDirective} Create a mid-story scene in ${styleDescription}. Feature ${story.hero_name} in this key moment: ${contentForImage}. Show action and emotion. Child-friendly, colorful illustration.`;
-    }
+    const beatPrompts: Record<string, string> = {
+      'cover': `${noTextDirective} Create a captivating cover illustration in ${styleDescription}. Feature ${story.hero_name} as the main character. Scene: ${contentForImage}. Colorful, family-friendly, high-quality with expressive characters and magical atmosphere.`,
+      'hook': `${noTextDirective} Create an opening scene in ${styleDescription}. Show ${story.hero_name} at the beginning of the story. Scene: ${contentForImage}. Child-friendly, inviting, sets the stage for adventure.`,
+      'inciting': `${noTextDirective} Create the moment when the adventure begins in ${styleDescription}. Show ${story.hero_name} discovering the problem or call to adventure. Scene: ${contentForImage}. Exciting, curiosity-sparking, child-friendly.`,
+      'try1': `${noTextDirective} Create a scene showing the first attempt in ${styleDescription}. Feature ${story.hero_name} trying to solve the problem. Scene: ${contentForImage}. Active, determined, child-friendly.`,
+      'try2': `${noTextDirective} Create a scene showing the second attempt with more effort in ${styleDescription}. Feature ${story.hero_name} trying harder. Scene: ${contentForImage}. Energetic, persistent, child-friendly.`,
+      'midpoint': `${noTextDirective} Create a major turning point scene in ${styleDescription}. Show ${story.hero_name} at a pivotal moment. Scene: ${contentForImage}. Dramatic, transformative, child-friendly.`,
+      'setback': `${noTextDirective} Create a challenge or setback moment in ${styleDescription}. Show ${story.hero_name} facing difficulty. Scene: ${contentForImage}. Tense but hopeful, child-friendly.`,
+      'plan': `${noTextDirective} Create a scene showing new strategy or help arriving in ${styleDescription}. Feature ${story.hero_name} with renewed hope. Scene: ${contentForImage}. Optimistic, clever, child-friendly.`,
+      'climax': `${noTextDirective} Create the final confrontation or big moment in ${styleDescription}. Show ${story.hero_name} at the peak of the story. Scene: ${contentForImage}. Exciting, triumphant, child-friendly.`,
+      'resolution': `${noTextDirective} Create a happy ending scene in ${styleDescription}. Show ${story.hero_name} celebrating or at peace. Scene: ${contentForImage}. Joyful, satisfying, child-friendly.`
+    };
+
+    corePrompt = beatPrompts[imageType] || beatPrompts['hook'];
 
     // Append customizations if provided
     let imagePrompt = corePrompt;
@@ -151,22 +176,22 @@ serve(async (req) => {
 
     console.log("Calling Leonardo AI API...");
 
-    // Determine image dimensions based on type
-    let width = 1024;
-    let height = 1024;
-    let aspectRatio = '1:1';
+    // Map all beat types to aspect ratios and dimensions
+    const aspectRatioMap: Record<string, { width: number; height: number; aspectRatio: string }> = {
+      'cover': { width: 1024, height: 576, aspectRatio: '16:9' },
+      'hook': { width: 1024, height: 1024, aspectRatio: '1:1' },
+      'inciting': { width: 1024, height: 1024, aspectRatio: '1:1' },
+      'try1': { width: 1024, height: 1024, aspectRatio: '1:1' },
+      'try2': { width: 1024, height: 1024, aspectRatio: '1:1' },
+      'midpoint': { width: 1024, height: 1024, aspectRatio: '1:1' },
+      'setback': { width: 1024, height: 1024, aspectRatio: '1:1' },
+      'plan': { width: 1024, height: 1024, aspectRatio: '1:1' },
+      'climax': { width: 1024, height: 1024, aspectRatio: '1:1' },
+      'resolution': { width: 1024, height: 1024, aspectRatio: '1:1' }
+    };
 
-    if (imageType === 'cover') {
-      // Cover images should be 16:9 (landscape)
-      width = 1024;
-      height = 576;
-      aspectRatio = '16:9';
-    } else {
-      // Scene images are square 1:1
-      width = 1024;
-      height = 1024;
-      aspectRatio = '1:1';
-    }
+    const dimensions = aspectRatioMap[imageType] || aspectRatioMap['hook'];
+    const { width, height, aspectRatio } = dimensions;
 
     console.log(`Generating ${imageType} image at ${width}x${height} (${aspectRatio})`);
 

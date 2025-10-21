@@ -768,9 +768,9 @@ const StoryView = () => {
           artStyle={story.art_style || "pixar-3d"}
           imageType={
             storyImages.length === 0 ? 'cover' :
-            storyImages.length === 1 ? 'early-scene' :
-            storyImages.length === 2 ? 'mid-scene' :
-            storyImages.length === 3 ? 'climax' : 'ending'
+            storyImages.length === 1 ? 'hook' :
+            storyImages.length === 2 ? 'midpoint' :
+            storyImages.length === 3 ? 'climax' : 'resolution'
           }
           storyExcerpt={story.content.split('\n\n').find((p: string) => p.trim()) || story.content.substring(0, 200)}
           imageCount={storyImages.length}
