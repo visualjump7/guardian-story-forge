@@ -730,7 +730,7 @@ If ANY checkbox is unchecked, REWRITE THE STORY.
     // Split content into paragraphs for intelligent image placement
     const paragraphs = cleanContent.split('\n\n').filter((p: string) => p.trim());
 
-    // Generate 5 images automatically (cover + 4 scene images)
+    // Generate 10 images automatically (cover + 9 story beat images)
     const imagesToGenerate = [
       {
         type: 'cover',
@@ -741,35 +741,70 @@ If ANY checkbox is unchecked, REWRITE THE STORY.
       },
       {
         type: 'hook',
-        position: 0.15,
-        content: paragraphs[Math.floor(paragraphs.length * 0.15)] || paragraphs[0],
-        description: 'Opening scene showing the adventure beginning',
-        label: 'Opening Scene'
+        position: 0.10,
+        content: paragraphs[Math.floor(paragraphs.length * 0.10)] || paragraphs[0],
+        description: 'Opening scene showing the ordinary world',
+        label: 'Hook'
+      },
+      {
+        type: 'inciting',
+        position: 0.20,
+        content: paragraphs[Math.floor(paragraphs.length * 0.20)] || paragraphs[0],
+        description: 'The moment the adventure or problem begins',
+        label: 'Inciting Event'
+      },
+      {
+        type: 'try1',
+        position: 0.30,
+        content: paragraphs[Math.floor(paragraphs.length * 0.30)] || paragraphs[0],
+        description: 'First attempt to solve the problem',
+        label: 'Try #1'
+      },
+      {
+        type: 'try2',
+        position: 0.40,
+        content: paragraphs[Math.floor(paragraphs.length * 0.40)] || paragraphs[0],
+        description: 'Second attempt with more effort',
+        label: 'Try #2'
       },
       {
         type: 'midpoint',
         position: 0.50,
         content: paragraphs[Math.floor(paragraphs.length * 0.50)] || paragraphs[0],
-        description: 'Midpoint scene at the heart of the adventure',
+        description: 'Major turning point in the story',
         label: 'Midpoint'
       },
       {
+        type: 'setback',
+        position: 0.60,
+        content: paragraphs[Math.floor(paragraphs.length * 0.60)] || paragraphs[0],
+        description: 'Challenge or failure moment',
+        label: 'Setback'
+      },
+      {
+        type: 'plan',
+        position: 0.70,
+        content: paragraphs[Math.floor(paragraphs.length * 0.70)] || paragraphs[0],
+        description: 'New strategy or help arrives',
+        label: 'Plan'
+      },
+      {
         type: 'climax',
-        position: 0.75,
-        content: paragraphs[Math.floor(paragraphs.length * 0.75)] || paragraphs[0],
-        description: 'Climax scene with the most dramatic moment',
+        position: 0.80,
+        content: paragraphs[Math.floor(paragraphs.length * 0.80)] || paragraphs[0],
+        description: 'Final confrontation or big moment',
         label: 'Climax'
       },
       {
         type: 'resolution',
         position: 0.90,
         content: paragraphs[Math.floor(paragraphs.length * 0.90)] || paragraphs[0],
-        description: 'Resolution scene showing the ending',
+        description: 'Happy ending scene',
         label: 'Resolution'
       }
     ];
 
-    console.log(`🎨 Generating 5 images using ${generationMode} mode...`);
+    console.log(`🎨 Generating 10 images using ${generationMode} mode...`);
 
     // Route to the correct image generation function based on mode
     const imageFunction = generationMode === 'studio' 
@@ -782,7 +817,7 @@ If ANY checkbox is unchecked, REWRITE THE STORY.
       const imageConfig = imagesToGenerate[i];
       
       try {
-        console.log(`🖼️  Generating image ${i + 1}/5: ${imageConfig.label} (${imageConfig.type})`);
+        console.log(`🖼️  Generating image ${i + 1}/10: ${imageConfig.label} (${imageConfig.type})`);
         
         if (imageFunction === 'generate-story-image-leonardo') {
           // Use Leonardo AI for studio mode
@@ -901,7 +936,7 @@ If ANY checkbox is unchecked, REWRITE THE STORY.
     }
 
     const successfulImages = generatedImages.filter(img => img.success);
-    console.log(`🎉 Initial image generation complete: ${successfulImages.length}/5 images generated successfully`);
+    console.log(`🎉 Initial image generation complete: ${successfulImages.length}/10 images generated successfully`);
 
     return new Response(
       JSON.stringify({ storyId: story.id, title, content: cleanContent }),
