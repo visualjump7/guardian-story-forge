@@ -84,8 +84,8 @@ serve(async (req) => {
       .eq("story_id", storyId)
       .order("created_at", { ascending: true });
 
-    if (existingImages && existingImages.length >= 3) {
-      throw new Error("Maximum 3 images per story reached");
+    if (existingImages && existingImages.length >= 12) {
+      throw new Error("Maximum 12 images per story reached");
     }
 
     // Determine image type and content
