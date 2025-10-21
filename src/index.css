@@ -98,6 +98,32 @@ All colors MUST be HSL.
     --story-choice-default: 240 5.9% 20%;
     --story-choice-hover: 45 93% 58%;
     --story-choice-selected: 45 93% 58%;
+
+    /* Vibrant Card Selection Gradients */
+    --gradient-character: linear-gradient(135deg, hsl(240 99% 46%) 0%, hsl(302 96% 60%) 100%);
+    --gradient-character-glow: 0 0 40px hsl(302 96% 60% / 0.4), 0 0 60px hsl(240 99% 46% / 0.3);
+
+    --gradient-story: linear-gradient(135deg, hsl(51 100% 60%) 0%, hsl(345 85% 58%) 100%);
+    --gradient-story-glow: 0 0 40px hsl(345 85% 58% / 0.4), 0 0 60px hsl(51 100% 60% / 0.3);
+
+    --gradient-mission: linear-gradient(135deg, hsl(177 100% 50%) 0%, hsl(286 100% 39%) 100%);
+    --gradient-mission-glow: 0 0 40px hsl(286 100% 39% / 0.4), 0 0 60px hsl(177 100% 50% / 0.3);
+
+    --gradient-art: linear-gradient(135deg, hsl(66 88% 57%) 0%, hsl(130 64% 59%) 100%);
+    --gradient-art-glow: 0 0 40px hsl(130 64% 59% / 0.4), 0 0 60px hsl(66 88% 57% / 0.3);
+
+    /* Individual gradient colors for tailwind usage */
+    --color-character-start: 240 99% 46%;
+    --color-character-end: 302 96% 60%;
+
+    --color-story-start: 51 100% 60%;
+    --color-story-end: 345 85% 58%;
+
+    --color-mission-start: 177 100% 50%;
+    --color-mission-end: 286 100% 39%;
+
+    --color-art-start: 66 88% 57%;
+    --color-art-end: 130 64% 59%;
   }
 
   .dark {
@@ -274,5 +300,34 @@ All colors MUST be HSL.
   #root {
     position: relative;
     z-index: 1;
+  }
+
+  /* Gradient text utilities */
+  .text-gradient-character {
+    background: var(--gradient-character);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .text-gradient-story {
+    background: var(--gradient-story);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .text-gradient-mission {
+    background: var(--gradient-mission);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .text-gradient-art {
+    background: var(--gradient-art);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
   }
 }

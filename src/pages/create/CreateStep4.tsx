@@ -116,6 +116,7 @@ export const CreateStep4 = () => {
             selected={selectedMission === mission.id}
             hasSelection={hasSelection}
             onSelect={() => handleSelect(mission.id, mission.image)}
+            gradientType="mission"
           />
         ))}
       </div>

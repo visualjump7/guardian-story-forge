@@ -110,6 +110,7 @@ export const CreateStep3 = () => {
             selected={selectedType === type.id}
             hasSelection={hasSelection}
             onSelect={() => handleSelect(type.id, type.image)}
+            gradientType="story"
           />
         ))}
       </div>

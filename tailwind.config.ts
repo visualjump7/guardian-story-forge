@@ -79,6 +79,34 @@ export default {
           200: "hsl(var(--clay-200))",
           300: "hsl(var(--clay-300))",
         },
+        "gradient-character": {
+          start: "hsl(var(--color-character-start))",
+          end: "hsl(var(--color-character-end))",
+        },
+        "gradient-story": {
+          start: "hsl(var(--color-story-start))",
+          end: "hsl(var(--color-story-end))",
+        },
+        "gradient-mission": {
+          start: "hsl(var(--color-mission-start))",
+          end: "hsl(var(--color-mission-end))",
+        },
+        "gradient-art": {
+          start: "hsl(var(--color-art-start))",
+          end: "hsl(var(--color-art-end))",
+        },
+      },
+      backgroundImage: {
+        'gradient-character': 'var(--gradient-character)',
+        'gradient-story': 'var(--gradient-story)',
+        'gradient-mission': 'var(--gradient-mission)',
+        'gradient-art': 'var(--gradient-art)',
+      },
+      boxShadow: {
+        'gradient-character-glow': 'var(--gradient-character-glow)',
+        'gradient-story-glow': 'var(--gradient-story-glow)',
+        'gradient-mission-glow': 'var(--gradient-mission-glow)',
+        'gradient-art-glow': 'var(--gradient-art-glow)',
       },
       borderRadius: {
         lg: "var(--radius)",

@@ -249,6 +249,7 @@ export const CreateStep5 = () => {
             selected={selectedStyle === style.id}
             hasSelection={hasSelection}
             onSelect={() => handleStyleSelect(style.id, style.image)}
+            gradientType="art"
           />
         ))}
       </div>
