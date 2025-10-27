@@ -201,60 +201,17 @@ const Home = () => {
             </h2>
             <p className="text-sm text-muted-foreground ml-11">(coming soon)</p>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {stories.map((story) => (
-              <Card
-                key={story.id}
-                className="group relative overflow-hidden cursor-pointer hover:shadow-[var(--shadow-card)] transition-all hover:scale-[1.02] border-2"
-                onClick={() => handleReadStory(story.id)}
-              >
-                {/* Hero Image Section */}
-                <div className="relative h-56 md:h-64 overflow-hidden">
-                  {story.cover_image_url ? (
-                    <img
-                      src={story.cover_image_url}
-                      alt={story.title}
-                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                    />
-                  ) : (
-                    <div className="w-full h-full bg-gradient-to-br from-primary/30 via-accent/30 to-secondary/30 flex items-center justify-center">
-                      <span className="text-8xl group-hover:scale-110 transition-transform duration-300">
-                        {story.story_themes?.emoji || "📖"}
-                      </span>
-                    </div>
-                  )}
-                  
-                  {/* Share Button */}
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="absolute top-4 right-4 bg-black/60 hover:bg-black/80 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
-                    onClick={(e) => handleShare(e, story)}
-                  >
-                    <Share2 className="w-5 h-5" />
-                  </Button>
-                </div>
-
-                {/* Dark Text Section */}
-                <div className="relative bg-gradient-to-t from-black/95 via-black/90 to-transparent p-6 space-y-3">
-                  <h3 className="text-2xl md:text-3xl font-chewy text-amber-400 line-clamp-2 tracking-tight leading-tight">
-                    {story.title}
-                  </h3>
-                  
-                  <p className="text-white/90 text-sm md:text-base line-clamp-2 leading-relaxed">
-                    {story.content.substring(0, 120)}...
-                  </p>
-                  
-                  <Button
-                    variant="outline"
-                    className="w-full mt-4 rounded-full border-white/40 bg-transparent text-white hover:bg-white hover:text-black transition-all"
-                    onClick={() => handleReadStory(story.id)}
-                  >
-                    Begin This Adventure
-                  </Button>
-                </div>
-              </Card>
-            ))}
+          {/* Empty state - no cards shown */}
+          <div className="flex items-center justify-center py-16">
+            <div className="text-center space-y-4">
+              <Sparkles className="w-16 h-16 text-primary mx-auto opacity-50" />
+              <p className="text-xl font-semibold text-muted-foreground">
+                Featured stories coming soon!
+              </p>
+              <p className="text-sm text-muted-foreground max-w-md">
+                We're working on curating amazing stories to inspire your next adventure.
+              </p>
+            </div>
           </div>
         </section>
       </main>
