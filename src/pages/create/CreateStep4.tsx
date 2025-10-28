@@ -300,7 +300,7 @@ export const CreateStep4 = () => {
       )}
 
       {/* Main content area */}
-      <div className="flex-1 flex flex-col items-center justify-center px-4 md:px-8 lg:px-16 py-12">
+      <div className="flex-1 flex flex-col items-center justify-center px-4 md:px-8 lg:px-16 pt-12 pb-0" style={{ marginBottom: '-2px' }}>
         {/* Title */}
         <h1 className="font-aoboshi text-4xl md:text-5xl text-white mb-16 text-center">
           Finalize Your Epic Journey
