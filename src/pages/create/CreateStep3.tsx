@@ -106,6 +106,18 @@ export const CreateStep3 = () => {
     }
   };
 
+  const handleProgressBarClick = (stepNumber: number) => {
+    if (stepNumber === 1) {
+      navigate('/create/01');
+    } else if (stepNumber === 2) {
+      navigate('/create/02');
+    } else if (stepNumber === 3) {
+      navigate('/create/03');
+    } else if (stepNumber === 4 && selectedStyle) {
+      handleNextStep();
+    }
+  };
+
   return (
     <div className="min-h-[calc(100vh-200px)] flex flex-col">
       {/* Main content area */}
