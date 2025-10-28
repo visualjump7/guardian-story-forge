@@ -36,7 +36,8 @@ const STORY_KINDS: StoryKindOption[] = [
     borderColor: '#6C2C2A',
     borderColorSelected: '#6C2C2A',
     labelColor: '#CFCFCF',
-    labelColorSelected: '#CFCFCF'
+    labelColorSelected: '#CFCFCF',
+    glowRgb: '108 44 42'
   },
   {
     id: 'Fantasy',
@@ -46,7 +47,8 @@ const STORY_KINDS: StoryKindOption[] = [
     borderColor: '#005AFF',
     borderColorSelected: '#005AFF',
     labelColor: '#FFFFFF',
-    labelColorSelected: '#FFFFFF'
+    labelColorSelected: '#FFFFFF',
+    glowRgb: '0 90 255'
   },
   {
     id: 'Fairy Tale',
@@ -56,7 +58,8 @@ const STORY_KINDS: StoryKindOption[] = [
     borderColor: '#9994F8',
     borderColorSelected: '#9994F8',
     labelColor: '#FFFFFF',
-    labelColorSelected: '#FFFFFF'
+    labelColorSelected: '#FFFFFF',
+    glowRgb: '153 148 248'
   },
   {
     id: 'Explorer',
@@ -66,7 +69,8 @@ const STORY_KINDS: StoryKindOption[] = [
     borderColor: '#94F8B4',
     borderColorSelected: '#94F8B4',
     labelColor: '#FFFFFF',
-    labelColorSelected: '#FFFFFF'
+    labelColorSelected: '#FFFFFF',
+    glowRgb: '148 248 180'
   },
   {
     id: 'Superhero',
@@ -76,7 +80,8 @@ const STORY_KINDS: StoryKindOption[] = [
     borderColor: '#E62222',
     borderColorSelected: '#E62222',
     labelColor: '#FFFFFF',
-    labelColorSelected: '#FFFFFF'
+    labelColorSelected: '#FFFFFF',
+    glowRgb: '230 34 34'
   },
 ];
 
