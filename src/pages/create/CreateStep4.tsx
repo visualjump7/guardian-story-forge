@@ -50,6 +50,117 @@ const ART_STYLE_MAPPING: Record<string, string> = {
   'anime': 'anime',
 };
 
+interface StoryKindOption {
+  id: string;
+  label: string;
+  image: string;
+  borderColor: string;
+  labelColor: string;
+}
+
+interface ArtStyleOption {
+  id: string;
+  label: string;
+  image: string;
+  borderColor: string;
+  labelColor: string;
+  textStroke?: string;
+}
+
+const STORY_KINDS: StoryKindOption[] = [
+  {
+    id: 'Action',
+    label: 'Action',
+    image: 'https://cdn.builder.io/api/v1/image/assets%2F9bebcf6b30bb4052a5f67c7bf4a01fd9%2Fbd7079eb565f486b952b669c06ab277c?format=webp&width=800',
+    borderColor: '#FFE500',
+    labelColor: '#CCB700'
+  },
+  {
+    id: 'Agent',
+    label: 'Agent',
+    image: 'https://cdn.builder.io/api/v1/image/assets%2F9bebcf6b30bb4052a5f67c7bf4a01fd9%2Fff79eb9a3bf4450ca01ad00b847c0952?format=webp&width=800',
+    borderColor: '#6C2C2A',
+    labelColor: '#CFCFCF'
+  },
+  {
+    id: 'Fantasy',
+    label: 'Fantasy',
+    image: 'https://cdn.builder.io/api/v1/image/assets%2F9bebcf6b30bb4052a5f67c7bf4a01fd9%2F122fba98f46947d7b7c96148ef5336de?format=webp&width=800',
+    borderColor: '#005AFF',
+    labelColor: '#FFFFFF'
+  },
+  {
+    id: 'Fairy Tale',
+    label: 'Fairy Tale',
+    image: 'https://cdn.builder.io/api/v1/image/assets%2F9bebcf6b30bb4052a5f67c7bf4a01fd9%2F665ef22f220243dda0cd115009df4363?format=webp&width=800',
+    borderColor: '#9994F8',
+    labelColor: '#FFFFFF'
+  },
+  {
+    id: 'Explorer',
+    label: 'Explorer',
+    image: 'https://cdn.builder.io/api/v1/image/assets%2F9bebcf6b30bb4052a5f67c7bf4a01fd9%2Fd3159d17d9124bfca8fdaa7126943dc7?format=webp&width=800',
+    borderColor: '#94F8B4',
+    labelColor: '#FFFFFF'
+  },
+  {
+    id: 'Superhero',
+    label: 'Superhero',
+    image: 'https://cdn.builder.io/api/v1/image/assets%2F9bebcf6b30bb4052a5f67c7bf4a01fd9%2Faa9a4f32bff54b18afb69b21e66290d9?format=webp&width=800',
+    borderColor: '#E62222',
+    labelColor: '#FFFFFF'
+  },
+];
+
+const ART_STYLES: ArtStyleOption[] = [
+  {
+    id: '3d',
+    label: '3D',
+    image: 'https://cdn.builder.io/api/v1/image/assets%2F9bebcf6b30bb4052a5f67c7bf4a01fd9%2F16edfe3c6c73459b9ab5368fbb923c75?format=webp&width=800',
+    borderColor: '#FFE500',
+    labelColor: '#CCB700'
+  },
+  {
+    id: 'illustration',
+    label: 'Illustration',
+    image: 'https://cdn.builder.io/api/v1/image/assets%2F9bebcf6b30bb4052a5f67c7bf4a01fd9%2F5f2af9c10240431a8247ec89c5ee4ce7?format=webp&width=800',
+    borderColor: '#C03B1A',
+    labelColor: '#968F96',
+    textStroke: '0.5px #000'
+  },
+  {
+    id: 'storybook',
+    label: 'Storybook',
+    image: 'https://cdn.builder.io/api/v1/image/assets%2F9bebcf6b30bb4052a5f67c7bf4a01fd9%2F757814de85294fdca888501150ff1f5c?format=webp&width=800',
+    borderColor: '#005AFF',
+    labelColor: '#FFFFFF',
+    textStroke: '1px #005AFF'
+  },
+  {
+    id: 'clay',
+    label: 'Clay',
+    image: 'https://cdn.builder.io/api/v1/image/assets%2F9bebcf6b30bb4052a5f67c7bf4a01fd9%2F25cfc0907f2440f19942447593a6bb76?format=webp&width=800',
+    borderColor: '#9994F8',
+    labelColor: '#FFFFFF',
+    textStroke: '1px #9994F8'
+  },
+  {
+    id: 'black-white',
+    label: 'Black & White',
+    image: 'https://cdn.builder.io/api/v1/image/assets%2F9bebcf6b30bb4052a5f67c7bf4a01fd9%2F175624b63f8f4a51877fa57f93ad3576?format=webp&width=800',
+    borderColor: '#94F8B4',
+    labelColor: '#FFFFFF'
+  },
+  {
+    id: 'anime',
+    label: 'Anime',
+    image: 'https://cdn.builder.io/api/v1/image/assets%2F9bebcf6b30bb4052a5f67c7bf4a01fd9%2F7896f021f42d46359289cfebfc5eaab8?format=webp&width=800',
+    borderColor: '#E62222',
+    labelColor: '#FFFFFF',
+    textStroke: '1px rgba(0, 0, 0, 0.2)'
+  },
+];
+
 export const CreateStep4 = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
