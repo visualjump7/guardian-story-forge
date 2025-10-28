@@ -135,53 +135,53 @@ export const CreateStep3 = () => {
       </button>
 
       {/* Main content area */}
-      <div className="flex-1 flex px-4 md:px-8 lg:px-12 py-8">
+      <div className="flex-1 flex items-center gap-8 px-4 md:px-8 lg:px-12 py-8">
         {/* Left side: Title and cards */}
-        <div className="w-full lg:w-1/2 flex flex-col">
+        <div className="w-full lg:w-auto flex flex-col flex-shrink-0">
           {/* Title */}
-          <h1 className="font-aoboshi text-3xl md:text-4xl text-white mb-8">
+          <h1 className="font-aoboshi text-2xl md:text-3xl lg:text-4xl text-white mb-6 lg:mb-8">
             Choose your art style.
           </h1>
 
-          {/* Cards grid */}
-          <div className="grid grid-cols-2 gap-6 md:gap-8 max-w-lg">
+          {/* Cards grid - fixed size */}
+          <div className="grid grid-cols-2 gap-4 lg:gap-6" style={{ width: '300px', maxWidth: '100%' }}>
             {ART_STYLES.map((artStyle) => {
               const isSelected = selectedStyle === artStyle.id;
-              
+
               return (
                 <button
                   key={artStyle.id}
                   onClick={() => handleSelect(artStyle.id, artStyle.image)}
                   onKeyPress={(e) => handleKeyPress(e, artStyle.id, artStyle.image)}
                   className="relative w-full aspect-square group focus:outline-none focus:ring-2 focus:ring-white/50 rounded-[19px]"
-                  style={{ 
-                    filter: isSelected 
-                      ? 'none' 
+                  style={{
+                    filter: isSelected
+                      ? 'none'
                       : 'brightness(0.7)',
                     transition: 'filter 0.3s ease'
                   }}
                 >
                   {/* Card image */}
-                  <div 
+                  <div
                     className="w-full h-full rounded-[19px] overflow-hidden relative"
                     style={{
                       border: `5px solid ${isSelected ? artStyle.borderColorSelected : artStyle.borderColor}`,
-                      boxShadow: isSelected 
+                      boxShadow: isSelected
                         ? '4px 11px 4px 0 rgba(0, 0, 0, 0.25) inset, 0 4px 4px 0 rgba(0, 0, 0, 0.25)'
                         : 'none'
                     }}
                   >
-                    <img 
-                      src={artStyle.image} 
+                    <img
+                      src={artStyle.image}
                       alt={artStyle.label}
                       className="w-full h-full object-cover"
                     />
-                    
+
                     {/* Label overlay */}
-                    <div className="absolute bottom-3 left-3 right-3">
-                      <span 
-                        className="font-inter text-xl md:text-2xl font-bold"
-                        style={{ 
+                    <div className="absolute bottom-2 left-2 right-2">
+                      <span
+                        className="font-inter text-base lg:text-xl font-bold"
+                        style={{
                           color: isSelected ? artStyle.labelColorSelected : artStyle.labelColor,
                           textShadow: artStyle.id === 'illustration' && isSelected
                             ? '0 1px 2.3px rgba(0, 0, 0, 0.25)'
@@ -199,38 +199,39 @@ export const CreateStep3 = () => {
           </div>
         </div>
 
-        {/* Right side: Video and Next button */}
-        <div className="hidden lg:flex w-1/2 flex-col items-center justify-start pl-12 gap-8">
+        {/* Right side: Video area - responsive and grows to fill space */}
+        <div className="hidden lg:flex flex-1 flex-col items-center justify-center gap-6">
           {/* Video preview area */}
           <div
-            className="w-full max-w-[704px] aspect-square bg-gradient-to-br from-gray-900 to-black rounded-lg border border-white/10 flex items-center justify-center overflow-hidden"
+            className="w-full aspect-square bg-gradient-to-br from-gray-900 to-black rounded-lg border border-white/10 flex items-center justify-center overflow-hidden"
+            style={{ maxHeight: 'calc(100vh - 400px)' }}
           >
-            <video
-              src=""
-              autoPlay
-              loop
-              muted
-              className="w-full h-full object-cover"
-              style={{ display: 'none' }}
-            />
-            {selectedStyle && (
+            {selectedStyle ? (
+              <video
+                key={selectedStyle}
+                src={ART_STYLES.find(s => s.id === selectedStyle)?.video}
+                autoPlay
+                loop
+                muted
+                playsInline
+                className="w-full h-full object-cover"
+              />
+            ) : (
               <div className="text-center">
                 <p className="text-white/60 text-lg font-inter">
-                  Preview for {ART_STYLES.find(s => s.id === selectedStyle)?.label}
+                  Select an art style to preview
                 </p>
-                <p className="text-white/40 text-sm mt-2">Video coming soon</p>
               </div>
             )}
           </div>
 
-          {/* Next Step Button - Desktop */}
+          {/* Next Step Button for Desktop */}
           <button
             onClick={handleNextStep}
             disabled={!selectedStyle}
-            className="relative transition-all"
+            className="relative w-full max-w-sm transition-all"
             style={{
-              width: '307px',
-              height: '88px',
+              height: '80px',
             }}
           >
             <div
@@ -242,7 +243,7 @@ export const CreateStep3 = () => {
               }}
             />
             <span
-              className="absolute inset-0 flex items-center justify-center font-inter text-5xl font-bold transition-all"
+              className="absolute inset-0 flex items-center justify-center font-inter text-4xl font-bold transition-all"
               style={{
                 color: selectedStyle ? '#FFFFFF' : '#6B7280',
               }}
