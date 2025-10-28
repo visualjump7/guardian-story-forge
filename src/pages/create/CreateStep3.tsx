@@ -176,7 +176,7 @@ export const CreateStep3 = () => {
         {/* Right side: Video/Preview area and Next button */}
         <div className="hidden lg:flex w-1/2 flex-col items-end justify-between pl-12">
           {/* Preview area */}
-          <div 
+          <div
             className="w-full max-w-[704px] aspect-square bg-gradient-to-br from-gray-900 to-black rounded-lg border border-white/10 flex items-center justify-center"
           >
             {selectedStyle && (
@@ -189,55 +189,64 @@ export const CreateStep3 = () => {
             )}
           </div>
 
-          {/* Next Step Button */}
-          {selectedStyle && (
-            <button
-              onClick={handleNextStep}
-              className="relative"
-              style={{
-                width: '307px',
-                height: '88px',
-              }}
-            >
-              <div 
-                className="absolute inset-0 rounded-xl transition-all hover:brightness-110"
-                style={{
-                  border: '4px solid #20B000',
-                  background: 'rgba(9, 9, 9, 0.82)',
-                }}
-              />
-              <span 
-                className="absolute inset-0 flex items-center justify-center font-inter text-5xl font-bold text-white"
-              >
-                Next Step
-              </span>
-            </button>
-          )}
-        </div>
-      </div>
-
-      {/* Mobile Next Step Button */}
-      {selectedStyle && (
-        <div className="lg:hidden flex justify-center px-4 pb-4">
+          {/* Next Step Button - Desktop */}
           <button
             onClick={handleNextStep}
-            className="relative w-full max-w-md h-20"
+            disabled={!selectedStyle}
+            className="relative transition-all"
+            style={{
+              width: '307px',
+              height: '88px',
+            }}
           >
-            <div 
-              className="absolute inset-0 rounded-xl transition-all hover:brightness-110"
+            <div
+              className="absolute inset-0 rounded-xl transition-all"
               style={{
-                border: '4px solid #20B000',
+                border: selectedStyle ? '4px solid #20B000' : '4px solid #3C3C3C',
                 background: 'rgba(9, 9, 9, 0.82)',
+                opacity: selectedStyle ? 1 : 0.5,
               }}
             />
-            <span 
-              className="absolute inset-0 flex items-center justify-center font-inter text-4xl font-bold text-white"
+            <span
+              className="absolute inset-0 flex items-center justify-center font-inter text-5xl font-bold transition-all"
+              style={{
+                color: selectedStyle ? '#FFFFFF' : '#6B7280',
+              }}
             >
               Next Step
             </span>
           </button>
         </div>
-      )}
+      </div>
+
+      {/* Mobile Next Step Button */}
+      <div className="lg:hidden flex justify-center px-4 pb-4">
+        <button
+          onClick={handleNextStep}
+          disabled={!selectedStyle}
+          className="relative w-full max-w-md transition-all"
+          style={{
+            height: '80px',
+          }}
+        >
+          <div
+            className="absolute inset-0 rounded-xl transition-all"
+            style={{
+              border: selectedStyle ? '4px solid #20B000' : '4px solid #3C3C3C',
+              background: 'rgba(9, 9, 9, 0.82)',
+              opacity: selectedStyle ? 1 : 0.5,
+            }}
+          />
+          <span
+            className="absolute inset-0 flex items-center justify-center font-inter text-4xl font-bold transition-all"
+            style={{
+              color: selectedStyle ? '#FFFFFF' : '#6B7280',
+            }}
+          >
+            Next Step
+          </span>
+        </button>
+      </div>
 
       {/* Progress bar at bottom */}
       <div className="pb-8">
