@@ -31,6 +31,8 @@ export default function CreateStep1() {
     }
   };
 
+  const isValid = validateName(localName);
+
   return (
     <div className="min-h-[calc(100vh-200px)] flex flex-col">
       {/* Main content area */}
@@ -63,6 +65,36 @@ export default function CreateStep1() {
           <p className="font-inter text-xl md:text-2xl text-[#C4C4C4] text-center mt-2">
             Name your main character and start the quest!
           </p>
+        </div>
+
+        {/* Next Step Button */}
+        <div className="mt-12">
+          <button
+            onClick={handleContinue}
+            disabled={!isValid}
+            className="relative transition-all"
+            style={{
+              width: '307px',
+              height: '88px',
+            }}
+          >
+            <div
+              className="absolute inset-0 rounded-xl transition-all"
+              style={{
+                border: isValid ? '4px solid #20B000' : '4px solid #3C3C3C',
+                background: 'rgba(9, 9, 9, 0.82)',
+                opacity: isValid ? 1 : 0.5,
+              }}
+            />
+            <span
+              className="absolute inset-0 flex items-center justify-center font-inter text-4xl md:text-5xl font-bold transition-all"
+              style={{
+                color: isValid ? '#FFFFFF' : '#6B7280',
+              }}
+            >
+              Next Step
+            </span>
+          </button>
         </div>
       </div>
 
