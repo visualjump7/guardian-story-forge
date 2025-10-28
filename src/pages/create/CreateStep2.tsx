@@ -174,20 +174,21 @@ export default function CreateStep2() {
           <div
             className="w-full max-w-[704px] aspect-square bg-gradient-to-br from-gray-900 to-black rounded-lg border border-white/10 flex items-center justify-center overflow-hidden"
           >
-            <video
-              src=""
-              autoPlay
-              loop
-              muted
-              className="w-full h-full object-cover"
-              style={{ display: 'none' }}
-            />
-            {selectedKind && (
+            {selectedKind ? (
+              <video
+                key={selectedKind}
+                src={STORY_KINDS.find(k => k.id === selectedKind)?.video}
+                autoPlay
+                loop
+                muted
+                playsInline
+                className="w-full h-full object-cover"
+              />
+            ) : (
               <div className="text-center">
                 <p className="text-white/60 text-lg font-inter">
-                  Preview for {selectedKind}
+                  Select a story kind to preview
                 </p>
-                <p className="text-white/40 text-sm mt-2">Video coming soon</p>
               </div>
             )}
           </div>
