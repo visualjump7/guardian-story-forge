@@ -306,7 +306,7 @@ export const CreateStep4 = () => {
         </h1>
 
         {/* Review Cards */}
-        <div className="w-full max-w-4xl grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
+        <div className="w-full max-w-4xl grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
           {/* Story Kind Card */}
           {storyConfig.storyKind && STORY_KINDS.find(s => s.id === storyConfig.storyKind) && (
             <div
