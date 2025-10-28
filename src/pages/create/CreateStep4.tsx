@@ -302,7 +302,7 @@ export const CreateStep4 = () => {
       <div className="flex-1 flex flex-col items-center justify-center px-4 md:px-8 lg:px-16 py-12">
         {/* Title */}
         <h1 className="font-aoboshi text-4xl md:text-5xl text-white mb-16 text-center">
-          Review
+          Finalize Your Epic Journey
         </h1>
 
         {/* Review Cards */}
