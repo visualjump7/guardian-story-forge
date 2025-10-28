@@ -262,7 +262,7 @@ export default function CreateStep2() {
 
       {/* Progress bar at bottom */}
       <div className="pb-8">
-        <CreateProgressBar currentStep={2} />
+        <CreateProgressBar currentStep={2} onStepClick={handleProgressBarClick} />
       </div>
     </div>
   );
