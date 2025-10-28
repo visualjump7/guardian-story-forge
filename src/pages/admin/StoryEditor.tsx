@@ -400,9 +400,9 @@ export default function StoryEditor() {
               
               {/* Basic Information Accordion */}
               <AccordionItem value="basic">
-                <AccordionTrigger className="text-lg font-semibold">
-                  Basic Information
-                </AccordionTrigger>
+            <AccordionTrigger className="text-lg font-inter font-bold">
+              Basic Information
+            </AccordionTrigger>
                 <AccordionContent className="space-y-6 pt-4">
                   {/* Title */}
                   <div className="space-y-2">
@@ -430,9 +430,9 @@ export default function StoryEditor() {
 
               {/* Images Accordion */}
               <AccordionItem value="images">
-                <AccordionTrigger className="text-lg font-semibold">
-                  Images
-                </AccordionTrigger>
+            <AccordionTrigger className="text-lg font-inter font-bold">
+              Images
+            </AccordionTrigger>
                 <AccordionContent className="space-y-6 pt-4">
                   <p className="text-sm text-muted-foreground">
                     Generate images for key story beats. AI generation requires story to be saved first.
@@ -469,9 +469,9 @@ export default function StoryEditor() {
 
               {/* Story Content Accordion */}
               <AccordionItem value="content">
-                <AccordionTrigger className="text-lg font-semibold">
-                  Story Content
-                </AccordionTrigger>
+            <AccordionTrigger className="text-lg font-inter font-bold">
+              Story Content
+            </AccordionTrigger>
                 <AccordionContent className="space-y-6 pt-4">
                   <div className="space-y-2">
                     <Label htmlFor="content">Story Content</Label>
@@ -488,9 +488,9 @@ export default function StoryEditor() {
 
               {/* Excerpt Accordion */}
               <AccordionItem value="excerpt">
-                <AccordionTrigger className="text-lg font-semibold">
-                  Excerpt (Preview Text)
-                </AccordionTrigger>
+            <AccordionTrigger className="text-lg font-inter font-bold">
+              Excerpt (Preview Text)
+            </AccordionTrigger>
                 <AccordionContent className="space-y-6 pt-4">
                   <div className="space-y-2">
                     <Label htmlFor="excerpt">Excerpt</Label>
