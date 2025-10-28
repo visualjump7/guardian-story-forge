@@ -272,19 +272,6 @@ export const CreateStep4 = () => {
     }
   };
 
-  const getArtStyleLabel = (style: string | null) => {
-    if (!style) return 'Art Style';
-    const labelMap: Record<string, string> = {
-      '3d': '3D',
-      'illustration': 'Illustration',
-      'storybook': 'Storybook',
-      'clay': 'Clay',
-      'black-white': 'Black & White',
-      'anime': 'Anime',
-    };
-    return labelMap[style] || style;
-  };
-
   return (
     <div className="min-h-[calc(100vh-200px)] flex flex-col relative">
       {/* Back Button */}
