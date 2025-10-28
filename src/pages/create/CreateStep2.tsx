@@ -3,13 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import { useStoryConfig, StoryKind } from '@/contexts/StoryConfigContext';
 import { CreateProgressBar } from '@/components/create/CreateProgressBar';
 
-import adventureImg from '@/assets/story-adventure.jpg';
-import mysteryImg from '@/assets/story-mystery.jpg';
-import magicalImg from '@/assets/story-magical.jpg';
-import epicImg from '@/assets/story-epic.jpg';
-import spaceImg from '@/assets/story-space.jpg';
-import surpriseImg from '@/assets/story-surprise.jpg';
-
 interface StoryKindOption {
   id: StoryKind;
   label: string;
