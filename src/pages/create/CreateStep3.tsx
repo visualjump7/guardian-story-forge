@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useStoryConfig, ArtStyle } from '@/contexts/StoryConfigContext';
 import { CreateProgressBar } from '@/components/create/CreateProgressBar';
@@ -15,6 +15,7 @@ interface ArtStyleOption {
   labelColor: string;
   labelColorSelected: string;
   textStroke?: string;
+  glowRgb: string;
 }
 
 const ART_STYLES: ArtStyleOption[] = [
@@ -26,7 +27,8 @@ const ART_STYLES: ArtStyleOption[] = [
     borderColor: '#FFE500',
     borderColorSelected: '#FFE500',
     labelColor: '#CCB700',
-    labelColorSelected: '#CCB700'
+    labelColorSelected: '#CCB700',
+    glowRgb: '255 229 0'
   },
   {
     id: 'illustration',
@@ -37,7 +39,8 @@ const ART_STYLES: ArtStyleOption[] = [
     borderColorSelected: '#C03B1A',
     labelColor: '#968F96',
     labelColorSelected: '#968F96',
-    textStroke: '0.5px #000'
+    textStroke: '0.5px #000',
+    glowRgb: '192 59 26'
   },
   {
     id: 'storybook',
@@ -48,7 +51,8 @@ const ART_STYLES: ArtStyleOption[] = [
     borderColorSelected: '#005AFF',
     labelColor: '#FFFFFF',
     labelColorSelected: '#FFFFFF',
-    textStroke: '1px #005AFF'
+    textStroke: '1px #005AFF',
+    glowRgb: '0 90 255'
   },
   {
     id: 'clay',
@@ -59,7 +63,8 @@ const ART_STYLES: ArtStyleOption[] = [
     borderColorSelected: '#9994F8',
     labelColor: '#FFFFFF',
     labelColorSelected: '#FFFFFF',
-    textStroke: '1px #9994F8'
+    textStroke: '1px #9994F8',
+    glowRgb: '153 148 248'
   },
   {
     id: 'black-white',
@@ -69,7 +74,8 @@ const ART_STYLES: ArtStyleOption[] = [
     borderColor: '#94F8B4',
     borderColorSelected: '#94F8B4',
     labelColor: '#FFFFFF',
-    labelColorSelected: '#FFFFFF'
+    labelColorSelected: '#FFFFFF',
+    glowRgb: '148 248 180'
   },
   {
     id: 'anime',
@@ -80,7 +86,8 @@ const ART_STYLES: ArtStyleOption[] = [
     borderColorSelected: '#E62222',
     labelColor: '#FFFFFF',
     labelColorSelected: '#FFFFFF',
-    textStroke: '1px rgba(0, 0, 0, 0.2)'
+    textStroke: '1px rgba(0, 0, 0, 0.2)',
+    glowRgb: '230 34 34'
   },
 ];
 
