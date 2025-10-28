@@ -443,16 +443,6 @@ export const CreateStep4 = () => {
             </Alert>
           )}
         </div>
-
-        {/* Back Button */}
-        {!isGenerating && (
-          <button
-            onClick={handleBack}
-            className="mt-6 font-inter text-white/60 hover:text-white transition-colors"
-          >
-            ← Back
-          </button>
-        )}
       </div>
 
       {/* Enhanced Loading Animation */}
