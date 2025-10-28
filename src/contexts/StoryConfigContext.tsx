@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 
 export type CharacterType = 'Explorer' | 'Super Hero' | 'Creature' | 'Robot' | 'Warrior' | 'Surprise';
+export type StoryKind = 'Action' | 'Agent' | 'Fantasy' | 'Fairy Tale' | 'Explorer' | 'Superhero';
 export type StoryType = 'Adventure' | 'Mystery' | 'Magical' | 'Epic' | 'Space' | 'Surprise';
 export type Mission = 'Rescue' | 'Treasure' | 'Protect' | 'Ranch' | 'Escape' | 'Surprise';
 export type WritingStyle = 
@@ -16,6 +17,7 @@ export type GenerationMode = 'express' | 'studio';
 
 interface StoryConfig {
   characterName: string;
+  storyKind: StoryKind | null;
   characterType: CharacterType | null;
   storyType: StoryType | null;
   mission: Mission | null;
@@ -26,6 +28,7 @@ interface StoryConfig {
   customStoryTypeDescription?: string;
   customMissionDescription?: string;
   assets: {
+    storyKindIcon: string | null;
     characterTypeIcon: string | null;
     storyTypeIcon: string | null;
     missionIcon: string | null;
@@ -37,6 +40,7 @@ interface StoryConfig {
 interface StoryConfigContextType {
   storyConfig: StoryConfig;
   setCharacterName: (name: string) => void;
+  setStoryKind: (kind: StoryKind, icon: string) => void;
   setCharacterType: (type: CharacterType, icon: string) => void;
   setStoryType: (type: StoryType, icon: string) => void;
   setMission: (mission: Mission, icon: string) => void;
@@ -46,6 +50,7 @@ interface StoryConfigContextType {
   setCustomCharacterDescription: (description: string) => void;
   setCustomStoryTypeDescription: (description: string) => void;
   setCustomMissionDescription: (description: string) => void;
+  clearStoryKind: () => void;
   clearCharacterType: () => void;
   clearStoryType: () => void;
   clearMission: () => void;
@@ -62,6 +67,7 @@ interface StoryConfigContextType {
 
 const defaultConfig: StoryConfig = {
   characterName: '',
+  storyKind: null,
   characterType: null,
   storyType: null,
   mission: null,
@@ -72,6 +78,7 @@ const defaultConfig: StoryConfig = {
   customStoryTypeDescription: undefined,
   customMissionDescription: undefined,
   assets: {
+    storyKindIcon: null,
     characterTypeIcon: null,
     storyTypeIcon: null,
     missionIcon: null,
@@ -94,6 +101,14 @@ export const StoryConfigProvider = ({ children }: { children: ReactNode }) => {
 
   const setCharacterName = (name: string) => {
     setStoryConfig(prev => ({ ...prev, characterName: name }));
+  };
+
+  const setStoryKind = (kind: StoryKind, icon: string) => {
+    setStoryConfig(prev => ({
+      ...prev,
+      storyKind: kind,
+      assets: { ...prev.assets, storyKindIcon: icon },
+    }));
   };
 
   const setCharacterType = (type: CharacterType, icon: string) => {
@@ -139,6 +154,14 @@ export const StoryConfigProvider = ({ children }: { children: ReactNode }) => {
     setStoryConfig(prev => ({
       ...prev,
       customMissionDescription: description,
+    }));
+  };
+
+  const clearStoryKind = () => {
+    setStoryConfig(prev => ({
+      ...prev,
+      storyKind: null,
+      assets: { ...prev.assets, storyKindIcon: null },
     }));
   };
 
@@ -213,7 +236,7 @@ export const StoryConfigProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const isStep2Complete = () => {
-    return storyConfig.characterType !== null || (storyConfig.customCharacterDescription && storyConfig.customCharacterDescription.trim().length > 0);
+    return storyConfig.storyKind !== null;
   };
 
   const isStep3Complete = () => {
@@ -237,6 +260,7 @@ export const StoryConfigProvider = ({ children }: { children: ReactNode }) => {
       value={{
         storyConfig,
         setCharacterName,
+        setStoryKind,
         setCharacterType,
         setStoryType,
         setMission,
@@ -246,6 +270,7 @@ export const StoryConfigProvider = ({ children }: { children: ReactNode }) => {
         setCustomCharacterDescription,
         setCustomStoryTypeDescription,
         setCustomMissionDescription,
+        clearStoryKind,
         clearCharacterType,
         clearStoryType,
         clearMission,
