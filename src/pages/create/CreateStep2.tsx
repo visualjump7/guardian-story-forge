@@ -118,10 +118,14 @@ export default function CreateStep2() {
       {/* Back Button */}
       <button
         onClick={handleBack}
-        className="absolute top-4 left-4 z-10 p-2 rounded-lg hover:bg-white/10 transition-colors"
+        className="absolute top-4 left-4 z-10 flex items-center gap-2 px-3 py-2 rounded-full hover:bg-white/20 transition-colors"
+        style={{
+          backgroundColor: '#4B5563',
+        }}
         aria-label="Go back"
       >
-        <ArrowLeft className="h-6 w-6 text-white" />
+        <ArrowLeft className="h-5 w-5" style={{ color: '#9CA3AF' }} />
+        <span className="font-inter text-sm" style={{ color: '#9CA3AF' }}>Back</span>
       </button>
 
       {/* Main content area */}
@@ -131,7 +135,7 @@ export default function CreateStep2() {
           {/* Left side: title and cards */}
           <div className="w-full lg:w-auto flex flex-col flex-shrink-0">
             {/* Title */}
-            <h1 className="font-aoboshi text-lg md:text-xl lg:text-2xl text-white" style={{ marginBottom: '50px' }}>
+            <h1 className="font-aoboshi text-lg md:text-xl lg:text-2xl text-white" style={{ marginBottom: '25px' }}>
               What kind of story?
             </h1>
 
