@@ -13,6 +13,7 @@ interface StoryKindOption {
   borderColorSelected: string;
   labelColor: string;
   labelColorSelected: string;
+  glowRgb: string;
 }
 
 const STORY_KINDS: StoryKindOption[] = [
@@ -24,7 +25,8 @@ const STORY_KINDS: StoryKindOption[] = [
     borderColor: '#FFE500',
     borderColorSelected: '#FFE500',
     labelColor: '#CCB700',
-    labelColorSelected: '#CCB700'
+    labelColorSelected: '#CCB700',
+    glowRgb: '255 229 0'
   },
   {
     id: 'Agent',
