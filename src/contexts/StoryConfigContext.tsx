@@ -12,7 +12,7 @@ export type WritingStyle =
   | 'action-packed'
   | 'gentle-reassuring'
   | 'Surprise';
-export type ArtStyle = 'pixar-3d' | 'anime' | 'illustration' | 'comic-book' | 'watercolor' | 'sketch';
+export type ArtStyle = '3d' | 'illustration' | 'storybook' | 'clay' | 'black-white' | 'anime';
 export type GenerationMode = 'express' | 'studio';
 
 interface StoryConfig {
