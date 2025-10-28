@@ -331,7 +331,7 @@ export const CreateStep4 = () => {
 
       {/* Progress bar at bottom - showing all 4 complete */}
       <div className="pb-8">
-        <CreateProgressBar currentStep={4} />
+        <CreateProgressBar currentStep={4} onStepClick={handleProgressBarClick} />
       </div>
 
       <LibraryLimitDialog
