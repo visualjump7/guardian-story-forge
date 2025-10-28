@@ -129,7 +129,7 @@ export default function CreateStep2() {
         {/* Left side: Title and cards */}
         <div className="w-full lg:w-auto flex flex-col flex-shrink-0">
           {/* Title */}
-          <h1 className="font-aoboshi text-2xl md:text-3xl lg:text-4xl text-white mb-6 lg:mb-8">
+          <h1 className="font-aoboshi text-xl md:text-2xl lg:text-3xl text-white mb-6 lg:mb-8">
             What kind of story?
           </h1>
 
