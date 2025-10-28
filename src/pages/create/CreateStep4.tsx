@@ -61,6 +61,18 @@ export const CreateStep4 = () => {
 
   const handleBack = () => navigate('/create/03');
 
+  const handleProgressBarClick = (stepNumber: number) => {
+    if (stepNumber === 1) {
+      navigate('/create/01');
+    } else if (stepNumber === 2) {
+      navigate('/create/02');
+    } else if (stepNumber === 3) {
+      navigate('/create/03');
+    } else if (stepNumber === 4) {
+      navigate('/create/04');
+    }
+  };
+
   const isComplete = () => {
     return !!(storyConfig.characterName && storyConfig.storyKind && storyConfig.artStyle);
   };
