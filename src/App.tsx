@@ -21,7 +21,7 @@ import AdminSettings from "./pages/admin/Settings";
 import AdminLLMSettings from "./pages/admin/LLMSettings";
 import { CreateLayout } from "./pages/create/CreateLayout";
 import CreateStep1 from "./pages/create/CreateStep1";
-import { CreateStep2 } from "./pages/create/CreateStep2";
+import CreateStep2 from "./pages/create/CreateStep2";
 import { CreateStep3 } from "./pages/create/CreateStep3";
 import { CreateStep4 } from "./pages/create/CreateStep4";
 import { CreateStep5 } from "./pages/create/CreateStep5";

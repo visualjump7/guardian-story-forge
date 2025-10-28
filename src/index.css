@@ -330,4 +330,108 @@ All colors MUST be HSL.
     -webkit-text-fill-color: transparent;
     background-clip: text;
   }
+
+  /* Choice Button Glow/Ripple Effect */
+  .choice-btn {
+    position: relative;
+    isolation: isolate;
+    transition: transform .18s ease, filter .18s ease, opacity .18s ease;
+    outline: none;
+    --fx: 255 184 0; /* glow color (R G B). can be overridden per button */
+  }
+
+  .choice-btn:hover {
+    transform: translateY(-1px);
+  }
+
+  .choice-btn:focus-visible {
+    box-shadow: 0 0 0 3px rgba(var(--fx)/.45);
+  }
+
+  /* Glow layer (burst) */
+  .choice-btn::before {
+    content: "";
+    position: absolute;
+    inset: -8px;
+    border-radius: inherit;
+    background: radial-gradient(40% 40% at 50% 50%, rgba(var(--fx)/.75), transparent 60%);
+    filter: blur(14px);
+    opacity: 0;
+    z-index: -1;
+  }
+
+  /* Ripple ring */
+  .choice-btn::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 9999px;
+    transform: translate(-50%, -50%) scale(0);
+    box-shadow: 0 0 0 2px rgba(var(--fx)/.9), 0 0 20px rgba(var(--fx)/.6) inset;
+    opacity: 0;
+    z-index: -1;
+  }
+
+  /* When clicked: play burst + ripple */
+  .choice-btn.is-active::before {
+    animation: burst .65s ease-out;
+  }
+  .choice-btn.is-active::after {
+    animation: ripple .65s ease-out;
+  }
+
+  /* Selected state keeps a soft glow + slight lift */
+  .choice-btn.is-selected {
+    filter: drop-shadow(0 6px 18px rgba(var(--fx)/.25));
+    transform: translateY(-2px);
+  }
+
+  /* Dim the rest when something is selected */
+  .choices.dim-others .choice-btn {
+    opacity: .5;
+    filter: grayscale(.3) brightness(.9);
+  }
+  .choices.dim-others .choice-btn.is-selected {
+    opacity: 1;
+    filter: none;
+  }
+
+  /* Animations */
+  @keyframes burst {
+    0% {
+      opacity: 0;
+      transform: scale(.92);
+    }
+    20% {
+      opacity: .95;
+      transform: scale(1.06);
+    }
+    100% {
+      opacity: 0;
+      transform: scale(1.28);
+    }
+  }
+  @keyframes ripple {
+    0% {
+      opacity: .85;
+      transform: translate(-50%, -50%) scale(.2);
+    }
+    100% {
+      opacity: 0;
+      transform: translate(-50%, -50%) scale(10);
+    }
+  }
+
+  /* Respect reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    .choice-btn,
+    .choice-btn::before,
+    .choice-btn::after {
+      transition: none;
+      animation: none !important;
+    }
+  }
 }

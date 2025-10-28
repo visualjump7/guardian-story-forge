@@ -6,7 +6,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { BookOpen, Sparkles, Library, PlusCircle, Wand2, Share2 } from "lucide-react";
 import { toast } from "sonner";
 import heroImage from "@/assets/swiss-chocolate-story.jpg";
-import VimeoPlayer from "@/components/VimeoPlayer";
 import { ShareDialog } from "@/components/ShareDialog";
 import { AppHeader } from "@/components/AppHeader";
 import { DesktopNav } from "@/components/DesktopNav";
@@ -15,6 +14,8 @@ import { useLibraryCount } from "@/hooks/useLibraryCount";
 import { LibraryLimitDialog } from "@/components/LibraryLimitDialog";
 import { FixedFeedbackButton } from "@/components/FixedFeedbackButton";
 import { WelcomeVideoDialog } from "@/components/WelcomeVideoDialog";
+import { StoryConfigProvider, useStoryConfig } from "@/contexts/StoryConfigContext";
+import { CreateProgressBar } from "@/components/create/CreateProgressBar";
 
 interface Story {
   id: string;
@@ -30,7 +31,9 @@ interface Story {
   } | null;
 }
 
-const Home = () => {
+const NAME_REGEX = /^[a-zA-Z\s'-]+$/;
+
+const HomeContent = () => {
   const navigate = useNavigate();
   const { isAdmin } = useAuth();
   const [user, setUser] = useState<any>(null);
@@ -42,6 +45,8 @@ const Home = () => {
   const [showLibraryFullDialog, setShowLibraryFullDialog] = useState(false);
   const [showWelcomeVideo, setShowWelcomeVideo] = useState(false);
   const { count: libraryCount, isFull } = useLibraryCount(user?.id || null);
+  const { storyConfig, setCharacterName } = useStoryConfig();
+  const [localName, setLocalName] = useState(storyConfig.characterName);
 
   useEffect(() => {
     checkUser();
@@ -102,11 +107,47 @@ const Home = () => {
     setShareDialogOpen(true);
   };
 
+  const validateName = (name: string): boolean => {
+    if (!name.trim()) return false;
+    if (name.length < 2) return false;
+    if (name.length > 24) return false;
+    if (!NAME_REGEX.test(name)) return false;
+    return true;
+  };
+
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter' && validateName(localName)) {
+      handleContinue();
+    }
+  };
+
+  const handleContinue = () => {
+    if (isFull) {
+      setShowLibraryFullDialog(true);
+      return;
+    }
+
+    if (validateName(localName)) {
+      setCharacterName(localName);
+      navigate('/create/02');
+    }
+  };
+
   const handleCreateStoryClick = () => {
     if (isFull) {
       setShowLibraryFullDialog(true);
     } else {
       navigate("/create/01");
+    }
+  };
+
+  const isValid = validateName(localName);
+
+  const handleProgressBarClick = (stepNumber: number) => {
+    if (stepNumber === 1) {
+      // Already on home page
+    } else if (stepNumber === 2 && isValid) {
+      handleContinue();
     }
   };
 
@@ -144,42 +185,74 @@ const Home = () => {
 
       {/* Main Content */}
       <main className="container mx-auto px-4 py-8 space-y-12">
-        {/* Video Hero Section */}
-        <section className="w-full -mx-4 px-0">
-          <VimeoPlayer 
-            videoId="1126023861" 
-            title="Welcome to Guardian Kids"
-            autoplay={false}
-            muted={false}
-          />
-        </section>
-
-        {/* Create Story CTA */}
-        <section 
-          className="relative overflow-hidden rounded-3xl p-8 md:p-12 shadow-[var(--shadow-magical)] bg-black"
-        >
-          {/* Centered Content */}
-          <div className="relative z-10 w-full flex flex-col items-center text-center gap-6 max-w-3xl mx-auto">
+        {/* Character Name Hero Section */}
+        <section className="relative overflow-hidden rounded-3xl shadow-[var(--shadow-magical)] bg-black min-h-[500px] flex flex-col">
+          {/* Main content area */}
+          <div className="flex-1 flex flex-col items-center justify-center px-4 md:px-8 lg:px-16 py-12">
             {/* Title */}
-            <h2 className="text-4xl md:text-5xl font-chewy text-amber-400">
-              Create Your Own Magical Story
-            </h2>
-            
-            {/* Description */}
-            <p className="text-xl text-white/90 leading-relaxed">
-              Choose your hero, pick your adventure, and watch your Epic Story come to life—crafted with heart, wonder, and a touch of magic. ✨
-            </p>
-            
-            {/* Button */}
-            <Button
-              variant="default"
-              size="lg"
-              onClick={handleCreateStoryClick}
-              className="shadow-xl"
-            >
-              <PlusCircle className="w-6 h-6" />
-              Start Creating!
-            </Button>
+            <h1 className="font-aoboshi text-4xl md:text-5xl lg:text-6xl text-white mb-12 md:mb-16 text-center">
+              Create Your Story...
+            </h1>
+
+            {/* Input section */}
+            <div className="w-full max-w-3xl flex flex-col items-center gap-4">
+              {/* Label */}
+              <div className="font-inter text-2xl md:text-3xl lg:text-4xl font-bold text-center">
+                <span className="text-white">Enter your </span>
+                <span className="text-[#FFAE00]">main character's name.</span>
+              </div>
+
+              {/* Input field */}
+              <input
+                type="text"
+                value={localName}
+                onChange={(e) => setLocalName(e.target.value)}
+                onKeyPress={handleKeyPress}
+                placeholder=""
+                maxLength={24}
+                className="w-full max-w-2xl h-16 px-4 rounded bg-[#D9D9D9] text-black text-xl font-inter focus:outline-none focus:ring-2 focus:ring-[#FFAE00] transition-all"
+              />
+
+              {/* Helper text */}
+              <p className="font-inter text-xl md:text-2xl text-[#C4C4C4] text-center mt-2">
+                Name your main character and start the quest!
+              </p>
+            </div>
+
+            {/* Next Step Button */}
+            <div className="mt-12">
+              <button
+                onClick={handleContinue}
+                disabled={!isValid}
+                className="relative transition-all"
+                style={{
+                  width: '307px',
+                  height: '88px',
+                }}
+              >
+                <div
+                  className="absolute inset-0 rounded-xl transition-all"
+                  style={{
+                    border: isValid ? '4px solid #20B000' : '4px solid #3C3C3C',
+                    background: 'rgba(9, 9, 9, 0.82)',
+                    opacity: isValid ? 1 : 0.5,
+                  }}
+                />
+                <span
+                  className="absolute inset-0 flex items-center justify-center font-inter text-4xl md:text-5xl font-bold transition-all"
+                  style={{
+                    color: isValid ? '#FFFFFF' : '#6B7280',
+                  }}
+                >
+                  Next Step
+                </span>
+              </button>
+            </div>
+          </div>
+
+          {/* Progress bar at bottom */}
+          <div className="pb-8 px-4">
+            <CreateProgressBar currentStep={1} onStepClick={handleProgressBarClick} />
           </div>
         </section>
 
@@ -242,6 +315,14 @@ const Home = () => {
 
       <FixedFeedbackButton />
     </div>
+  );
+};
+
+const Home = () => {
+  return (
+    <StoryConfigProvider>
+      <HomeContent />
+    </StoryConfigProvider>
   );
 };
 

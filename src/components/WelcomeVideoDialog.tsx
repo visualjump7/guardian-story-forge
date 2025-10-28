@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -38,6 +38,7 @@ export const WelcomeVideoDialog = ({ open, onOpenChange }: WelcomeVideoDialogPro
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-4xl w-[95vw] p-0 overflow-hidden bg-black border-2 border-primary/30">
+        <DialogTitle className="sr-only">Welcome Video</DialogTitle>
         {/* Close Button */}
         <Button
           variant="ghost"
