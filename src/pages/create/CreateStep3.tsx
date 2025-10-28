@@ -200,7 +200,7 @@ export const CreateStep3 = () => {
             </h1>
 
             {/* Cards grid - fixed size */}
-            <div className="grid grid-cols-2 gap-4 lg:gap-6" style={{ width: '300px', maxWidth: '100%' }}>
+            <div ref={wrapperRef} data-choices className="choices grid grid-cols-2 gap-4 lg:gap-6" style={{ width: '300px', maxWidth: '100%' }}>
             {ART_STYLES.map((artStyle) => {
               const isSelected = selectedStyle === artStyle.id;
 
@@ -209,13 +209,15 @@ export const CreateStep3 = () => {
                   key={artStyle.id}
                   onClick={() => handleSelect(artStyle.id, artStyle.image)}
                   onKeyPress={(e) => handleKeyPress(e, artStyle.id, artStyle.image)}
-                  className="relative w-full aspect-square group focus:outline-none focus:ring-2 focus:ring-white/50 rounded-[19px]"
+                  className={`choice-btn relative w-full aspect-square group focus:outline-none focus:ring-2 focus:ring-white/50 rounded-[19px] ${isSelected ? 'is-selected' : ''}`}
+                  aria-pressed={isSelected}
                   style={{
                     filter: isSelected
                       ? 'none'
                       : 'brightness(0.7)',
-                    transition: 'filter 0.3s ease'
-                  }}
+                    transition: 'filter 0.3s ease',
+                    '--fx': artStyle.glowRgb
+                  } as React.CSSProperties}
                 >
                   {/* Card image */}
                   <div
