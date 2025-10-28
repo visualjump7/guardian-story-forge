@@ -31,7 +31,9 @@ interface Story {
   } | null;
 }
 
-const Home = () => {
+const NAME_REGEX = /^[a-zA-Z\s'-]+$/;
+
+const HomeContent = () => {
   const navigate = useNavigate();
   const { isAdmin } = useAuth();
   const [user, setUser] = useState<any>(null);
@@ -43,6 +45,8 @@ const Home = () => {
   const [showLibraryFullDialog, setShowLibraryFullDialog] = useState(false);
   const [showWelcomeVideo, setShowWelcomeVideo] = useState(false);
   const { count: libraryCount, isFull } = useLibraryCount(user?.id || null);
+  const { storyConfig, setCharacterName } = useStoryConfig();
+  const [localName, setLocalName] = useState(storyConfig.characterName);
 
   useEffect(() => {
     checkUser();
