@@ -168,49 +168,29 @@ export default function CreateStep2() {
           </div>
         </div>
 
-        {/* Right side: Video/Preview area and Next button */}
-        <div className="hidden lg:flex w-1/2 flex-col items-end justify-between pl-12">
-          {/* Preview area */}
+        {/* Right side: Video area */}
+        <div className="hidden lg:flex w-1/2 items-start justify-center pl-12">
+          {/* Video preview area */}
           <div
-            className="w-full max-w-[704px] aspect-square bg-gradient-to-br from-gray-900 to-black rounded-lg border border-white/10 flex items-center justify-center"
+            className="w-full max-w-[704px] aspect-square bg-gradient-to-br from-gray-900 to-black rounded-lg border border-white/10 flex items-center justify-center overflow-hidden"
           >
+            <video
+              src=""
+              autoPlay
+              loop
+              muted
+              className="w-full h-full object-cover"
+              style={{ display: 'none' }}
+            />
             {selectedKind && (
               <div className="text-center">
                 <p className="text-white/60 text-lg font-inter">
                   Preview for {selectedKind}
                 </p>
-                <p className="text-white/40 text-sm mt-2">Coming soon</p>
+                <p className="text-white/40 text-sm mt-2">Video coming soon</p>
               </div>
             )}
           </div>
-
-          {/* Next Step Button - Desktop */}
-          <button
-            onClick={handleNextStep}
-            disabled={!selectedKind}
-            className="relative transition-all"
-            style={{
-              width: '307px',
-              height: '88px',
-            }}
-          >
-            <div
-              className="absolute inset-0 rounded-xl transition-all"
-              style={{
-                border: selectedKind ? '4px solid #20B000' : '4px solid #3C3C3C',
-                background: 'rgba(9, 9, 9, 0.82)',
-                opacity: selectedKind ? 1 : 0.5,
-              }}
-            />
-            <span
-              className="absolute inset-0 flex items-center justify-center font-inter text-5xl font-bold transition-all"
-              style={{
-                color: selectedKind ? '#FFFFFF' : '#6B7280',
-              }}
-            >
-              Next Step
-            </span>
-          </button>
         </div>
       </div>
 
