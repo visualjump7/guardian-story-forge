@@ -107,11 +107,47 @@ const HomeContent = () => {
     setShareDialogOpen(true);
   };
 
+  const validateName = (name: string): boolean => {
+    if (!name.trim()) return false;
+    if (name.length < 2) return false;
+    if (name.length > 24) return false;
+    if (!NAME_REGEX.test(name)) return false;
+    return true;
+  };
+
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter' && validateName(localName)) {
+      handleContinue();
+    }
+  };
+
+  const handleContinue = () => {
+    if (isFull) {
+      setShowLibraryFullDialog(true);
+      return;
+    }
+
+    if (validateName(localName)) {
+      setCharacterName(localName);
+      navigate('/create/02');
+    }
+  };
+
   const handleCreateStoryClick = () => {
     if (isFull) {
       setShowLibraryFullDialog(true);
     } else {
       navigate("/create/01");
+    }
+  };
+
+  const isValid = validateName(localName);
+
+  const handleProgressBarClick = (stepNumber: number) => {
+    if (stepNumber === 1) {
+      // Already on home page
+    } else if (stepNumber === 2 && isValid) {
+      handleContinue();
     }
   };
 
