@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { supabase } from '@/integrations/supabase/client';
 import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'sonner';
@@ -53,7 +54,7 @@ const ImageSlot = ({
             <img
               src={displayImage}
               alt={`${label} preview`}
-              className="w-full h-full object-cover"
+              className="w-full h-full object-contain bg-muted"
             />
           ) : (
             <div className="w-full h-full bg-muted flex items-center justify-center">
@@ -394,92 +395,120 @@ export default function StoryEditor() {
           <CardHeader className="px-4 sm:px-6">
             <CardTitle className="text-lg sm:text-xl">Story Details</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-6 px-4 sm:px-6 pb-6">
-            {/* Title */}
-            <div className="space-y-2">
-              <Label htmlFor="title">Title</Label>
-              <Input
-                id="title"
-                value={formData.title}
-                onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                placeholder="Story title"
-              />
-            </div>
-
-            {/* Hero Name */}
-            <div className="space-y-2">
-              <Label htmlFor="hero_name">Hero Name</Label>
-              <Input
-                id="hero_name"
-                value={formData.hero_name}
-                onChange={(e) => setFormData({ ...formData, hero_name: e.target.value })}
-                placeholder="Main character name"
-              />
-            </div>
-
-            {/* Image Slots Section */}
-            <div className="space-y-4">
-              <div>
-                <Label className="text-lg font-semibold">Story Images</Label>
-                <p className="text-sm text-muted-foreground mt-1">
-                  Generate images for key story beats. AI generation requires story to be saved first.
-                </p>
-              </div>
+          <CardContent className="space-y-0 px-4 sm:px-6 pb-6">
+            <Accordion type="multiple" defaultValue={["basic", "images", "content"]} className="w-full">
               
-              {/* Cover Image - Full Width */}
-              <ImageSlot
-                label={IMAGE_SLOTS[0].label}
-                description={IMAGE_SLOTS[0].description}
-                imageKey={IMAGE_SLOTS[0].key}
-                aspectRatio={IMAGE_SLOTS[0].aspectRatio}
-                imageInfo={imageData[IMAGE_SLOTS[0].key]}
-                onGenerateClick={() => setGeneratingImage({ type: IMAGE_SLOTS[0].key, isOpen: true })}
-                isGenerating={isGenerating && generatingImage.type === IMAGE_SLOTS[0].key}
-              />
-              
-              {/* Scene Images - 3x3 Grid */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                {IMAGE_SLOTS.slice(1).map(slot => (
+              {/* Basic Information Accordion */}
+              <AccordionItem value="basic">
+            <AccordionTrigger className="text-lg font-inter font-bold">
+              Basic Information
+            </AccordionTrigger>
+                <AccordionContent className="space-y-6 pt-4">
+                  {/* Title */}
+                  <div className="space-y-2">
+                    <Label htmlFor="title">Title</Label>
+                    <Input
+                      id="title"
+                      value={formData.title}
+                      onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                      placeholder="Story title"
+                    />
+                  </div>
+
+                  {/* Hero Name */}
+                  <div className="space-y-2">
+                    <Label htmlFor="hero_name">Hero Name</Label>
+                    <Input
+                      id="hero_name"
+                      value={formData.hero_name}
+                      onChange={(e) => setFormData({ ...formData, hero_name: e.target.value })}
+                      placeholder="Main character name"
+                    />
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+
+              {/* Images Accordion */}
+              <AccordionItem value="images">
+            <AccordionTrigger className="text-lg font-inter font-bold">
+              Images
+            </AccordionTrigger>
+                <AccordionContent className="space-y-6 pt-4">
+                  <p className="text-sm text-muted-foreground">
+                    Generate images for key story beats. AI generation requires story to be saved first.
+                  </p>
+                  
+                  {/* Cover Image - Full Width */}
                   <ImageSlot
-                    key={slot.key}
-                    label={slot.label}
-                    description={slot.description}
-                    imageKey={slot.key}
-                    aspectRatio={slot.aspectRatio}
-                    imageInfo={imageData[slot.key]}
-                    onGenerateClick={() => setGeneratingImage({ type: slot.key, isOpen: true })}
-                    isGenerating={isGenerating && generatingImage.type === slot.key}
+                    label={IMAGE_SLOTS[0].label}
+                    description={IMAGE_SLOTS[0].description}
+                    imageKey={IMAGE_SLOTS[0].key}
+                    aspectRatio={IMAGE_SLOTS[0].aspectRatio}
+                    imageInfo={imageData[IMAGE_SLOTS[0].key]}
+                    onGenerateClick={() => setGeneratingImage({ type: IMAGE_SLOTS[0].key, isOpen: true })}
+                    isGenerating={isGenerating && generatingImage.type === IMAGE_SLOTS[0].key}
                   />
-                ))}
-              </div>
-            </div>
+                  
+                  {/* Scene Images - 3x3 Grid */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {IMAGE_SLOTS.slice(1).map(slot => (
+                      <ImageSlot
+                        key={slot.key}
+                        label={slot.label}
+                        description={slot.description}
+                        imageKey={slot.key}
+                        aspectRatio={slot.aspectRatio}
+                        imageInfo={imageData[slot.key]}
+                        onGenerateClick={() => setGeneratingImage({ type: slot.key, isOpen: true })}
+                        isGenerating={isGenerating && generatingImage.type === slot.key}
+                      />
+                    ))}
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
 
-            {/* Story Content */}
-            <div className="space-y-2">
-              <Label htmlFor="content">Story Content</Label>
-              <Textarea
-                id="content"
-                value={formData.content}
-                onChange={(e) => setFormData({ ...formData, content: e.target.value })}
-                placeholder="Write the full story here..."
-                className="min-h-[300px] sm:min-h-[400px] font-serif text-sm"
-              />
-            </div>
+              {/* Story Content Accordion */}
+              <AccordionItem value="content">
+            <AccordionTrigger className="text-lg font-inter font-bold">
+              Story Content
+            </AccordionTrigger>
+                <AccordionContent className="space-y-6 pt-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="content">Story Content</Label>
+                    <Textarea
+                      id="content"
+                      value={formData.content}
+                      onChange={(e) => setFormData({ ...formData, content: e.target.value })}
+                      placeholder="Write the full story here..."
+                      className="min-h-[300px] sm:min-h-[400px] font-sans text-xl leading-relaxed"
+                    />
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
 
-            {/* Excerpt */}
-            <div className="space-y-2">
-              <Label htmlFor="excerpt">Excerpt (Preview Text)</Label>
-              <Textarea
-                id="excerpt"
-                value={formData.excerpt}
-                onChange={(e) => setFormData({ ...formData, excerpt: e.target.value })}
-                placeholder="Short preview of the story..."
-                className="min-h-[100px]"
-              />
-            </div>
+              {/* Excerpt Accordion */}
+              <AccordionItem value="excerpt">
+            <AccordionTrigger className="text-lg font-inter font-bold">
+              Excerpt (Preview Text)
+            </AccordionTrigger>
+                <AccordionContent className="space-y-6 pt-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="excerpt">Excerpt</Label>
+                    <Textarea
+                      id="excerpt"
+                      value={formData.excerpt}
+                      onChange={(e) => setFormData({ ...formData, excerpt: e.target.value })}
+                      placeholder="Short preview of the story..."
+                      className="min-h-[100px] font-sans text-xl leading-relaxed"
+                    />
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+
+            </Accordion>
 
             {/* Bottom Save Button */}
-            <div className="flex justify-center sm:justify-end pt-4 border-t border-border/50">
+            <div className="flex justify-center sm:justify-end pt-4 border-t border-border/50 mt-6">
               <Button 
                 onClick={handleSave} 
                 disabled={saving}
