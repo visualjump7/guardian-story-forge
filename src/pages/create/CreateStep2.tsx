@@ -103,16 +103,16 @@ export default function CreateStep2() {
   return (
     <div className="min-h-[calc(100vh-200px)] flex flex-col">
       {/* Main content area */}
-      <div className="flex-1 flex px-4 md:px-8 lg:px-12 py-8">
+      <div className="flex-1 flex items-center gap-8 px-4 md:px-8 lg:px-12 py-8">
         {/* Left side: Title and cards */}
-        <div className="w-full lg:w-1/2 flex flex-col">
+        <div className="w-full lg:w-auto flex flex-col flex-shrink-0">
           {/* Title */}
-          <h1 className="font-aoboshi text-3xl md:text-4xl text-white mb-8">
+          <h1 className="font-aoboshi text-2xl md:text-3xl lg:text-4xl text-white mb-6 lg:mb-8">
             What kind of story?
           </h1>
 
-          {/* Cards grid */}
-          <div className="grid grid-cols-2 gap-6 md:gap-8 max-w-lg">
+          {/* Cards grid - fixed size */}
+          <div className="grid grid-cols-2 gap-4 lg:gap-6" style={{ width: '300px', maxWidth: '100%' }}>
             {STORY_KINDS.map((kind) => {
               const isSelected = selectedKind === kind.id;
 
@@ -146,9 +146,9 @@ export default function CreateStep2() {
                     />
 
                     {/* Label overlay */}
-                    <div className="absolute bottom-3 left-3 right-3">
+                    <div className="absolute bottom-2 left-2 right-2">
                       <span
-                        className="font-inter text-xl md:text-2xl font-bold"
+                        className="font-inter text-base lg:text-xl font-bold"
                         style={{
                           color: isSelected ? kind.labelColorSelected : kind.labelColor,
                           textShadow: kind.id === 'Fantasy' && isSelected
@@ -168,11 +168,12 @@ export default function CreateStep2() {
           </div>
         </div>
 
-        {/* Right side: Video area */}
-        <div className="hidden lg:flex w-1/2 items-start justify-center pl-12">
+        {/* Right side: Video area - responsive and grows to fill space */}
+        <div className="hidden lg:flex flex-1 items-center justify-center">
           {/* Video preview area */}
           <div
-            className="w-full max-w-[704px] aspect-square bg-gradient-to-br from-gray-900 to-black rounded-lg border border-white/10 flex items-center justify-center overflow-hidden"
+            className="w-full aspect-square bg-gradient-to-br from-gray-900 to-black rounded-lg border border-white/10 flex items-center justify-center overflow-hidden"
+            style={{ maxHeight: 'calc(100vh - 300px)' }}
           >
             {selectedKind ? (
               <video
