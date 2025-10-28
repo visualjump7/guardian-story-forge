@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useStoryConfig, ArtStyle } from '@/contexts/StoryConfigContext';
 import { CreateProgressBar } from '@/components/create/CreateProgressBar';
+import { ArrowLeft } from 'lucide-react';
 
 
 interface ArtStyleOption {
