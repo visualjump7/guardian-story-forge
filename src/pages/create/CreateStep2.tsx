@@ -100,6 +100,14 @@ export default function CreateStep2() {
     }
   };
 
+  const handleProgressBarClick = (stepNumber: number) => {
+    if (stepNumber === 1) {
+      navigate('/create/01');
+    } else if (stepNumber === 2) {
+      navigate('/create/02');
+    }
+  };
+
   return (
     <div className="min-h-[calc(100vh-200px)] flex flex-col">
       {/* Main content area */}
