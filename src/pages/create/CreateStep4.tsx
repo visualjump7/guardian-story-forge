@@ -300,148 +300,156 @@ export const CreateStep4 = () => {
       )}
 
       {/* Main content area */}
-      <div className="flex-1 flex flex-col items-center justify-center px-4 md:px-8 lg:px-16 pt-12 pb-0" style={{ marginBottom: '-2px' }}>
-        {/* Title */}
-        <h1 className="font-aoboshi text-4xl md:text-5xl text-white mb-16 text-center">
-          Finalize Your Epic Journey
-        </h1>
+      <div className="flex-1 flex flex-col px-4 md:px-8 lg:px-12 py-8">
+        {/* Content flex row - centered vertically */}
+        <div className="flex-1 flex flex-col items-center justify-center gap-8">
+          {/* Title */}
+          <h1 className="font-aoboshi text-lg md:text-xl lg:text-2xl text-white" style={{ marginBottom: '0px' }}>
+            Finalize Your Epic Journey
+          </h1>
 
-        {/* Review Cards */}
-        <div className="w-full max-w-4xl grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
-          {/* Story Kind Card */}
-          {storyConfig.storyKind && STORY_KINDS.find(s => s.id === storyConfig.storyKind) && (
-            <div
-              className="flex flex-col items-center justify-center rounded-2xl p-6 aspect-square relative overflow-hidden"
-              style={{
-                border: `5px solid ${STORY_KINDS.find(s => s.id === storyConfig.storyKind)?.borderColor || '#FFAE00'}`,
-                background: 'rgba(20, 20, 20, 0.8)',
-              }}
-            >
-              <img
-                src={STORY_KINDS.find(s => s.id === storyConfig.storyKind)?.image}
-                alt={storyConfig.storyKind}
-                className="absolute inset-0 w-full h-full object-cover"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black to-transparent" />
+          {/* Review Cards */}
+          <div className="w-full max-w-4xl grid grid-cols-1 md:grid-cols-2 gap-8">
+            {/* Story Kind Card */}
+            {storyConfig.storyKind && STORY_KINDS.find(s => s.id === storyConfig.storyKind) && (
+              <div
+                className="flex flex-col items-center justify-center rounded-2xl p-6 aspect-square relative overflow-hidden"
+                style={{
+                  border: `5px solid ${STORY_KINDS.find(s => s.id === storyConfig.storyKind)?.borderColor || '#FFAE00'}`,
+                  background: 'rgba(20, 20, 20, 0.8)',
+                }}
+              >
+                <img
+                  src={STORY_KINDS.find(s => s.id === storyConfig.storyKind)?.image}
+                  alt={storyConfig.storyKind}
+                  className="absolute inset-0 w-full h-full object-cover"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black to-transparent" />
 
-              <div className="relative z-10 flex flex-col items-center justify-end h-full pb-6 text-center">
-                <p
-                  className="font-inter font-bold text-lg md:text-xl"
-                  style={{
-                    color: STORY_KINDS.find(s => s.id === storyConfig.storyKind)?.labelColor || '#FFFFFF'
-                  }}
-                >
-                  {storyConfig.storyKind}
-                </p>
+                <div className="relative z-10 flex flex-col items-center justify-end h-full pb-6 text-center">
+                  <p
+                    className="font-inter font-bold text-lg md:text-xl"
+                    style={{
+                      color: STORY_KINDS.find(s => s.id === storyConfig.storyKind)?.labelColor || '#FFFFFF'
+                    }}
+                  >
+                    {storyConfig.storyKind}
+                  </p>
+                </div>
               </div>
-            </div>
-          )}
-
-          {/* Art Style Card */}
-          {storyConfig.artStyle && ART_STYLES.find(a => a.id === storyConfig.artStyle) && (
-            <div
-              className="flex flex-col items-center justify-center rounded-2xl p-6 aspect-square relative overflow-hidden"
-              style={{
-                border: `5px solid ${ART_STYLES.find(a => a.id === storyConfig.artStyle)?.borderColor || '#FFAE00'}`,
-                background: 'rgba(20, 20, 20, 0.8)',
-              }}
-            >
-              <img
-                src={ART_STYLES.find(a => a.id === storyConfig.artStyle)?.image}
-                alt={storyConfig.artStyle}
-                className="absolute inset-0 w-full h-full object-cover"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black to-transparent" />
-
-              <div className="relative z-10 flex flex-col items-center justify-end h-full pb-6 text-center">
-                <p
-                  className="font-inter font-bold text-lg md:text-xl"
-                  style={{
-                    color: ART_STYLES.find(a => a.id === storyConfig.artStyle)?.labelColor || '#FFFFFF'
-                  }}
-                >
-                  {ART_STYLES.find(a => a.id === storyConfig.artStyle)?.label}
-                </p>
-              </div>
-            </div>
-          )}
-        </div>
-
-        {/* Generate Story Button */}
-        <button
-          onClick={handleGenerateStory}
-          disabled={isGenerating || !isComplete() || !isConfigLoaded}
-          className="relative transition-all mb-8"
-          style={{
-            width: '200px',
-            height: '57px',
-          }}
-        >
-          <div
-            className="absolute inset-0 rounded-xl transition-all"
-            style={{
-              border: !isGenerating && isComplete() && isConfigLoaded ? '4px solid #20B000' : '4px solid #3C3C3C',
-              background: 'rgba(9, 9, 9, 0.82)',
-              opacity: !isGenerating && isComplete() && isConfigLoaded ? 1 : 0.5,
-            }}
-          />
-          <span
-            className="absolute inset-0 flex items-center justify-center font-inter text-3xl font-bold transition-all"
-            style={{
-              color: !isGenerating && isComplete() && isConfigLoaded ? '#FFFFFF' : '#6B7280',
-            }}
-          >
-            {isGenerating ? (
-              <Loader2 className="h-6 w-6 animate-spin" />
-            ) : (
-              "Let's go!"
             )}
-          </span>
-        </button>
 
-        {/* Image Generation Quality Toggle */}
-        <div className="w-full max-w-2xl mb-12">
-          <h3 className="text-xl font-bold text-white mb-4 text-center font-inter">
-            Image Generation Quality
-          </h3>
+            {/* Art Style Card */}
+            {storyConfig.artStyle && ART_STYLES.find(a => a.id === storyConfig.artStyle) && (
+              <div
+                className="flex flex-col items-center justify-center rounded-2xl p-6 aspect-square relative overflow-hidden"
+                style={{
+                  border: `5px solid ${ART_STYLES.find(a => a.id === storyConfig.artStyle)?.borderColor || '#FFAE00'}`,
+                  background: 'rgba(20, 20, 20, 0.8)',
+                }}
+              >
+                <img
+                  src={ART_STYLES.find(a => a.id === storyConfig.artStyle)?.image}
+                  alt={storyConfig.artStyle}
+                  className="absolute inset-0 w-full h-full object-cover"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black to-transparent" />
 
-          <div className="flex items-center justify-center gap-4 mb-4">
-            <div className={`flex items-center gap-2 transition-opacity ${
-              storyConfig.generationMode === 'express' ? 'opacity-100' : 'opacity-50'
-            }`}>
-              <span className="font-semibold text-white font-inter">Built for Speed</span>
-            </div>
-
-            <Switch
-              checked={storyConfig.generationMode === 'studio'}
-              onCheckedChange={(checked) => {
-                setGenerationMode(checked ? 'studio' : 'express');
-                setModeChanged(true);
-              }}
-            />
-
-            <div className={`flex items-center gap-2 transition-opacity ${
-              storyConfig.generationMode === 'studio' ? 'opacity-100' : 'opacity-50'
-            }`}>
-              <span className="font-semibold text-white font-inter">Big Time Studio</span>
-            </div>
+                <div className="relative z-10 flex flex-col items-center justify-end h-full pb-6 text-center">
+                  <p
+                    className="font-inter font-bold text-lg md:text-xl"
+                    style={{
+                      color: ART_STYLES.find(a => a.id === storyConfig.artStyle)?.labelColor || '#FFFFFF'
+                    }}
+                  >
+                    {ART_STYLES.find(a => a.id === storyConfig.artStyle)?.label}
+                  </p>
+                </div>
+              </div>
+            )}
           </div>
 
-          {modeChanged && storyConfig.generationMode === 'express' && (
-            <Alert className="bg-slate-800 text-white border-slate-700">
-              <AlertDescription className="text-white text-base">
-                <span className="font-medium">Fast generation</span> - Images ready in ~10 seconds
-              </AlertDescription>
-            </Alert>
-          )}
+          {/* Button and Quality Control - Same Row */}
+          <div className="w-full max-w-4xl flex flex-col lg:flex-row items-center justify-center gap-8">
+            {/* Image Generation Quality Toggle */}
+            <div className="w-full lg:w-auto lg:flex-1">
+              <div className="flex flex-col items-center gap-4">
+                <h3 className="text-lg font-bold text-white font-inter">
+                  Image Quality
+                </h3>
 
-          {storyConfig.generationMode === 'studio' && (
-            <Alert className="bg-slate-800 text-white border-slate-700">
-              <AlertDescription className="text-white text-base">
-                <span className="font-medium">Premium quality</span> - Studio-grade images. Takes 1-2 minutes per image.
-              </AlertDescription>
-            </Alert>
-          )}
+                <div className="flex items-center justify-center gap-4">
+                  <div className={`flex items-center gap-2 transition-opacity ${
+                    storyConfig.generationMode === 'express' ? 'opacity-100' : 'opacity-50'
+                  }`}>
+                    <span className="font-semibold text-white font-inter text-sm">Built for Speed</span>
+                  </div>
+
+                  <Switch
+                    checked={storyConfig.generationMode === 'studio'}
+                    onCheckedChange={(checked) => {
+                      setGenerationMode(checked ? 'studio' : 'express');
+                      setModeChanged(true);
+                    }}
+                  />
+
+                  <div className={`flex items-center gap-2 transition-opacity ${
+                    storyConfig.generationMode === 'studio' ? 'opacity-100' : 'opacity-50'
+                  }`}>
+                    <span className="font-semibold text-white font-inter text-sm">Big Time Studio</span>
+                  </div>
+                </div>
+
+                {modeChanged && storyConfig.generationMode === 'express' && (
+                  <Alert className="bg-slate-800 text-white border-slate-700 w-full">
+                    <AlertDescription className="text-white text-xs">
+                      <span className="font-medium">Fast generation</span> - Images ready in ~10 seconds
+                    </AlertDescription>
+                  </Alert>
+                )}
+
+                {storyConfig.generationMode === 'studio' && (
+                  <Alert className="bg-slate-800 text-white border-slate-700 w-full">
+                    <AlertDescription className="text-white text-xs">
+                      <span className="font-medium">Premium quality</span> - Studio-grade images. Takes 1-2 minutes per image.
+                    </AlertDescription>
+                  </Alert>
+                )}
+              </div>
+            </div>
+
+            {/* Generate Story Button */}
+            <button
+              onClick={handleGenerateStory}
+              disabled={isGenerating || !isComplete() || !isConfigLoaded}
+              className="relative transition-all lg:mt-0"
+              style={{
+                width: '200px',
+                height: '57px',
+              }}
+            >
+              <div
+                className="absolute inset-0 rounded-xl transition-all"
+                style={{
+                  border: !isGenerating && isComplete() && isConfigLoaded ? '4px solid #20B000' : '4px solid #3C3C3C',
+                  background: 'rgba(9, 9, 9, 0.82)',
+                  opacity: !isGenerating && isComplete() && isConfigLoaded ? 1 : 0.5,
+                }}
+              />
+              <span
+                className="absolute inset-0 flex items-center justify-center font-inter text-3xl font-bold transition-all"
+                style={{
+                  color: !isGenerating && isComplete() && isConfigLoaded ? '#FFFFFF' : '#6B7280',
+                }}
+              >
+                {isGenerating ? (
+                  <Loader2 className="h-6 w-6 animate-spin" />
+                ) : (
+                  "Let's go!"
+                )}
+              </span>
+            </button>
+          </div>
         </div>
       </div>
 
