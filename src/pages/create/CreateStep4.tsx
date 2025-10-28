@@ -317,48 +317,62 @@ export const CreateStep4 = () => {
         {/* Review Cards */}
         <div className="w-full max-w-4xl grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
           {/* Story Kind Card */}
-          <div 
-            className="flex flex-col items-center justify-center rounded-2xl p-8 md:p-12 aspect-square"
-            style={{
-              border: '3px solid #FFAE00',
-              background: 'rgba(20, 20, 20, 0.8)',
-            }}
-          >
-            <div className="text-white/60 font-inter text-center mb-4">
-              <p className="text-sm md:text-base">Story Kind</p>
-            </div>
-            <p className="text-white/40 text-center font-inter text-xs md:text-sm">
-              Placeholder
-            </p>
-            <p 
-              className="font-inter font-bold mt-8 text-center"
-              style={{ color: '#FFAE00' }}
+          {storyConfig.storyKind && STORY_KINDS.find(s => s.id === storyConfig.storyKind) && (
+            <div
+              className="flex flex-col items-center justify-center rounded-2xl p-6 aspect-square relative overflow-hidden"
+              style={{
+                border: `5px solid ${STORY_KINDS.find(s => s.id === storyConfig.storyKind)?.borderColor || '#FFAE00'}`,
+                background: 'rgba(20, 20, 20, 0.8)',
+              }}
             >
-              02 - {storyConfig.storyKind}
-            </p>
-          </div>
+              <img
+                src={STORY_KINDS.find(s => s.id === storyConfig.storyKind)?.image}
+                alt={storyConfig.storyKind}
+                className="absolute inset-0 w-full h-full object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black to-transparent" />
+
+              <div className="relative z-10 flex flex-col items-center justify-end h-full pb-6 text-center">
+                <p
+                  className="font-inter font-bold text-lg md:text-xl"
+                  style={{
+                    color: STORY_KINDS.find(s => s.id === storyConfig.storyKind)?.labelColor || '#FFFFFF'
+                  }}
+                >
+                  {storyConfig.storyKind}
+                </p>
+              </div>
+            </div>
+          )}
 
           {/* Art Style Card */}
-          <div 
-            className="flex flex-col items-center justify-center rounded-2xl p-8 md:p-12 aspect-square"
-            style={{
-              border: '3px solid #FFAE00',
-              background: 'rgba(20, 20, 20, 0.8)',
-            }}
-          >
-            <div className="text-white/60 font-inter text-center mb-4">
-              <p className="text-sm md:text-base">Art Style</p>
-            </div>
-            <p className="text-white/40 text-center font-inter text-xs md:text-sm">
-              Placeholder
-            </p>
-            <p 
-              className="font-inter font-bold mt-8 text-center"
-              style={{ color: '#FFAE00' }}
+          {storyConfig.artStyle && ART_STYLES.find(a => a.id === storyConfig.artStyle) && (
+            <div
+              className="flex flex-col items-center justify-center rounded-2xl p-6 aspect-square relative overflow-hidden"
+              style={{
+                border: `5px solid ${ART_STYLES.find(a => a.id === storyConfig.artStyle)?.borderColor || '#FFAE00'}`,
+                background: 'rgba(20, 20, 20, 0.8)',
+              }}
             >
-              03 - {getArtStyleLabel(storyConfig.artStyle)}
-            </p>
-          </div>
+              <img
+                src={ART_STYLES.find(a => a.id === storyConfig.artStyle)?.image}
+                alt={storyConfig.artStyle}
+                className="absolute inset-0 w-full h-full object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black to-transparent" />
+
+              <div className="relative z-10 flex flex-col items-center justify-end h-full pb-6 text-center">
+                <p
+                  className="font-inter font-bold text-lg md:text-xl"
+                  style={{
+                    color: ART_STYLES.find(a => a.id === storyConfig.artStyle)?.labelColor || '#FFFFFF'
+                  }}
+                >
+                  {ART_STYLES.find(a => a.id === storyConfig.artStyle)?.label}
+                </p>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Image Generation Quality Toggle */}
