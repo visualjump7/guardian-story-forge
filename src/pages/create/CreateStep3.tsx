@@ -9,6 +9,7 @@ interface ArtStyleOption {
   id: ArtStyle;
   label: string;
   image: string;
+  video: string;
   borderColor: string;
   borderColorSelected: string;
   labelColor: string;
