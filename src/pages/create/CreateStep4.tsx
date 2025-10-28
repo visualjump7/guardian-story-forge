@@ -78,13 +78,17 @@ export const CreateStep4 = () => {
     setIsGenerating(true);
 
     try {
-      const themeId = STORY_KIND_TO_THEME[storyConfig.storyKind || ''] || STORY_KIND_TO_THEME['Action'];
-      const narrativeStructure = STORY_KIND_TO_NARRATIVE[storyConfig.storyKind || ''] || 'heros-journey';
+      const storyKind = storyConfig.storyKind || 'Action';
+      const themeId = STORY_KIND_TO_THEME[storyKind];
+      const narrativeStructure = STORY_KIND_TO_NARRATIVE[storyKind];
+      const storyType = STORY_KIND_TO_STORY_TYPE[storyKind];
+      const mappedArtStyle = ART_STYLE_MAPPING[storyConfig.artStyle || '3d'];
 
       console.log('Generating story with:', {
         heroName: storyConfig.characterName,
-        storyKind: storyConfig.storyKind,
-        artStyle: storyConfig.artStyle,
+        storyKind,
+        storyType,
+        artStyle: mappedArtStyle,
         themeId,
         narrativeStructure,
       });
@@ -92,13 +96,12 @@ export const CreateStep4 = () => {
       const { data, error } = await supabase.functions.invoke('generate-story', {
         body: {
           heroName: storyConfig.characterName,
-          characterType: storyConfig.storyKind,
-          storyType: storyConfig.storyKind,
+          storyType: storyType,
           themeId: themeId,
           narrativeStructure: narrativeStructure,
           storyLength: 'medium',
           ageRange: '8-10',
-          artStyle: storyConfig.artStyle || '3d',
+          artStyle: mappedArtStyle,
           generationMode: storyConfig.generationMode,
           selectedBand: selectedBand,
         },
