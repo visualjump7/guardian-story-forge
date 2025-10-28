@@ -1,10 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useStoryConfig, StoryType } from '@/contexts/StoryConfigContext';
-import { StoryMagicTray } from '@/components/create/StoryMagicTray';
-import { ChoiceCard } from '@/components/create/ChoiceCard';
-import { CreateNavBar } from '@/components/create/CreateNavBar';
+import { useStoryConfig, ArtStyle } from '@/contexts/StoryConfigContext';
+import { CreateProgressBar } from '@/components/create/CreateProgressBar';
 
+// Using story images as placeholders for art styles
 import adventureImg from '@/assets/story-adventure.jpg';
 import mysteryImg from '@/assets/story-mystery.jpg';
 import magicalImg from '@/assets/story-magical.jpg';
@@ -12,107 +11,237 @@ import epicImg from '@/assets/story-epic.jpg';
 import spaceImg from '@/assets/story-space.jpg';
 import surpriseImg from '@/assets/story-surprise.jpg';
 
-const STORY_TYPES = [
-  { id: 'Adventure', label: 'Adventure', image: adventureImg },
-  { id: 'Mystery', label: 'Mystery', image: mysteryImg },
-  { id: 'Magical', label: 'Magical', image: magicalImg },
-  { id: 'Epic', label: 'Epic', image: epicImg },
-  { id: 'Space', label: 'Space', image: spaceImg },
-  { id: 'Surprise', label: 'Surprise Me!', image: surpriseImg },
+interface ArtStyleOption {
+  id: ArtStyle;
+  label: string;
+  image: string;
+  borderColor: string;
+  borderColorSelected: string;
+  labelColor: string;
+  labelColorSelected: string;
+  textStroke?: string;
+}
+
+const ART_STYLES: ArtStyleOption[] = [
+  { 
+    id: '3d', 
+    label: '3D', 
+    image: adventureImg,
+    borderColor: '#FFE500',
+    borderColorSelected: '#FFE500',
+    labelColor: '#CCB700',
+    labelColorSelected: '#CCB700'
+  },
+  { 
+    id: 'illustration', 
+    label: 'Illustration', 
+    image: mysteryImg,
+    borderColor: '#C03B1A',
+    borderColorSelected: '#C03B1A',
+    labelColor: '#968F96',
+    labelColorSelected: '#968F96',
+    textStroke: '0.5px #000'
+  },
+  { 
+    id: 'storybook', 
+    label: 'Storybook', 
+    image: magicalImg,
+    borderColor: '#005AFF',
+    borderColorSelected: '#005AFF',
+    labelColor: '#FFFFFF',
+    labelColorSelected: '#FFFFFF',
+    textStroke: '1px #005AFF'
+  },
+  { 
+    id: 'clay', 
+    label: 'Clay', 
+    image: epicImg,
+    borderColor: '#9994F8',
+    borderColorSelected: '#9994F8',
+    labelColor: '#FFFFFF',
+    labelColorSelected: '#FFFFFF',
+    textStroke: '1px #9994F8'
+  },
+  { 
+    id: 'black-white', 
+    label: 'Black & White', 
+    image: spaceImg,
+    borderColor: '#94F8B4',
+    borderColorSelected: '#94F8B4',
+    labelColor: '#FFFFFF',
+    labelColorSelected: '#FFFFFF'
+  },
+  { 
+    id: 'anime', 
+    label: 'Anime', 
+    image: surpriseImg,
+    borderColor: '#E62222',
+    borderColorSelected: '#E62222',
+    labelColor: '#FFFFFF',
+    labelColorSelected: '#FFFFFF',
+    textStroke: '1px rgba(0, 0, 0, 0.2)'
+  },
 ];
 
 export const CreateStep3 = () => {
   const navigate = useNavigate();
-  const { storyConfig, setStoryType, clearStoryType } = useStoryConfig();
-  const [selectedType, setSelectedType] = useState<string>(storyConfig.storyType || '');
-  const [animateSlot, setAnimateSlot] = useState(false);
+  const { storyConfig, setArtStyle } = useStoryConfig();
+  const [selectedStyle, setSelectedStyle] = useState<ArtStyle | null>(storyConfig.artStyle);
 
-  useEffect(() => {
-    setSelectedType(storyConfig.storyType || '');
-  }, [storyConfig.storyType]);
-
-  const handleSelect = (typeId: string, image: string) => {
-    setSelectedType(typeId);
-    setStoryType(typeId as StoryType, image);
-    
-    setAnimateSlot(true);
-    setTimeout(() => setAnimateSlot(false), 800);
+  const handleSelect = (style: ArtStyle, image: string) => {
+    setSelectedStyle(style);
+    setArtStyle(style, image);
   };
 
-  const handleSlot1Click = () => {
-    navigate('/create/02');
+  const handleKeyPress = (e: React.KeyboardEvent, style: ArtStyle, image: string) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      handleSelect(style, image);
+    }
   };
 
-  const handleSlotClick = () => {
-    setSelectedType('');
-    clearStoryType();
-  };
-
-  const handleSlot3Click = () => {
-    navigate('/create/04');
-  };
-
-  const handleContinue = () => {
-    navigate('/create/04');
-  };
-
-  const isContinueEnabled = () => {
-    return !!selectedType;
-  };
-
-  const hasSelection = !!selectedType;
-
-  const handleBack = () => {
-    navigate('/create/02');
+  const handleNextStep = () => {
+    if (selectedStyle) {
+      navigate('/create/04');
+    }
   };
 
   return (
-    <div className="w-full max-w-4xl mx-auto">
-    <CreateNavBar
-      onBack={handleBack}
-      onContinue={handleContinue}
-      continueDisabled={!isContinueEnabled()}
-      continuePulse={!!selectedType}
-    />
+    <div className="min-h-[calc(100vh-200px)] flex flex-col">
+      {/* Main content area */}
+      <div className="flex-1 flex px-4 md:px-8 lg:px-12 py-8">
+        {/* Left side: Title and cards */}
+        <div className="w-full lg:w-1/2 flex flex-col">
+          {/* Title */}
+          <h1 className="font-aoboshi text-3xl md:text-4xl text-white mb-8">
+            Choose your art style.
+          </h1>
 
-      <StoryMagicTray
-        slot1={{
-          filled: !!storyConfig.characterType,
-          imageSrc: storyConfig.assets.characterTypeIcon || undefined,
-          label: storyConfig.characterType || undefined,
-          active: false,
-          onClick: handleSlot1Click,
-        }}
-        slot2={{
-          filled: !!selectedType,
-          imageSrc: storyConfig.assets.storyTypeIcon || undefined,
-          label: selectedType === 'Surprise' ? 'Surprise Me!' : selectedType,
-          active: true,
-          justFilled: animateSlot,
-          onClick: handleSlotClick,
-        }}
-        slot3={{ filled: false, active: false, onClick: handleSlot3Click }}
-      />
+          {/* Cards grid */}
+          <div className="grid grid-cols-2 gap-6 md:gap-8 max-w-lg">
+            {ART_STYLES.map((artStyle) => {
+              const isSelected = selectedStyle === artStyle.id;
+              
+              return (
+                <button
+                  key={artStyle.id}
+                  onClick={() => handleSelect(artStyle.id, artStyle.image)}
+                  onKeyPress={(e) => handleKeyPress(e, artStyle.id, artStyle.image)}
+                  className="relative w-full aspect-square group focus:outline-none focus:ring-2 focus:ring-white/50 rounded-[19px]"
+                  style={{ 
+                    filter: isSelected 
+                      ? 'none' 
+                      : 'brightness(0.7)',
+                    transition: 'filter 0.3s ease'
+                  }}
+                >
+                  {/* Card image */}
+                  <div 
+                    className="w-full h-full rounded-[19px] overflow-hidden relative"
+                    style={{
+                      border: `5px solid ${isSelected ? artStyle.borderColorSelected : artStyle.borderColor}`,
+                      boxShadow: isSelected 
+                        ? '4px 11px 4px 0 rgba(0, 0, 0, 0.25) inset, 0 4px 4px 0 rgba(0, 0, 0, 0.25)'
+                        : 'none'
+                    }}
+                  >
+                    <img 
+                      src={artStyle.image} 
+                      alt={artStyle.label}
+                      className="w-full h-full object-cover"
+                    />
+                    
+                    {/* Label overlay */}
+                    <div className="absolute bottom-3 left-3 right-3">
+                      <span 
+                        className="font-inter text-xl md:text-2xl font-bold"
+                        style={{ 
+                          color: isSelected ? artStyle.labelColorSelected : artStyle.labelColor,
+                          textShadow: artStyle.id === 'illustration' && isSelected
+                            ? '0 1px 2.3px rgba(0, 0, 0, 0.25)'
+                            : undefined,
+                          WebkitTextStroke: artStyle.textStroke && isSelected ? artStyle.textStroke : undefined
+                        }}
+                      >
+                        {artStyle.label}
+                      </span>
+                    </div>
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+        </div>
 
-      <div className="text-center mb-3 md:mb-4">
-        <h2 className="text-2xl md:text-3xl font-bold text-story-heading font-chewy">
-          What Kind of Story?
-        </h2>
+        {/* Right side: Video/Preview area and Next button */}
+        <div className="hidden lg:flex w-1/2 flex-col items-end justify-between pl-12">
+          {/* Preview area */}
+          <div 
+            className="w-full max-w-[704px] aspect-square bg-gradient-to-br from-gray-900 to-black rounded-lg border border-white/10 flex items-center justify-center"
+          >
+            {selectedStyle && (
+              <div className="text-center">
+                <p className="text-white/60 text-lg font-inter">
+                  Preview for {ART_STYLES.find(s => s.id === selectedStyle)?.label}
+                </p>
+                <p className="text-white/40 text-sm mt-2">Coming soon</p>
+              </div>
+            )}
+          </div>
+
+          {/* Next Step Button */}
+          {selectedStyle && (
+            <button
+              onClick={handleNextStep}
+              className="relative"
+              style={{
+                width: '307px',
+                height: '88px',
+              }}
+            >
+              <div 
+                className="absolute inset-0 rounded-xl transition-all hover:brightness-110"
+                style={{
+                  border: '4px solid #20B000',
+                  background: 'rgba(9, 9, 9, 0.82)',
+                }}
+              />
+              <span 
+                className="absolute inset-0 flex items-center justify-center font-inter text-5xl font-bold text-white"
+              >
+                Next Step
+              </span>
+            </button>
+          )}
+        </div>
       </div>
 
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-2 md:gap-3 mb-4">
-        {STORY_TYPES.map((type) => (
-          <ChoiceCard
-            key={type.id}
-            id={type.id}
-            label={type.label}
-            imageSrc={type.image}
-            selected={selectedType === type.id}
-            hasSelection={hasSelection}
-            onSelect={() => handleSelect(type.id, type.image)}
-            gradientType="story"
-          />
-        ))}
+      {/* Mobile Next Step Button */}
+      {selectedStyle && (
+        <div className="lg:hidden flex justify-center px-4 pb-4">
+          <button
+            onClick={handleNextStep}
+            className="relative w-full max-w-md h-20"
+          >
+            <div 
+              className="absolute inset-0 rounded-xl transition-all hover:brightness-110"
+              style={{
+                border: '4px solid #20B000',
+                background: 'rgba(9, 9, 9, 0.82)',
+              }}
+            />
+            <span 
+              className="absolute inset-0 flex items-center justify-center font-inter text-4xl font-bold text-white"
+            >
+              Next Step
+            </span>
+          </button>
+        </div>
+      )}
+
+      {/* Progress bar at bottom */}
+      <div className="pb-8">
+        <CreateProgressBar currentStep={3} />
       </div>
     </div>
   );
