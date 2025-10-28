@@ -112,6 +112,10 @@ export const CreateStep3 = () => {
     }
   };
 
+  const handleBack = () => {
+    navigate('/create/02');
+  };
+
   return (
     <div className="min-h-[calc(100vh-200px)] flex flex-col">
       {/* Main content area */}
