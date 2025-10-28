@@ -190,7 +190,7 @@ export default function CreateStep2() {
             </h1>
 
             {/* Cards grid - fixed size */}
-            <div className="grid grid-cols-2 gap-4 lg:gap-6" style={{ width: '300px', maxWidth: '100%' }}>
+            <div ref={wrapperRef} data-choices className="choices grid grid-cols-2 gap-4 lg:gap-6" style={{ width: '300px', maxWidth: '100%' }}>
             {STORY_KINDS.map((kind) => {
               const isSelected = selectedKind === kind.id;
 
@@ -199,13 +199,15 @@ export default function CreateStep2() {
                   key={kind.id}
                   onClick={() => handleSelect(kind.id, kind.image)}
                   onKeyPress={(e) => handleKeyPress(e, kind.id, kind.image)}
-                  className="relative w-full aspect-square group focus:outline-none focus:ring-2 focus:ring-white/50 rounded-[19px]"
+                  className={`choice-btn relative w-full aspect-square group focus:outline-none focus:ring-2 focus:ring-white/50 rounded-[19px] ${isSelected ? 'is-selected' : ''}`}
+                  aria-pressed={isSelected}
                   style={{
                     filter: isSelected
                       ? 'none'
                       : 'brightness(0.7)',
-                    transition: 'filter 0.3s ease'
-                  }}
+                    transition: 'filter 0.3s ease',
+                    '--fx': kind.glowRgb
+                  } as React.CSSProperties}
                 >
                   {/* Card image */}
                   <div
