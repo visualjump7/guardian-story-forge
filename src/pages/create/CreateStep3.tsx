@@ -136,15 +136,15 @@ export const CreateStep3 = () => {
 
       {/* Main content area */}
       <div className="flex-1 flex flex-col px-4 md:px-8 lg:px-12 py-8">
-        {/* Title */}
-        <h1 className="font-aoboshi text-xl md:text-2xl lg:text-3xl text-white mb-6 lg:mb-8">
-          Choose your art style.
-        </h1>
-
         {/* Content flex row - centered vertically */}
         <div className="flex-1 flex items-center gap-8">
-          {/* Left side: cards */}
-          <div className="w-full lg:w-auto flex flex-shrink-0">
+          {/* Left side: title and cards */}
+          <div className="w-full lg:w-auto flex flex-col flex-shrink-0">
+            {/* Title */}
+            <h1 className="font-aoboshi text-lg md:text-xl lg:text-2xl text-white" style={{ marginBottom: '50px' }}>
+              Choose your art style.
+            </h1>
+
             {/* Cards grid - fixed size */}
             <div className="grid grid-cols-2 gap-4 lg:gap-6" style={{ width: '300px', maxWidth: '100%' }}>
             {ART_STYLES.map((artStyle) => {
