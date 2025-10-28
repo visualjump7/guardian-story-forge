@@ -14,6 +14,8 @@ export default {
     },
     extend: {
       fontFamily: {
+        aoboshi: ['Aoboshi One', 'serif'],
+        inter: ['Inter', 'sans-serif'],
         chewy: ['Chewy', 'cursive'],
         fredoka: ['Fredoka', 'sans-serif'],
         sans: ['Fredoka', 'sans-serif'],
