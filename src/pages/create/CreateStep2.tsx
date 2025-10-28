@@ -125,16 +125,18 @@ export default function CreateStep2() {
       </button>
 
       {/* Main content area */}
-      <div className="flex-1 flex items-center gap-8 px-4 md:px-8 lg:px-12 py-8">
-        {/* Left side: Title and cards */}
-        <div className="w-full lg:w-auto flex flex-col flex-shrink-0">
-          {/* Title */}
-          <h1 className="font-aoboshi text-xl md:text-2xl lg:text-3xl text-white mb-6 lg:mb-8">
-            What kind of story?
-          </h1>
+      <div className="flex-1 flex flex-col px-4 md:px-8 lg:px-12 py-8">
+        {/* Title */}
+        <h1 className="font-aoboshi text-xl md:text-2xl lg:text-3xl text-white mb-6 lg:mb-8">
+          What kind of story?
+        </h1>
 
-          {/* Cards grid - fixed size */}
-          <div className="grid grid-cols-2 gap-4 lg:gap-6" style={{ width: '300px', maxWidth: '100%' }}>
+        {/* Content flex row - centered vertically */}
+        <div className="flex-1 flex items-center gap-8">
+          {/* Left side: cards */}
+          <div className="w-full lg:w-auto flex flex-shrink-0">
+            {/* Cards grid - fixed size */}
+            <div className="grid grid-cols-2 gap-4 lg:gap-6" style={{ width: '300px', maxWidth: '100%' }}>
             {STORY_KINDS.map((kind) => {
               const isSelected = selectedKind === kind.id;
 
@@ -187,11 +189,11 @@ export default function CreateStep2() {
                 </button>
               );
             })}
+            </div>
           </div>
-        </div>
 
-        {/* Right side: Video area - responsive and grows to fill space */}
-        <div className="hidden lg:flex flex-1 flex-col items-center justify-center gap-6">
+          {/* Right side: Video area - responsive and grows to fill space */}
+          <div className="hidden lg:flex flex-1 flex-col items-center justify-center gap-6">
           {/* Video preview area */}
           <div
             className="w-full aspect-square bg-gradient-to-br from-gray-900 to-black rounded-lg border border-white/10 flex items-center justify-center overflow-hidden"
@@ -242,6 +244,7 @@ export default function CreateStep2() {
               Next Step
             </span>
           </button>
+          </div>
         </div>
       </div>
 
