@@ -440,38 +440,6 @@ export const CreateStep4 = () => {
           )}
         </div>
 
-        {/* Generate Story Button */}
-        <button
-          onClick={handleGenerateStory}
-          disabled={isGenerating || !isComplete() || !isConfigLoaded}
-          className="relative transition-all"
-          style={{
-            width: '307px',
-            height: '88px',
-          }}
-        >
-          <div 
-            className="absolute inset-0 rounded-xl transition-all"
-            style={{
-              border: !isGenerating && isComplete() && isConfigLoaded ? '4px solid #20B000' : '4px solid #3C3C3C',
-              background: 'rgba(9, 9, 9, 0.82)',
-              opacity: !isGenerating && isComplete() && isConfigLoaded ? 1 : 0.5,
-            }}
-          />
-          <span 
-            className="absolute inset-0 flex items-center justify-center font-inter text-5xl font-bold transition-all"
-            style={{
-              color: !isGenerating && isComplete() && isConfigLoaded ? '#FFFFFF' : '#6B7280',
-            }}
-          >
-            {isGenerating ? (
-              <Loader2 className="h-10 w-10 animate-spin" />
-            ) : (
-              "Let's go!"
-            )}
-          </span>
-        </button>
-
         {/* Back Button */}
         {!isGenerating && (
           <button
