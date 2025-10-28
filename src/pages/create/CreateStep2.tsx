@@ -94,6 +94,12 @@ export default function CreateStep2() {
     }
   };
 
+  const handleNextStep = () => {
+    if (selectedKind) {
+      navigate('/create/03');
+    }
+  };
+
   return (
     <div className="min-h-[calc(100vh-200px)] flex flex-col">
       {/* Main content area */}
@@ -109,43 +115,43 @@ export default function CreateStep2() {
           <div className="grid grid-cols-2 gap-6 md:gap-8 max-w-lg">
             {STORY_KINDS.map((kind) => {
               const isSelected = selectedKind === kind.id;
-              
+
               return (
                 <button
                   key={kind.id}
                   onClick={() => handleSelect(kind.id, kind.image)}
                   onKeyPress={(e) => handleKeyPress(e, kind.id, kind.image)}
                   className="relative w-full aspect-square group focus:outline-none focus:ring-2 focus:ring-white/50 rounded-[19px]"
-                  style={{ 
-                    filter: isSelected 
-                      ? 'none' 
+                  style={{
+                    filter: isSelected
+                      ? 'none'
                       : 'brightness(0.7)',
                     transition: 'filter 0.3s ease'
                   }}
                 >
                   {/* Card image */}
-                  <div 
+                  <div
                     className="w-full h-full rounded-[19px] overflow-hidden relative"
                     style={{
                       border: `5px solid ${isSelected ? kind.borderColorSelected : kind.borderColor}`,
-                      boxShadow: isSelected 
+                      boxShadow: isSelected
                         ? '4px 11px 4px 0 rgba(0, 0, 0, 0.25) inset, 0 4px 4px 0 rgba(0, 0, 0, 0.25)'
                         : 'none'
                     }}
                   >
-                    <img 
-                      src={kind.image} 
+                    <img
+                      src={kind.image}
                       alt={kind.label}
                       className="w-full h-full object-cover"
                     />
-                    
+
                     {/* Label overlay */}
                     <div className="absolute bottom-3 left-3 right-3">
-                      <span 
+                      <span
                         className="font-inter text-xl md:text-2xl font-bold"
-                        style={{ 
+                        style={{
                           color: isSelected ? kind.labelColorSelected : kind.labelColor,
-                          textShadow: kind.id === 'Fantasy' && isSelected 
+                          textShadow: kind.id === 'Fantasy' && isSelected
                             ? '0 0 1px #005AFF, 0 0 1px #005AFF'
                             : kind.id === 'Superhero' && isSelected
                             ? '0 0 1px rgba(0, 0, 0, 0.2)'
@@ -162,9 +168,10 @@ export default function CreateStep2() {
           </div>
         </div>
 
-        {/* Right side: Video/Preview area (hidden on mobile/tablet) */}
-        <div className="hidden lg:flex w-1/2 items-start justify-center pl-12">
-          <div 
+        {/* Right side: Video/Preview area and Next button */}
+        <div className="hidden lg:flex w-1/2 flex-col items-end justify-between pl-12">
+          {/* Preview area */}
+          <div
             className="w-full max-w-[704px] aspect-square bg-gradient-to-br from-gray-900 to-black rounded-lg border border-white/10 flex items-center justify-center"
           >
             {selectedKind && (
@@ -176,7 +183,64 @@ export default function CreateStep2() {
               </div>
             )}
           </div>
+
+          {/* Next Step Button - Desktop */}
+          <button
+            onClick={handleNextStep}
+            disabled={!selectedKind}
+            className="relative transition-all"
+            style={{
+              width: '307px',
+              height: '88px',
+            }}
+          >
+            <div
+              className="absolute inset-0 rounded-xl transition-all"
+              style={{
+                border: selectedKind ? '4px solid #20B000' : '4px solid #3C3C3C',
+                background: 'rgba(9, 9, 9, 0.82)',
+                opacity: selectedKind ? 1 : 0.5,
+              }}
+            />
+            <span
+              className="absolute inset-0 flex items-center justify-center font-inter text-5xl font-bold transition-all"
+              style={{
+                color: selectedKind ? '#FFFFFF' : '#6B7280',
+              }}
+            >
+              Next Step
+            </span>
+          </button>
         </div>
+      </div>
+
+      {/* Mobile Next Step Button */}
+      <div className="lg:hidden flex justify-center px-4 pb-4">
+        <button
+          onClick={handleNextStep}
+          disabled={!selectedKind}
+          className="relative w-full max-w-md transition-all"
+          style={{
+            height: '80px',
+          }}
+        >
+          <div
+            className="absolute inset-0 rounded-xl transition-all"
+            style={{
+              border: selectedKind ? '4px solid #20B000' : '4px solid #3C3C3C',
+              background: 'rgba(9, 9, 9, 0.82)',
+              opacity: selectedKind ? 1 : 0.5,
+            }}
+          />
+          <span
+            className="absolute inset-0 flex items-center justify-center font-inter text-4xl font-bold transition-all"
+            style={{
+              color: selectedKind ? '#FFFFFF' : '#6B7280',
+            }}
+          >
+            Next Step
+          </span>
+        </button>
       </div>
 
       {/* Progress bar at bottom */}
