@@ -7,6 +7,7 @@ interface StoryKindOption {
   id: StoryKind;
   label: string;
   image: string;
+  video: string;
   borderColor: string;
   borderColorSelected: string;
   labelColor: string;
@@ -18,6 +19,7 @@ const STORY_KINDS: StoryKindOption[] = [
     id: 'Action',
     label: 'Action',
     image: 'https://cdn.builder.io/api/v1/image/assets%2F9bebcf6b30bb4052a5f67c7bf4a01fd9%2Fbd7079eb565f486b952b669c06ab277c?format=webp&width=800',
+    video: 'https://cdn.builder.io/o/assets%2F9bebcf6b30bb4052a5f67c7bf4a01fd9%2F05ee7d40af3a4fc6ae70af4ee38a48e2?alt=media&token=001e8311-7afc-4bfd-b443-99bbb8875fa2&apiKey=9bebcf6b30bb4052a5f67c7bf4a01fd9',
     borderColor: '#FFE500',
     borderColorSelected: '#FFE500',
     labelColor: '#CCB700',
@@ -27,6 +29,7 @@ const STORY_KINDS: StoryKindOption[] = [
     id: 'Agent',
     label: 'Agent',
     image: 'https://cdn.builder.io/api/v1/image/assets%2F9bebcf6b30bb4052a5f67c7bf4a01fd9%2Fff79eb9a3bf4450ca01ad00b847c0952?format=webp&width=800',
+    video: 'https://cdn.builder.io/o/assets%2F9bebcf6b30bb4052a5f67c7bf4a01fd9%2Fe6b3d6ab91924be18fa8ebf382bd1be8?alt=media&token=47f81526-faac-42ec-9f9f-fd4d718c9631&apiKey=9bebcf6b30bb4052a5f67c7bf4a01fd9',
     borderColor: '#6C2C2A',
     borderColorSelected: '#6C2C2A',
     labelColor: '#CFCFCF',
@@ -36,6 +39,7 @@ const STORY_KINDS: StoryKindOption[] = [
     id: 'Fantasy',
     label: 'Fantasy',
     image: 'https://cdn.builder.io/api/v1/image/assets%2F9bebcf6b30bb4052a5f67c7bf4a01fd9%2F122fba98f46947d7b7c96148ef5336de?format=webp&width=800',
+    video: 'https://cdn.builder.io/o/assets%2F9bebcf6b30bb4052a5f67c7bf4a01fd9%2F5999a21ef6df44229c6270aa4a69c349?alt=media&token=62264ada-ee30-4b3c-8370-61a6db8906e0&apiKey=9bebcf6b30bb4052a5f67c7bf4a01fd9',
     borderColor: '#005AFF',
     borderColorSelected: '#005AFF',
     labelColor: '#FFFFFF',
@@ -45,6 +49,7 @@ const STORY_KINDS: StoryKindOption[] = [
     id: 'Fairy Tale',
     label: 'Fairy Tale',
     image: 'https://cdn.builder.io/api/v1/image/assets%2F9bebcf6b30bb4052a5f67c7bf4a01fd9%2F665ef22f220243dda0cd115009df4363?format=webp&width=800',
+    video: 'https://cdn.builder.io/o/assets%2F9bebcf6b30bb4052a5f67c7bf4a01fd9%2F083550454ac24a68abc7760fb0ef4cfc?alt=media&token=6e6efc47-5b88-451d-846c-369aefcf1b90&apiKey=9bebcf6b30bb4052a5f67c7bf4a01fd9',
     borderColor: '#9994F8',
     borderColorSelected: '#9994F8',
     labelColor: '#FFFFFF',
@@ -54,6 +59,7 @@ const STORY_KINDS: StoryKindOption[] = [
     id: 'Explorer',
     label: 'Explorer',
     image: 'https://cdn.builder.io/api/v1/image/assets%2F9bebcf6b30bb4052a5f67c7bf4a01fd9%2Fd3159d17d9124bfca8fdaa7126943dc7?format=webp&width=800',
+    video: 'https://cdn.builder.io/o/assets%2F9bebcf6b30bb4052a5f67c7bf4a01fd9%2F640f6f3009fb4f87a5c9c0ff53c1a985?alt=media&token=a4bd8cee-782d-4904-8469-24d5d5c78f2b&apiKey=9bebcf6b30bb4052a5f67c7bf4a01fd9',
     borderColor: '#94F8B4',
     borderColorSelected: '#94F8B4',
     labelColor: '#FFFFFF',
@@ -63,6 +69,7 @@ const STORY_KINDS: StoryKindOption[] = [
     id: 'Superhero',
     label: 'Superhero',
     image: 'https://cdn.builder.io/api/v1/image/assets%2F9bebcf6b30bb4052a5f67c7bf4a01fd9%2Faa9a4f32bff54b18afb69b21e66290d9?format=webp&width=800',
+    video: 'https://cdn.builder.io/o/assets%2F9bebcf6b30bb4052a5f67c7bf4a01fd9%2F2f709bfa39d3454a8cdea75ae79d5bf5?alt=media&token=c73c9e38-5b61-4b9f-84fe-bb08fdfd99a4&apiKey=9bebcf6b30bb4052a5f67c7bf4a01fd9',
     borderColor: '#E62222',
     borderColorSelected: '#E62222',
     labelColor: '#FFFFFF',
