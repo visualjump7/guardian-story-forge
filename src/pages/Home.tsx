@@ -6,7 +6,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { BookOpen, Sparkles, Library, PlusCircle, Wand2, Share2 } from "lucide-react";
 import { toast } from "sonner";
 import heroImage from "@/assets/swiss-chocolate-story.jpg";
-import VimeoPlayer from "@/components/VimeoPlayer";
 import { ShareDialog } from "@/components/ShareDialog";
 import { AppHeader } from "@/components/AppHeader";
 import { DesktopNav } from "@/components/DesktopNav";
@@ -15,6 +14,8 @@ import { useLibraryCount } from "@/hooks/useLibraryCount";
 import { LibraryLimitDialog } from "@/components/LibraryLimitDialog";
 import { FixedFeedbackButton } from "@/components/FixedFeedbackButton";
 import { WelcomeVideoDialog } from "@/components/WelcomeVideoDialog";
+import { StoryConfigProvider, useStoryConfig } from "@/contexts/StoryConfigContext";
+import { CreateProgressBar } from "@/components/create/CreateProgressBar";
 
 interface Story {
   id: string;
