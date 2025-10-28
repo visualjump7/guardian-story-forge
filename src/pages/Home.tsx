@@ -318,4 +318,12 @@ const HomeContent = () => {
   );
 };
 
+const Home = () => {
+  return (
+    <StoryConfigProvider>
+      <HomeContent />
+    </StoryConfigProvider>
+  );
+};
+
 export default Home;
