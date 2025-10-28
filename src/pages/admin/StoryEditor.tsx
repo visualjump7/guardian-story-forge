@@ -54,7 +54,7 @@ const ImageSlot = ({
             <img
               src={displayImage}
               alt={`${label} preview`}
-              className="w-full h-full object-cover"
+              className="w-full h-full object-contain bg-muted"
             />
           ) : (
             <div className="w-full h-full bg-muted flex items-center justify-center">
