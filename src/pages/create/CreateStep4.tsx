@@ -175,7 +175,16 @@ export const CreateStep4 = () => {
   };
 
   return (
-    <div className="min-h-[calc(100vh-200px)] flex flex-col">
+    <div className="min-h-[calc(100vh-200px)] flex flex-col relative">
+      {/* Back Button */}
+      <button
+        onClick={handleBack}
+        className="absolute top-4 left-4 z-10 p-2 rounded-lg hover:bg-white/10 transition-colors"
+        aria-label="Go back"
+      >
+        <ArrowLeft className="h-6 w-6 text-white" />
+      </button>
+
       {/* Config Warning */}
       {!isConfigLoaded && (
         <Alert variant="destructive" className="mx-4 mt-6">
