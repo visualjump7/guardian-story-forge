@@ -177,11 +177,11 @@ export default function CreateStep2() {
         </div>
 
         {/* Right side: Video area - responsive and grows to fill space */}
-        <div className="hidden lg:flex flex-1 items-center justify-center">
+        <div className="hidden lg:flex flex-1 flex-col items-center justify-center gap-6">
           {/* Video preview area */}
           <div
             className="w-full aspect-square bg-gradient-to-br from-gray-900 to-black rounded-lg border border-white/10 flex items-center justify-center overflow-hidden"
-            style={{ maxHeight: 'calc(100vh - 300px)' }}
+            style={{ maxHeight: 'calc(100vh - 400px)' }}
           >
             {selectedKind ? (
               <video
@@ -201,6 +201,33 @@ export default function CreateStep2() {
               </div>
             )}
           </div>
+
+          {/* Next Step Button for Desktop */}
+          <button
+            onClick={handleNextStep}
+            disabled={!selectedKind}
+            className="relative w-full max-w-sm transition-all"
+            style={{
+              height: '80px',
+            }}
+          >
+            <div
+              className="absolute inset-0 rounded-xl transition-all"
+              style={{
+                border: selectedKind ? '4px solid #20B000' : '4px solid #3C3C3C',
+                background: 'rgba(9, 9, 9, 0.82)',
+                opacity: selectedKind ? 1 : 0.5,
+              }}
+            />
+            <span
+              className="absolute inset-0 flex items-center justify-center font-inter text-4xl font-bold transition-all"
+              style={{
+                color: selectedKind ? '#FFFFFF' : '#6B7280',
+              }}
+            >
+              Next Step
+            </span>
+          </button>
         </div>
       </div>
 
