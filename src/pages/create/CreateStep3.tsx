@@ -95,6 +95,49 @@ export const CreateStep3 = () => {
   const navigate = useNavigate();
   const { storyConfig, setArtStyle } = useStoryConfig();
   const [selectedStyle, setSelectedStyle] = useState<ArtStyle | null>(storyConfig.artStyle);
+  const wrapperRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const wrapper = wrapperRef.current;
+    if (!wrapper) return;
+
+    const handleClick = (e: MouseEvent) => {
+      const btn = (e.target as HTMLElement).closest('.choice-btn');
+      if (!btn || !wrapper.contains(btn)) return;
+
+      // Mark selection
+      wrapper.querySelectorAll('.choice-btn').forEach(b => b.classList.remove('is-selected'));
+      btn.classList.add('is-selected');
+      wrapper.classList.add('dim-others', 'choices');
+
+      // Restart the one-shot animation
+      btn.classList.remove('is-active');
+      void (btn as HTMLElement).offsetWidth; // reflow to reset animation
+      btn.classList.add('is-active');
+
+      // Accessibility
+      wrapper.querySelectorAll('.choice-btn').forEach(b =>
+        b.setAttribute('aria-pressed', b === btn ? 'true' : 'false')
+      );
+    };
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      const btn = (e.target as HTMLElement).closest('.choice-btn');
+      if (!btn || !wrapper.contains(btn)) return;
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        (btn as HTMLElement).click();
+      }
+    };
+
+    document.addEventListener('click', handleClick);
+    document.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      document.removeEventListener('click', handleClick);
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, []);
 
   const handleSelect = (style: ArtStyle, image: string) => {
     setSelectedStyle(style);
