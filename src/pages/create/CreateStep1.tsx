@@ -33,6 +33,14 @@ export default function CreateStep1() {
 
   const isValid = validateName(localName);
 
+  const handleProgressBarClick = (stepNumber: number) => {
+    if (stepNumber === 1) {
+      navigate('/create/01');
+    } else if (stepNumber === 2 && isValid) {
+      handleContinue();
+    }
+  };
+
   return (
     <div className="min-h-[calc(100vh-200px)] flex flex-col">
       {/* Main content area */}
