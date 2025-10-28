@@ -11,6 +11,16 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { LoadingAnimation } from '@/components/LoadingAnimation';
 import { CreateProgressBar } from '@/components/create/CreateProgressBar';
 
+// Story Kind to Story Type mapping
+const STORY_KIND_TO_STORY_TYPE: Record<string, string> = {
+  'Action': 'Adventure',
+  'Agent': 'Mystery',
+  'Fantasy': 'Magical',
+  'Fairy Tale': 'Epic',
+  'Explorer': 'Adventure',
+  'Superhero': 'Epic',
+};
+
 // Story Kind to Theme UUID mapping
 const STORY_KIND_TO_THEME: Record<string, string> = {
   'Action': 'e59bc1c0-319d-4899-a42a-b91e241c4524', // Courage
@@ -28,6 +38,16 @@ const STORY_KIND_TO_NARRATIVE: Record<string, string> = {
   'Fairy Tale': 'voyage-return',
   'Explorer': 'quest',
   'Superhero': 'heros-journey',
+};
+
+// Art Style mapping
+const ART_STYLE_MAPPING: Record<string, string> = {
+  '3d': 'pixar-3d',
+  'illustration': 'classic-disney',
+  'storybook': 'ghibli-2d',
+  'clay': 'watercolor',
+  'black-white': 'classic-disney',
+  'anime': 'anime',
 };
 
 export const CreateStep4 = () => {
