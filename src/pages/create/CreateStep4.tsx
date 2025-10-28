@@ -370,10 +370,10 @@ export const CreateStep4 = () => {
         <button
           onClick={handleGenerateStory}
           disabled={isGenerating || !isComplete() || !isConfigLoaded}
-          className="relative transition-all mb-12"
+          className="relative transition-all mb-8"
           style={{
-            width: '307px',
-            height: '88px',
+            width: '200px',
+            height: '57px',
           }}
         >
           <div
@@ -385,13 +385,13 @@ export const CreateStep4 = () => {
             }}
           />
           <span
-            className="absolute inset-0 flex items-center justify-center font-inter text-5xl font-bold transition-all"
+            className="absolute inset-0 flex items-center justify-center font-inter text-3xl font-bold transition-all"
             style={{
               color: !isGenerating && isComplete() && isConfigLoaded ? '#FFFFFF' : '#6B7280',
             }}
           >
             {isGenerating ? (
-              <Loader2 className="h-10 w-10 animate-spin" />
+              <Loader2 className="h-6 w-6 animate-spin" />
             ) : (
               "Let's go!"
             )}
