@@ -277,10 +277,14 @@ export const CreateStep4 = () => {
       {/* Back Button */}
       <button
         onClick={handleBack}
-        className="absolute top-4 left-4 z-10 p-2 rounded-lg hover:bg-white/10 transition-colors"
+        className="absolute top-4 left-4 z-10 flex items-center gap-2 px-3 py-2 rounded-full hover:bg-white/20 transition-colors"
+        style={{
+          backgroundColor: '#262A32',
+        }}
         aria-label="Go back"
       >
-        <ArrowLeft className="h-6 w-6 text-white" />
+        <ArrowLeft className="h-5 w-5" style={{ color: '#9CA3AF' }} />
+        <span className="font-inter text-sm" style={{ color: '#9CA3AF' }}>Back</span>
       </button>
 
       {/* Config Warning */}
