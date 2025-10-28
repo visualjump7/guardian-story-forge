@@ -404,34 +404,37 @@ export const CreateStep4 = () => {
           <h3 className="text-xl font-bold text-white mb-4 text-center font-inter">
             Image Generation Quality
           </h3>
-          
+
           <div className="flex items-center justify-center gap-4 mb-4">
             <div className={`flex items-center gap-2 transition-opacity ${
               storyConfig.generationMode === 'express' ? 'opacity-100' : 'opacity-50'
             }`}>
               <span className="font-semibold text-white font-inter">Built for Speed</span>
             </div>
-            
+
             <Switch
               checked={storyConfig.generationMode === 'studio'}
-              onCheckedChange={(checked) => setGenerationMode(checked ? 'studio' : 'express')}
+              onCheckedChange={(checked) => {
+                setGenerationMode(checked ? 'studio' : 'express');
+                setModeChanged(true);
+              }}
             />
-            
+
             <div className={`flex items-center gap-2 transition-opacity ${
               storyConfig.generationMode === 'studio' ? 'opacity-100' : 'opacity-50'
             }`}>
               <span className="font-semibold text-white font-inter">Big Time Studio</span>
             </div>
           </div>
-          
-          {storyConfig.generationMode === 'express' && (
+
+          {modeChanged && storyConfig.generationMode === 'express' && (
             <Alert className="bg-slate-800 text-white border-slate-700">
               <AlertDescription className="text-white text-base">
                 <span className="font-medium">Fast generation</span> - Images ready in ~10 seconds
               </AlertDescription>
             </Alert>
           )}
-          
+
           {storyConfig.generationMode === 'studio' && (
             <Alert className="bg-slate-800 text-white border-slate-700">
               <AlertDescription className="text-white text-base">
