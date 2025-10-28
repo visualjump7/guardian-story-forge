@@ -270,7 +270,7 @@ export const CreateStep3 = () => {
 
       {/* Progress bar at bottom */}
       <div className="pb-8">
-        <CreateProgressBar currentStep={3} />
+        <CreateProgressBar currentStep={3} onStepClick={handleProgressBarClick} />
       </div>
     </div>
   );
