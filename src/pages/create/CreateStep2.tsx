@@ -114,7 +114,16 @@ export default function CreateStep2() {
   };
 
   return (
-    <div className="min-h-[calc(100vh-200px)] flex flex-col">
+    <div className="min-h-[calc(100vh-200px)] flex flex-col relative">
+      {/* Back Button */}
+      <button
+        onClick={handleBack}
+        className="absolute top-4 left-4 z-10 p-2 rounded-lg hover:bg-white/10 transition-colors"
+        aria-label="Go back"
+      >
+        <ArrowLeft className="h-6 w-6 text-white" />
+      </button>
+
       {/* Main content area */}
       <div className="flex-1 flex items-center gap-8 px-4 md:px-8 lg:px-12 py-8">
         {/* Left side: Title and cards */}
