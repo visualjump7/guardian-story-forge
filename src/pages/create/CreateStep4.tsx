@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import { useStoryConfig } from '@/contexts/StoryConfigContext';
 import { useAgeBand } from '@/contexts/AgeBandContext';
 import { supabase } from '@/integrations/supabase/client';
-import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2, AlertCircle } from 'lucide-react';
 import { LibraryLimitDialog } from '@/components/LibraryLimitDialog';
@@ -12,7 +11,7 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { LoadingAnimation } from '@/components/LoadingAnimation';
 import { CreateProgressBar } from '@/components/create/CreateProgressBar';
 
-// Mission to Theme UUID mapping (keeping for backend compatibility)
+// Story Kind to Theme UUID mapping
 const STORY_KIND_TO_THEME: Record<string, string> = {
   'Action': 'e59bc1c0-319d-4899-a42a-b91e241c4524', // Courage
   'Agent': 'eafb2f85-27ca-47a7-9534-96a01528f47b', // Perseverance
@@ -73,8 +72,8 @@ export const CreateStep4 = () => {
       const { data, error } = await supabase.functions.invoke('generate-story', {
         body: {
           heroName: storyConfig.characterName,
-          characterType: storyConfig.storyKind, // Using story kind as character type for now
-          storyType: storyConfig.storyKind, // Using story kind as story type
+          characterType: storyConfig.storyKind,
+          storyType: storyConfig.storyKind,
           themeId: themeId,
           narrativeStructure: narrativeStructure,
           storyLength: 'medium',
@@ -127,6 +126,19 @@ export const CreateStep4 = () => {
     }
   };
 
+  const getArtStyleLabel = (style: string | null) => {
+    if (!style) return 'Art Style';
+    const labelMap: Record<string, string> = {
+      '3d': '3D',
+      'illustration': 'Illustration',
+      'storybook': 'Storybook',
+      'clay': 'Clay',
+      'black-white': 'Black & White',
+      'anime': 'Anime',
+    };
+    return labelMap[style] || style;
+  };
+
   return (
     <div className="min-h-[calc(100vh-200px)] flex flex-col">
       {/* Config Warning */}
@@ -141,36 +153,56 @@ export const CreateStep4 = () => {
       )}
 
       {/* Main content area */}
-      <div className="flex-1 flex flex-col items-center justify-center px-4 md:px-8 lg:px-16">
-        {/* Story Summary */}
-        <div className="w-full max-w-2xl mb-12 text-center">
-          <h1 className="font-aoboshi text-3xl md:text-4xl lg:text-5xl text-white mb-8">
-            Your Story Magic
-          </h1>
-          
-          <div className="space-y-4 text-left bg-white/5 rounded-lg p-6 md:p-8 border border-white/10">
-            <div className="flex justify-between items-center">
-              <span className="font-inter text-lg text-white/60">Hero:</span>
-              <span className="font-inter text-xl md:text-2xl font-bold text-white">
-                {storyConfig.characterName}
-              </span>
+      <div className="flex-1 flex flex-col items-center justify-center px-4 md:px-8 lg:px-16 py-12">
+        {/* Title */}
+        <h1 className="font-aoboshi text-4xl md:text-5xl text-white mb-16 text-center">
+          Review
+        </h1>
+
+        {/* Review Cards */}
+        <div className="w-full max-w-4xl grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
+          {/* Story Kind Card */}
+          <div 
+            className="flex flex-col items-center justify-center rounded-2xl p-8 md:p-12 aspect-square"
+            style={{
+              border: '3px solid #FFAE00',
+              background: 'rgba(20, 20, 20, 0.8)',
+            }}
+          >
+            <div className="text-white/60 font-inter text-center mb-4">
+              <p className="text-sm md:text-base">Story Kind</p>
             </div>
-            
-            <div className="flex justify-between items-center">
-              <span className="font-inter text-lg text-white/60">Story Kind:</span>
-              <span className="font-inter text-xl md:text-2xl font-bold text-white">
-                {storyConfig.storyKind}
-              </span>
+            <p className="text-white/40 text-center font-inter text-xs md:text-sm">
+              Placeholder
+            </p>
+            <p 
+              className="font-inter font-bold mt-8 text-center"
+              style={{ color: '#FFAE00' }}
+            >
+              02 - {storyConfig.storyKind}
+            </p>
+          </div>
+
+          {/* Art Style Card */}
+          <div 
+            className="flex flex-col items-center justify-center rounded-2xl p-8 md:p-12 aspect-square"
+            style={{
+              border: '3px solid #FFAE00',
+              background: 'rgba(20, 20, 20, 0.8)',
+            }}
+          >
+            <div className="text-white/60 font-inter text-center mb-4">
+              <p className="text-sm md:text-base">Art Style</p>
             </div>
-            
-            <div className="flex justify-between items-center">
-              <span className="font-inter text-lg text-white/60">Art Style:</span>
-              <span className="font-inter text-xl md:text-2xl font-bold text-white">
-                {storyConfig.artStyle === '3d' ? '3D' :
-                 storyConfig.artStyle === 'black-white' ? 'Black & White' :
-                 storyConfig.artStyle?.charAt(0).toUpperCase() + storyConfig.artStyle?.slice(1)}
-              </span>
-            </div>
+            <p className="text-white/40 text-center font-inter text-xs md:text-sm">
+              Placeholder
+            </p>
+            <p 
+              className="font-inter font-bold mt-8 text-center"
+              style={{ color: '#FFAE00' }}
+            >
+              03 - {getArtStyleLabel(storyConfig.artStyle)}
+            </p>
           </div>
         </div>
 
@@ -216,48 +248,53 @@ export const CreateStep4 = () => {
           )}
         </div>
 
-        {/* Generate Story Section */}
-        <div className="flex flex-col items-center text-center mb-8">
-          <h2 className="font-inter text-2xl md:text-3xl font-bold text-white mb-8">
-            Ready to build your story?
-          </h2>
+        {/* Generate Story Button */}
+        <button
+          onClick={handleGenerateStory}
+          disabled={isGenerating || !isComplete() || !isConfigLoaded}
+          className="relative transition-all"
+          style={{
+            width: '307px',
+            height: '88px',
+          }}
+        >
+          <div 
+            className="absolute inset-0 rounded-xl transition-all"
+            style={{
+              border: !isGenerating && isComplete() && isConfigLoaded ? '4px solid #20B000' : '4px solid #3C3C3C',
+              background: 'rgba(9, 9, 9, 0.82)',
+              opacity: !isGenerating && isComplete() && isConfigLoaded ? 1 : 0.5,
+            }}
+          />
+          <span 
+            className="absolute inset-0 flex items-center justify-center font-inter text-5xl font-bold transition-all"
+            style={{
+              color: !isGenerating && isComplete() && isConfigLoaded ? '#FFFFFF' : '#6B7280',
+            }}
+          >
+            {isGenerating ? (
+              <Loader2 className="h-10 w-10 animate-spin" />
+            ) : (
+              "Let's go!"
+            )}
+          </span>
+        </button>
 
-          <div className="flex gap-6 items-center justify-center">
-            <Button
-              variant="outline"
-              size="lg"
-              onClick={handleBack}
-              disabled={isGenerating}
-              className="text-lg px-8 font-inter"
-            >
-              Not Yet
-            </Button>
-
-            <Button
-              size="lg"
-              onClick={handleGenerateStory}
-              disabled={isGenerating || !isComplete() || !isConfigLoaded}
-              className={`text-lg px-8 font-inter ${
-                !isGenerating && isComplete() && isConfigLoaded ? 'animate-button-pulse' : ''
-              }`}
-            >
-              {isGenerating ? (
-                <>
-                  <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                  Creating your story...
-                </>
-              ) : (
-                'Yes, let\'s go!'
-              )}
-            </Button>
-          </div>
-        </div>
+        {/* Back Button */}
+        {!isGenerating && (
+          <button
+            onClick={handleBack}
+            className="mt-6 font-inter text-white/60 hover:text-white transition-colors"
+          >
+            ← Back
+          </button>
+        )}
       </div>
 
       {/* Enhanced Loading Animation */}
       {isGenerating && <LoadingAnimation />}
 
-      {/* Progress bar at bottom */}
+      {/* Progress bar at bottom - showing all 4 complete */}
       <div className="pb-8">
         <CreateProgressBar currentStep={4} />
       </div>
