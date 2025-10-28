@@ -16,58 +16,58 @@ interface ArtStyleOption {
 }
 
 const ART_STYLES: ArtStyleOption[] = [
-  { 
-    id: '3d', 
-    label: '3D', 
-    image: adventureImg,
+  {
+    id: '3d',
+    label: '3D',
+    image: 'https://cdn.builder.io/api/v1/image/assets%2F9bebcf6b30bb4052a5f67c7bf4a01fd9%2F16edfe3c6c73459b9ab5368fbb923c75?format=webp&width=800',
     borderColor: '#FFE500',
     borderColorSelected: '#FFE500',
     labelColor: '#CCB700',
     labelColorSelected: '#CCB700'
   },
-  { 
-    id: 'illustration', 
-    label: 'Illustration', 
-    image: mysteryImg,
+  {
+    id: 'illustration',
+    label: 'Illustration',
+    image: 'https://cdn.builder.io/api/v1/image/assets%2F9bebcf6b30bb4052a5f67c7bf4a01fd9%2F5f2af9c10240431a8247ec89c5ee4ce7?format=webp&width=800',
     borderColor: '#C03B1A',
     borderColorSelected: '#C03B1A',
     labelColor: '#968F96',
     labelColorSelected: '#968F96',
     textStroke: '0.5px #000'
   },
-  { 
-    id: 'storybook', 
-    label: 'Storybook', 
-    image: magicalImg,
+  {
+    id: 'storybook',
+    label: 'Storybook',
+    image: 'https://cdn.builder.io/api/v1/image/assets%2F9bebcf6b30bb4052a5f67c7bf4a01fd9%2F757814de85294fdca888501150ff1f5c?format=webp&width=800',
     borderColor: '#005AFF',
     borderColorSelected: '#005AFF',
     labelColor: '#FFFFFF',
     labelColorSelected: '#FFFFFF',
     textStroke: '1px #005AFF'
   },
-  { 
-    id: 'clay', 
-    label: 'Clay', 
-    image: epicImg,
+  {
+    id: 'clay',
+    label: 'Clay',
+    image: 'https://cdn.builder.io/api/v1/image/assets%2F9bebcf6b30bb4052a5f67c7bf4a01fd9%2F25cfc0907f2440f19942447593a6bb76?format=webp&width=800',
     borderColor: '#9994F8',
     borderColorSelected: '#9994F8',
     labelColor: '#FFFFFF',
     labelColorSelected: '#FFFFFF',
     textStroke: '1px #9994F8'
   },
-  { 
-    id: 'black-white', 
-    label: 'Black & White', 
-    image: spaceImg,
+  {
+    id: 'black-white',
+    label: 'Black & White',
+    image: 'https://cdn.builder.io/api/v1/image/assets%2F9bebcf6b30bb4052a5f67c7bf4a01fd9%2F175624b63f8f4a51877fa57f93ad3576?format=webp&width=800',
     borderColor: '#94F8B4',
     borderColorSelected: '#94F8B4',
     labelColor: '#FFFFFF',
     labelColorSelected: '#FFFFFF'
   },
-  { 
-    id: 'anime', 
-    label: 'Anime', 
-    image: surpriseImg,
+  {
+    id: 'anime',
+    label: 'Anime',
+    image: 'https://cdn.builder.io/api/v1/image/assets%2F9bebcf6b30bb4052a5f67c7bf4a01fd9%2F7896f021f42d46359289cfebfc5eaab8?format=webp&width=800',
     borderColor: '#E62222',
     borderColorSelected: '#E62222',
     labelColor: '#FFFFFF',
