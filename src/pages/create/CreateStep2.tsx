@@ -21,55 +21,55 @@ interface StoryKindOption {
 }
 
 const STORY_KINDS: StoryKindOption[] = [
-  { 
-    id: 'Action', 
-    label: 'Action', 
-    image: adventureImg,
+  {
+    id: 'Action',
+    label: 'Action',
+    image: 'https://cdn.builder.io/api/v1/image/assets%2F9bebcf6b30bb4052a5f67c7bf4a01fd9%2Fbd7079eb565f486b952b669c06ab277c?format=webp&width=800',
     borderColor: '#FFE500',
     borderColorSelected: '#FFE500',
     labelColor: '#CCB700',
     labelColorSelected: '#CCB700'
   },
-  { 
-    id: 'Agent', 
-    label: 'Agent', 
-    image: mysteryImg,
+  {
+    id: 'Agent',
+    label: 'Agent',
+    image: 'https://cdn.builder.io/api/v1/image/assets%2F9bebcf6b30bb4052a5f67c7bf4a01fd9%2Fff79eb9a3bf4450ca01ad00b847c0952?format=webp&width=800',
     borderColor: '#6C2C2A',
     borderColorSelected: '#6C2C2A',
     labelColor: '#CFCFCF',
     labelColorSelected: '#CFCFCF'
   },
-  { 
-    id: 'Fantasy', 
-    label: 'Fantasy', 
-    image: magicalImg,
+  {
+    id: 'Fantasy',
+    label: 'Fantasy',
+    image: 'https://cdn.builder.io/api/v1/image/assets%2F9bebcf6b30bb4052a5f67c7bf4a01fd9%2F122fba98f46947d7b7c96148ef5336de?format=webp&width=800',
     borderColor: '#005AFF',
     borderColorSelected: '#005AFF',
     labelColor: '#FFFFFF',
     labelColorSelected: '#FFFFFF'
   },
-  { 
-    id: 'Fairy Tale', 
-    label: 'Fairy Tale', 
-    image: epicImg,
+  {
+    id: 'Fairy Tale',
+    label: 'Fairy Tale',
+    image: 'https://cdn.builder.io/api/v1/image/assets%2F9bebcf6b30bb4052a5f67c7bf4a01fd9%2F665ef22f220243dda0cd115009df4363?format=webp&width=800',
     borderColor: '#9994F8',
     borderColorSelected: '#9994F8',
     labelColor: '#FFFFFF',
     labelColorSelected: '#FFFFFF'
   },
-  { 
-    id: 'Explorer', 
-    label: 'Explorer', 
-    image: spaceImg,
+  {
+    id: 'Explorer',
+    label: 'Explorer',
+    image: 'https://cdn.builder.io/api/v1/image/assets%2F9bebcf6b30bb4052a5f67c7bf4a01fd9%2Fd3159d17d9124bfca8fdaa7126943dc7?format=webp&width=800',
     borderColor: '#94F8B4',
     borderColorSelected: '#94F8B4',
     labelColor: '#FFFFFF',
     labelColorSelected: '#FFFFFF'
   },
-  { 
-    id: 'Superhero', 
-    label: 'Superhero', 
-    image: surpriseImg,
+  {
+    id: 'Superhero',
+    label: 'Superhero',
+    image: 'https://cdn.builder.io/api/v1/image/assets%2F9bebcf6b30bb4052a5f67c7bf4a01fd9%2Faa9a4f32bff54b18afb69b21e66290d9?format=webp&width=800',
     borderColor: '#E62222',
     borderColorSelected: '#E62222',
     labelColor: '#FFFFFF',
