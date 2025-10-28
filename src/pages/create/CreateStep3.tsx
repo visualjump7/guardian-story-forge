@@ -173,18 +173,26 @@ export const CreateStep3 = () => {
           </div>
         </div>
 
-        {/* Right side: Video/Preview area and Next button */}
-        <div className="hidden lg:flex w-1/2 flex-col items-end justify-between pl-12">
-          {/* Preview area */}
+        {/* Right side: Video and Next button */}
+        <div className="hidden lg:flex w-1/2 flex-col items-center justify-start pl-12 gap-8">
+          {/* Video preview area */}
           <div
-            className="w-full max-w-[704px] aspect-square bg-gradient-to-br from-gray-900 to-black rounded-lg border border-white/10 flex items-center justify-center"
+            className="w-full max-w-[704px] aspect-square bg-gradient-to-br from-gray-900 to-black rounded-lg border border-white/10 flex items-center justify-center overflow-hidden"
           >
+            <video
+              src=""
+              autoPlay
+              loop
+              muted
+              className="w-full h-full object-cover"
+              style={{ display: 'none' }}
+            />
             {selectedStyle && (
               <div className="text-center">
                 <p className="text-white/60 text-lg font-inter">
                   Preview for {ART_STYLES.find(s => s.id === selectedStyle)?.label}
                 </p>
-                <p className="text-white/40 text-sm mt-2">Coming soon</p>
+                <p className="text-white/40 text-sm mt-2">Video coming soon</p>
               </div>
             )}
           </div>
