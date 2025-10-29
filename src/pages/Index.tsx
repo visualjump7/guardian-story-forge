@@ -52,7 +52,7 @@ const Index = () => {
             
             {/* Beta Version */}
             <div className="text-sm font-medium mt-3 bg-gradient-to-r from-gray-400 via-gray-300 to-gray-400 bg-clip-text text-transparent">
-              Beta Preview v0.7
+              Beta Preview v0.8
             </div>
             
             {/* Powered by Phantom Link */}
