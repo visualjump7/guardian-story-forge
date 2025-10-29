@@ -4,10 +4,11 @@ import { useStoryConfig } from '@/contexts/StoryConfigContext';
 import { useAgeBand } from '@/contexts/AgeBandContext';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, AlertCircle, ArrowLeft } from 'lucide-react';
+import { Loader2, AlertCircle, Settings } from 'lucide-react';
 import { LibraryLimitDialog } from '@/components/LibraryLimitDialog';
 import { Switch } from '@/components/ui/switch';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { LoadingAnimation } from '@/components/LoadingAnimation';
 import { CreateProgressBar } from '@/components/create/CreateProgressBar';
 
