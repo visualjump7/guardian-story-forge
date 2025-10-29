@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { BookOpen, Sparkles, Library, PlusCircle, Wand2, Share2 } from "lucide-react";
 import { toast } from "sonner";
-import heroImage from "@/assets/swiss-chocolate-story.jpg";
+
 import { ShareDialog } from "@/components/ShareDialog";
 import { AppHeader } from "@/components/AppHeader";
 import { DesktopNav } from "@/components/DesktopNav";
@@ -254,15 +254,6 @@ const HomeContent = () => {
           <div className="pb-8 px-4">
             <CreateProgressBar currentStep={1} onStepClick={handleProgressBarClick} />
           </div>
-        </section>
-
-        {/* Hero Image Section */}
-        <section className="w-full rounded-3xl overflow-hidden shadow-[var(--shadow-magical)]">
-          <img
-            src={heroImage}
-            alt="Magical story creation"
-            className="w-full h-auto object-cover max-h-[500px]"
-          />
         </section>
 
         {/* Featured Stories */}
