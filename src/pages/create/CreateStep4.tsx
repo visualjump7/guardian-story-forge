@@ -426,6 +426,7 @@ export const CreateStep4 = () => {
               style={{
                 width: '200px',
                 height: '57px',
+                padding: '40px 0',
               }}
             >
               <div
