@@ -2,7 +2,6 @@ import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useStoryConfig, StoryKind } from '@/contexts/StoryConfigContext';
 import { CreateProgressBar } from '@/components/create/CreateProgressBar';
-import { ArrowLeft } from 'lucide-react';
 
 interface StoryKindOption {
   id: StoryKind;
@@ -99,17 +98,14 @@ export default function CreateStep2() {
       const btn = (e.target as HTMLElement).closest('.choice-btn');
       if (!btn || !wrapper.contains(btn)) return;
 
-      // Mark selection
       wrapper.querySelectorAll('.choice-btn').forEach(b => b.classList.remove('is-selected'));
       btn.classList.add('is-selected');
       wrapper.classList.add('dim-others', 'choices');
 
-      // Restart the one-shot animation
       btn.classList.remove('is-active');
-      void (btn as HTMLElement).offsetWidth; // reflow to reset animation
+      void (btn as HTMLElement).offsetWidth;
       btn.classList.add('is-active');
 
-      // Accessibility
       wrapper.querySelectorAll('.choice-btn').forEach(b =>
         b.setAttribute('aria-pressed', b === btn ? 'true' : 'false')
       );
@@ -165,31 +161,13 @@ export default function CreateStep2() {
 
   return (
     <div className="min-h-[calc(100vh-200px)] flex flex-col relative">
-      {/* Back Button */}
-      <button
-        onClick={handleBack}
-        className="absolute top-4 left-4 z-10 flex items-center gap-2 px-3 py-2 rounded-full hover:bg-white/20 transition-colors"
-        style={{
-          backgroundColor: '#262A32',
-        }}
-        aria-label="Go back"
-      >
-        <ArrowLeft className="h-5 w-5" style={{ color: '#9CA3AF' }} />
-        <span className="font-inter text-sm" style={{ color: '#9CA3AF' }}>Back</span>
-      </button>
-
-      {/* Main content area */}
       <div className="flex-1 flex flex-col px-4 md:px-8 lg:px-12 py-8">
-        {/* Content flex row - centered vertically */}
         <div className="flex-1 flex items-center gap-8">
-          {/* Left side: title and cards */}
           <div className="w-full lg:w-auto flex flex-col flex-shrink-0">
-            {/* Title */}
             <h1 className="font-aoboshi text-lg md:text-xl lg:text-2xl text-white" style={{ marginBottom: '25px' }}>
               What kind of story?
             </h1>
 
-            {/* Cards grid - fixed size */}
             <div ref={wrapperRef} data-choices className="choices grid grid-cols-2 gap-4 lg:gap-6" style={{ width: '300px', maxWidth: '100%' }}>
             {STORY_KINDS.map((kind) => {
               const isSelected = selectedKind === kind.id;
@@ -209,7 +187,6 @@ export default function CreateStep2() {
                     '--fx': kind.glowRgb
                   } as React.CSSProperties}
                 >
-                  {/* Card image */}
                   <div
                     className="w-full h-full rounded-[19px] overflow-hidden relative"
                     style={{
@@ -225,7 +202,6 @@ export default function CreateStep2() {
                       className="w-full h-full object-cover"
                     />
 
-                    {/* Label overlay */}
                     <div className="absolute bottom-2 left-2 right-2">
                       <span
                         className="font-inter text-base lg:text-xl font-bold"
@@ -248,9 +224,7 @@ export default function CreateStep2() {
             </div>
           </div>
 
-          {/* Right side: Video area - responsive and grows to fill space */}
           <div className="hidden lg:flex flex-1 flex-col items-center justify-center gap-6">
-          {/* Video preview area */}
           <div
             className="w-full aspect-square bg-gradient-to-br from-gray-900 to-black rounded-lg border border-white/10 flex items-center justify-center overflow-hidden"
             style={{ maxHeight: 'calc(100vh - 400px)' }}
@@ -274,66 +248,163 @@ export default function CreateStep2() {
             )}
           </div>
 
-          {/* Next Step Button for Desktop */}
-          <button
-            onClick={handleNextStep}
-            disabled={!selectedKind}
-            className="relative w-full max-w-sm transition-all"
-            style={{
-              height: '80px',
-            }}
-          >
-            <div
-              className="absolute inset-0 rounded-xl transition-all"
+          <div className="flex items-center justify-center gap-4 w-full max-w-md">
+            <button
+              onClick={handleBack}
+              className="flex items-center justify-center gap-2 px-4 py-3 rounded-xl transition-all"
+              style={{
+                border: '4px solid #AA00B0',
+                background: 'rgba(9, 9, 9, 0.82)',
+                minWidth: '180px',
+                height: '80px',
+              }}
+              aria-label="Go back"
+            >
+              <svg
+                width="43"
+                height="43"
+                viewBox="0 0 50 50"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                style={{ flexShrink: 0 }}
+              >
+                <path
+                  d="M43.4347 35.5C39.6884 41.9762 32.6864 46.3333 24.6667 46.3333C12.7005 46.3333 3 36.6328 3 24.6667C3 12.7005 12.7005 3 24.6667 3C32.6864 3 39.6884 7.35715 43.4347 13.8333M24.6668 16L16.0001 24.6667M16.0001 24.6667L24.6668 33.3333M16.0001 24.6667H46.3335"
+                  stroke="#EDEAEA"
+                  strokeWidth="6"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+              <span
+                className="font-inter text-4xl font-bold"
+                style={{ color: '#F6F6F6' }}
+              >
+                Back
+              </span>
+            </button>
+
+            <button
+              onClick={handleNextStep}
+              disabled={!selectedKind}
+              className="flex items-center justify-center gap-2 px-4 py-3 rounded-xl transition-all"
               style={{
                 border: selectedKind ? '4px solid #20B000' : '4px solid #3C3C3C',
                 background: 'rgba(9, 9, 9, 0.82)',
+                minWidth: '180px',
+                height: '80px',
                 opacity: selectedKind ? 1 : 0.5,
               }}
-            />
-            <span
-              className="absolute inset-0 flex items-center justify-center font-inter text-4xl font-bold transition-all"
-              style={{
-                color: selectedKind ? '#FFFFFF' : '#6B7280',
-              }}
             >
-              Next Step
-            </span>
-          </button>
+              <span
+                className="font-inter text-4xl font-bold"
+                style={{
+                  color: '#F6F6F6',
+                  WebkitTextStroke: selectedKind ? '1px #20B000' : 'none',
+                }}
+              >
+                Next
+              </span>
+              <svg
+                width="37"
+                height="28"
+                viewBox="0 0 45 36"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                style={{ flexShrink: 0 }}
+              >
+                <path
+                  d="M4 17.75H40.6667M40.6667 17.75L26.9167 4M40.6667 17.75L26.9167 31.5"
+                  stroke="#FAFAFA"
+                  strokeWidth="8"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </button>
+          </div>
           </div>
         </div>
       </div>
 
-      {/* Mobile Next Step Button */}
-      <div className="lg:hidden flex justify-center px-4 pb-4">
-        <button
-          onClick={handleNextStep}
-          disabled={!selectedKind}
-          className="relative w-full max-w-md transition-all"
-          style={{
-            height: '80px',
-          }}
-        >
-          <div
-            className="absolute inset-0 rounded-xl transition-all"
+      <div className="lg:hidden flex flex-col gap-4 px-4 pb-4">
+        <div className="flex items-center justify-center gap-3">
+          <button
+            onClick={handleBack}
+            className="flex items-center justify-center gap-2 px-3 py-2 rounded-xl transition-all flex-1"
+            style={{
+              border: '4px solid #AA00B0',
+              background: 'rgba(9, 9, 9, 0.82)',
+              maxWidth: '180px',
+              height: '70px',
+            }}
+            aria-label="Go back"
+          >
+            <svg
+              width="32"
+              height="32"
+              viewBox="0 0 50 50"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+              style={{ flexShrink: 0 }}
+            >
+              <path
+                d="M43.4347 35.5C39.6884 41.9762 32.6864 46.3333 24.6667 46.3333C12.7005 46.3333 3 36.6328 3 24.6667C3 12.7005 12.7005 3 24.6667 3C32.6864 3 39.6884 7.35715 43.4347 13.8333M24.6668 16L16.0001 24.6667M16.0001 24.6667L24.6668 33.3333M16.0001 24.6667H46.3335"
+                stroke="#EDEAEA"
+                strokeWidth="6"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+            <span
+              className="font-inter text-2xl font-bold"
+              style={{ color: '#F6F6F6' }}
+            >
+              Back
+            </span>
+          </button>
+
+          <button
+            onClick={handleNextStep}
+            disabled={!selectedKind}
+            className="flex items-center justify-center gap-2 px-3 py-2 rounded-xl transition-all flex-1"
             style={{
               border: selectedKind ? '4px solid #20B000' : '4px solid #3C3C3C',
               background: 'rgba(9, 9, 9, 0.82)',
+              maxWidth: '180px',
+              height: '70px',
               opacity: selectedKind ? 1 : 0.5,
             }}
-          />
-          <span
-            className="absolute inset-0 flex items-center justify-center font-inter text-4xl font-bold transition-all"
-            style={{
-              color: selectedKind ? '#FFFFFF' : '#6B7280',
-            }}
           >
-            Next Step
-          </span>
-        </button>
+            <span
+              className="font-inter text-2xl font-bold"
+              style={{
+                color: '#F6F6F6',
+                WebkitTextStroke: selectedKind ? '1px #20B000' : 'none',
+              }}
+            >
+              Next
+            </span>
+            <svg
+              width="28"
+              height="21"
+              viewBox="0 0 45 36"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+              style={{ flexShrink: 0 }}
+            >
+              <path
+                d="M4 17.75H40.6667M40.6667 17.75L26.9167 4M40.6667 17.75L26.9167 31.5"
+                stroke="#FAFAFA"
+                strokeWidth="8"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </button>
+        </div>
       </div>
 
-      {/* Progress bar at bottom */}
       <div className="pb-8">
         <CreateProgressBar currentStep={2} onStepClick={handleProgressBarClick} />
       </div>
