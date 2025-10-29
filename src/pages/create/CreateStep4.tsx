@@ -4,12 +4,12 @@ import { useStoryConfig } from '@/contexts/StoryConfigContext';
 import { useAgeBand } from '@/contexts/AgeBandContext';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, AlertCircle, ArrowLeft } from 'lucide-react';
+import { Loader2, AlertCircle, Settings } from 'lucide-react';
 import { LibraryLimitDialog } from '@/components/LibraryLimitDialog';
-import { Switch } from '@/components/ui/switch';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { LoadingAnimation } from '@/components/LoadingAnimation';
 import { CreateProgressBar } from '@/components/create/CreateProgressBar';
+import { OptionsDialog } from '@/components/create/OptionsDialog';
 
 // Story Kind to Story Type mapping
 const STORY_KIND_TO_STORY_TYPE: Record<string, string> = {
@@ -170,6 +170,7 @@ export const CreateStep4 = () => {
   const [showLibraryFullDialog, setShowLibraryFullDialog] = useState(false);
   const [libraryCount, setLibraryCount] = useState(10);
   const [modeChanged, setModeChanged] = useState(false);
+  const [optionsOpen, setOptionsOpen] = useState(false);
 
   const handleBack = () => navigate('/create/03');
 
@@ -275,18 +276,6 @@ export const CreateStep4 = () => {
 
   return (
     <div className="min-h-[calc(100vh-200px)] flex flex-col relative">
-      {/* Back Button */}
-      <button
-        onClick={handleBack}
-        className="absolute top-4 left-4 z-10 flex items-center gap-2 px-3 py-2 rounded-full hover:bg-white/20 transition-colors"
-        style={{
-          backgroundColor: '#262A32',
-        }}
-        aria-label="Go back"
-      >
-        <ArrowLeft className="h-5 w-5" style={{ color: '#9CA3AF' }} />
-        <span className="font-inter text-sm" style={{ color: '#9CA3AF' }}>Back</span>
-      </button>
 
       {/* Config Warning */}
       {!isConfigLoaded && (
@@ -369,64 +358,64 @@ export const CreateStep4 = () => {
             )}
           </div>
 
-          {/* Button and Quality Control - Same Row */}
-          <div className="w-full max-w-4xl flex flex-col lg:flex-row items-center justify-center gap-8">
-            {/* Image Generation Quality Toggle */}
-            <div className="w-full lg:w-auto lg:flex-1">
-              <div className="flex flex-col items-center gap-4">
-                <h3 className="text-lg font-bold text-white font-inter">
-                  Image Quality
-                </h3>
+          {/* Three Button Row */}
+          <div className="w-full max-w-4xl flex flex-col md:flex-row items-center justify-center gap-4 md:gap-6">
+            {/* Back Button */}
+            <button
+              onClick={handleBack}
+              className="relative transition-all w-full md:w-auto"
+              style={{
+                minWidth: '180px',
+                height: '80px',
+              }}
+            >
+              <div
+                className="absolute inset-0 rounded-xl"
+                style={{
+                  border: '4px solid #AA00B0',
+                  background: 'rgba(9, 9, 9, 0.82)',
+                }}
+              />
+              <span className="absolute inset-0 flex items-center justify-center gap-3 font-inter text-2xl font-bold text-white">
+                <svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M15 28C22.1797 28 28 22.1797 28 15C28 7.8203 22.1797 2 15 2C7.8203 2 2 7.8203 2 15C2 22.1797 7.8203 28 15 28Z" stroke="#AA00B0" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  <path d="M15 10L10 15L15 20" stroke="#AA00B0" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  <path d="M20 15H10" stroke="#AA00B0" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+                Back
+              </span>
+            </button>
 
-                <div className="flex items-center justify-center gap-4">
-                  <div className={`flex items-center gap-2 transition-opacity ${
-                    storyConfig.generationMode === 'express' ? 'opacity-100' : 'opacity-50'
-                  }`}>
-                    <span className="font-semibold text-white font-inter text-sm">Built for Speed</span>
-                  </div>
+            {/* Options Button */}
+            <button
+              onClick={() => setOptionsOpen(true)}
+              className="relative transition-all w-full md:w-auto"
+              style={{
+                minWidth: '180px',
+                height: '80px',
+              }}
+            >
+              <div
+                className="absolute inset-0 rounded-xl"
+                style={{
+                  border: '4px solid #005AFF',
+                  background: 'rgba(9, 9, 9, 0.82)',
+                }}
+              />
+              <span className="absolute inset-0 flex items-center justify-center gap-3 font-inter text-2xl font-bold text-white">
+                <Settings className="w-7 h-7" />
+                Options
+              </span>
+            </button>
 
-                  <Switch
-                    checked={storyConfig.generationMode === 'studio'}
-                    onCheckedChange={(checked) => {
-                      setGenerationMode(checked ? 'studio' : 'express');
-                      setModeChanged(true);
-                    }}
-                  />
-
-                  <div className={`flex items-center gap-2 transition-opacity ${
-                    storyConfig.generationMode === 'studio' ? 'opacity-100' : 'opacity-50'
-                  }`}>
-                    <span className="font-semibold text-white font-inter text-sm">Big Time Studio</span>
-                  </div>
-                </div>
-
-                {modeChanged && storyConfig.generationMode === 'express' && (
-                  <Alert className="bg-slate-800 text-white border-slate-700 w-full">
-                    <AlertDescription className="text-white text-xs">
-                      <span className="font-medium">Fast generation</span> - Images ready in ~10 seconds
-                    </AlertDescription>
-                  </Alert>
-                )}
-
-                {storyConfig.generationMode === 'studio' && (
-                  <Alert className="bg-slate-800 text-white border-slate-700 w-full">
-                    <AlertDescription className="text-white text-xs">
-                      <span className="font-medium">Premium quality</span> - Studio-grade images. Takes 1-2 minutes per image.
-                    </AlertDescription>
-                  </Alert>
-                )}
-              </div>
-            </div>
-
-            {/* Generate Story Button */}
+            {/* Let's Go Button */}
             <button
               onClick={handleGenerateStory}
               disabled={isGenerating || !isComplete() || !isConfigLoaded}
-              className="relative transition-all lg:mt-0"
+              className="relative transition-all w-full md:w-auto"
               style={{
-                width: '200px',
-                height: '57px',
-                padding: '40px 0',
+                minWidth: '200px',
+                height: '80px',
               }}
             >
               <div
@@ -467,6 +456,15 @@ export const CreateStep4 = () => {
         onOpenChange={setShowLibraryFullDialog}
         currentCount={libraryCount}
         onGoToLibrary={() => navigate("/library")}
+      />
+
+      <OptionsDialog
+        open={optionsOpen}
+        onOpenChange={setOptionsOpen}
+        generationMode={storyConfig.generationMode}
+        setGenerationMode={setGenerationMode}
+        modeChanged={modeChanged}
+        setModeChanged={setModeChanged}
       />
     </div>
   );
