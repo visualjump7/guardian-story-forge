@@ -359,64 +359,79 @@ export const CreateStep4 = () => {
             )}
           </div>
 
-          {/* Button and Quality Control - Same Row */}
-          <div className="w-full max-w-4xl flex flex-col lg:flex-row items-center justify-center gap-8">
-            {/* Image Generation Quality Toggle */}
-            <div className="w-full lg:w-auto lg:flex-1">
-              <div className="flex flex-col items-center gap-4">
-                <h3 className="text-lg font-bold text-white font-inter">
-                  Image Quality
-                </h3>
+          {/* Navigation Buttons Row */}
+          <div className="w-full max-w-4xl flex items-center justify-center gap-4">
+            {/* Back Button */}
+            <button
+              onClick={handleBack}
+              className="flex items-center justify-center gap-2 px-4 py-3 rounded-xl transition-all"
+              style={{
+                border: '4px solid #AA00B0',
+                background: 'rgba(9, 9, 9, 0.82)',
+                minWidth: '180px',
+                height: '80px',
+              }}
+              aria-label="Go back"
+            >
+              <svg
+                width="43"
+                height="43"
+                viewBox="0 0 50 50"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                style={{ flexShrink: 0 }}
+              >
+                <path
+                  d="M43.4347 35.5C39.6884 41.9762 32.6864 46.3333 24.6667 46.3333C12.7005 46.3333 3 36.6328 3 24.6667C3 12.7005 12.7005 3 24.6667 3C32.6864 3 39.6884 7.35715 43.4347 13.8333M24.6668 16L16.0001 24.6667M16.0001 24.6667L24.6668 33.3333M16.0001 24.6667H46.3335"
+                  stroke="#EDEAEA"
+                  strokeWidth="6"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+              <span
+                className="font-inter text-4xl font-bold"
+                style={{ color: '#F6F6F6' }}
+              >
+                Back
+              </span>
+            </button>
 
-                <div className="flex items-center justify-center gap-4">
-                  <div className={`flex items-center gap-2 transition-opacity ${
-                    storyConfig.generationMode === 'express' ? 'opacity-100' : 'opacity-50'
-                  }`}>
-                    <span className="font-semibold text-white font-inter text-sm">Built for Speed</span>
-                  </div>
-
-                  <Switch
-                    checked={storyConfig.generationMode === 'studio'}
-                    onCheckedChange={(checked) => {
-                      setGenerationMode(checked ? 'studio' : 'express');
-                      setModeChanged(true);
-                    }}
-                  />
-
-                  <div className={`flex items-center gap-2 transition-opacity ${
-                    storyConfig.generationMode === 'studio' ? 'opacity-100' : 'opacity-50'
-                  }`}>
-                    <span className="font-semibold text-white font-inter text-sm">Big Time Studio</span>
-                  </div>
-                </div>
-
-                {modeChanged && storyConfig.generationMode === 'express' && (
-                  <Alert className="bg-slate-800 text-white border-slate-700 w-full">
-                    <AlertDescription className="text-white text-xs">
-                      <span className="font-medium">Fast generation</span> - Images ready in ~10 seconds
-                    </AlertDescription>
-                  </Alert>
-                )}
-
-                {storyConfig.generationMode === 'studio' && (
-                  <Alert className="bg-slate-800 text-white border-slate-700 w-full">
-                    <AlertDescription className="text-white text-xs">
-                      <span className="font-medium">Premium quality</span> - Studio-grade images. Takes 1-2 minutes per image.
-                    </AlertDescription>
-                  </Alert>
-                )}
-              </div>
-            </div>
+            {/* Options Button */}
+            <button
+              onClick={() => setShowOptionsDialog(true)}
+              className="flex items-center justify-center gap-2 px-4 py-3 rounded-xl transition-all"
+              style={{
+                border: '4px solid #005AFF',
+                background: 'rgba(9, 9, 9, 0.82)',
+                minWidth: '180px',
+                height: '80px',
+              }}
+              aria-label="Open options"
+            >
+              <Settings
+                size={32}
+                style={{
+                  color: '#F6F6F6',
+                  flexShrink: 0,
+                }}
+              />
+              <span
+                className="font-inter text-4xl font-bold"
+                style={{ color: '#F6F6F6' }}
+              >
+                Options
+              </span>
+            </button>
 
             {/* Generate Story Button */}
             <button
               onClick={handleGenerateStory}
               disabled={isGenerating || !isComplete() || !isConfigLoaded}
-              className="relative transition-all lg:mt-0"
+              className="relative transition-all"
               style={{
                 width: '200px',
-                height: '57px',
-                padding: '40px 0',
+                height: '80px',
               }}
             >
               <div
