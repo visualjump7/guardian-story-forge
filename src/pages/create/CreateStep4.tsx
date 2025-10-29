@@ -473,6 +473,58 @@ export const CreateStep4 = () => {
         currentCount={libraryCount}
         onGoToLibrary={() => navigate("/library")}
       />
+
+      {/* Image Quality Options Dialog */}
+      <Dialog open={showOptionsDialog} onOpenChange={setShowOptionsDialog}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-white">Image Quality</DialogTitle>
+            <DialogDescription className="text-gray-400">
+              Choose your preferred image generation quality
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="flex flex-col items-center gap-6 py-4">
+            <div className="flex items-center justify-center gap-4 w-full">
+              <div className={`flex items-center gap-2 transition-opacity ${
+                storyConfig.generationMode === 'express' ? 'opacity-100' : 'opacity-50'
+              }`}>
+                <span className="font-semibold text-white font-inter text-sm">Built for Speed</span>
+              </div>
+
+              <Switch
+                checked={storyConfig.generationMode === 'studio'}
+                onCheckedChange={(checked) => {
+                  setGenerationMode(checked ? 'studio' : 'express');
+                  setModeChanged(true);
+                }}
+              />
+
+              <div className={`flex items-center gap-2 transition-opacity ${
+                storyConfig.generationMode === 'studio' ? 'opacity-100' : 'opacity-50'
+              }`}>
+                <span className="font-semibold text-white font-inter text-sm">Big Time Studio</span>
+              </div>
+            </div>
+
+            {modeChanged && storyConfig.generationMode === 'express' && (
+              <Alert className="bg-slate-800 text-white border-slate-700 w-full">
+                <AlertDescription className="text-white text-xs">
+                  <span className="font-medium">Fast generation</span> - Images ready in ~10 seconds
+                </AlertDescription>
+              </Alert>
+            )}
+
+            {storyConfig.generationMode === 'studio' && (
+              <Alert className="bg-slate-800 text-white border-slate-700 w-full">
+                <AlertDescription className="text-white text-xs">
+                  <span className="font-medium">Premium quality</span> - Studio-grade images. Takes 1-2 minutes per image.
+                </AlertDescription>
+              </Alert>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
