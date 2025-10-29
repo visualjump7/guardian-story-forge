@@ -171,6 +171,7 @@ export const CreateStep4 = () => {
   const [showLibraryFullDialog, setShowLibraryFullDialog] = useState(false);
   const [libraryCount, setLibraryCount] = useState(10);
   const [modeChanged, setModeChanged] = useState(false);
+  const [showOptionsDialog, setShowOptionsDialog] = useState(false);
 
   const handleBack = () => navigate('/create/03');
 
