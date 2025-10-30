@@ -166,11 +166,11 @@ export default function CreateStep2() {
   return (
     <div className="min-h-[calc(100vh-200px)] flex flex-col relative">
       <div className="flex-1 flex flex-col px-4 md:px-8 lg:px-12 py-8">
-        <div className="flex-1 flex items-center gap-8">
-          <div className="w-full lg:w-auto flex flex-col flex-shrink-0">
-            <h1 className="font-aoboshi text-lg md:text-xl lg:text-2xl text-white" style={{ marginBottom: '25px' }}>
-              What kind of story?
-            </h1>
+      <div className="flex-1 flex flex-col lg:flex-row items-start lg:items-center gap-8">
+        <div className="w-full lg:w-auto flex flex-col flex-shrink-0">
+          <h1 className="font-aoboshi text-lg md:text-xl lg:text-2xl text-white" style={{ marginBottom: '25px' }}>
+            What kind of story?
+          </h1>
 
             <div ref={wrapperRef} data-choices className="choices grid grid-cols-2 gap-4 lg:gap-6" style={{ width: '300px', maxWidth: '100%' }}>
             {STORY_KINDS.map((kind) => {
@@ -228,10 +228,10 @@ export default function CreateStep2() {
             </div>
           </div>
 
-          <div className="flex flex-1 flex-col items-center justify-center gap-6 mt-8 lg:mt-0">
+        <div className="flex-1 flex flex-col items-center gap-6">
           <div
             className="w-full aspect-square bg-gradient-to-br from-gray-900 to-black rounded-lg border border-white/10 flex items-center justify-center overflow-hidden relative"
-            style={{ maxHeight: 'calc(100vh - 500px)', minHeight: '250px' }}
+            style={{ maxHeight: '600px', maxWidth: '600px' }}
           >
             {selectedKind ? (
               <>
@@ -349,84 +349,6 @@ export default function CreateStep2() {
             </button>
           </div>
           </div>
-        </div>
-      </div>
-
-      <div className="lg:hidden flex flex-col gap-4 px-4 pb-4">
-        <div className="flex items-center justify-center gap-3">
-          <button
-            onClick={handleBack}
-            className="flex items-center justify-center gap-2 px-3 py-2 rounded-xl transition-all flex-1"
-            style={{
-              border: '4px solid #AA00B0',
-              background: 'rgba(9, 9, 9, 0.82)',
-              maxWidth: '180px',
-              height: '70px',
-            }}
-            aria-label="Go back"
-          >
-            <svg
-              width="32"
-              height="32"
-              viewBox="0 0 50 50"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-              style={{ flexShrink: 0 }}
-            >
-              <path
-                d="M43.4347 35.5C39.6884 41.9762 32.6864 46.3333 24.6667 46.3333C12.7005 46.3333 3 36.6328 3 24.6667C3 12.7005 12.7005 3 24.6667 3C32.6864 3 39.6884 7.35715 43.4347 13.8333M24.6668 16L16.0001 24.6667M16.0001 24.6667L24.6668 33.3333M16.0001 24.6667H46.3335"
-                stroke="#EDEAEA"
-                strokeWidth="6"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-            <span
-              className="font-inter text-2xl font-bold"
-              style={{ color: '#F6F6F6' }}
-            >
-              Back
-            </span>
-          </button>
-
-          <button
-            onClick={handleNextStep}
-            disabled={!selectedKind}
-            className="flex items-center justify-center gap-2 px-3 py-2 rounded-xl transition-all flex-1"
-            style={{
-              border: selectedKind ? '4px solid #20B000' : '4px solid #3C3C3C',
-              background: 'rgba(9, 9, 9, 0.82)',
-              maxWidth: '180px',
-              height: '70px',
-              opacity: selectedKind ? 1 : 0.5,
-            }}
-          >
-            <span
-              className="font-inter text-2xl font-bold"
-              style={{
-                color: '#F6F6F6',
-                WebkitTextStroke: selectedKind ? '1px #20B000' : 'none',
-              }}
-            >
-              Next
-            </span>
-            <svg
-              width="28"
-              height="21"
-              viewBox="0 0 45 36"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-              style={{ flexShrink: 0 }}
-            >
-              <path
-                d="M4 17.75H40.6667M40.6667 17.75L26.9167 4M40.6667 17.75L26.9167 31.5"
-                stroke="#FAFAFA"
-                strokeWidth="8"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-          </button>
         </div>
       </div>
 
