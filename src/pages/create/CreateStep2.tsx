@@ -88,6 +88,8 @@ export default function CreateStep2() {
   const navigate = useNavigate();
   const { storyConfig, setStoryKind } = useStoryConfig();
   const [selectedKind, setSelectedKind] = useState<StoryKind | null>(storyConfig.storyKind);
+  const [videoLoading, setVideoLoading] = useState(false);
+  const [videoError, setVideoError] = useState(false);
   const wrapperRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -132,6 +134,8 @@ export default function CreateStep2() {
   const handleSelect = (kind: StoryKind, image: string) => {
     setSelectedKind(kind);
     setStoryKind(kind, image);
+    setVideoLoading(true);
+    setVideoError(false);
   };
 
   const handleKeyPress = (e: React.KeyboardEvent, kind: StoryKind, image: string) => {
@@ -224,21 +228,42 @@ export default function CreateStep2() {
             </div>
           </div>
 
-          <div className="hidden lg:flex flex-1 flex-col items-center justify-center gap-6">
+          <div className="flex flex-1 flex-col items-center justify-center gap-6 mt-8 lg:mt-0">
           <div
-            className="w-full aspect-square bg-gradient-to-br from-gray-900 to-black rounded-lg border border-white/10 flex items-center justify-center overflow-hidden"
-            style={{ maxHeight: 'calc(100vh - 400px)' }}
+            className="w-full aspect-square bg-gradient-to-br from-gray-900 to-black rounded-lg border border-white/10 flex items-center justify-center overflow-hidden relative"
+            style={{ maxHeight: 'calc(100vh - 500px)', minHeight: '250px' }}
           >
             {selectedKind ? (
-              <video
-                key={selectedKind}
-                src={STORY_KINDS.find(k => k.id === selectedKind)?.video}
-                autoPlay
-                loop
-                muted
-                playsInline
-                className="w-full h-full object-cover"
-              />
+              <>
+                <video
+                  key={selectedKind}
+                  src={STORY_KINDS.find(k => k.id === selectedKind)?.video}
+                  autoPlay
+                  loop
+                  muted
+                  playsInline
+                  className="w-full h-full object-cover"
+                  onLoadStart={() => setVideoLoading(true)}
+                  onCanPlay={() => setVideoLoading(false)}
+                  onError={() => {
+                    setVideoError(true);
+                    setVideoLoading(false);
+                    console.error('Video failed to load:', selectedKind);
+                  }}
+                />
+                {videoLoading && (
+                  <div className="absolute inset-0 flex items-center justify-center bg-black/50">
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white" />
+                  </div>
+                )}
+                {videoError && (
+                  <img
+                    src={STORY_KINDS.find(k => k.id === selectedKind)?.image}
+                    alt={selectedKind}
+                    className="absolute inset-0 w-full h-full object-cover"
+                  />
+                )}
+              </>
             ) : (
               <div className="text-center">
                 <p className="text-white/60 text-lg font-inter">
