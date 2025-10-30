@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useStoryConfig } from '@/contexts/StoryConfigContext';
 import { useAgeBand } from '@/contexts/AgeBandContext';
@@ -172,6 +172,26 @@ export const CreateStep4 = () => {
   const [modeChanged, setModeChanged] = useState(false);
   const [optionsOpen, setOptionsOpen] = useState(false);
 
+  // Navigation guards - redirect to previous steps if incomplete
+  useEffect(() => {
+    if (!storyConfig.characterName || storyConfig.characterName.trim().length < 2) {
+      console.warn('Character name missing, redirecting to Step 1');
+      navigate('/create/01', { replace: true });
+      return;
+    }
+    
+    if (!storyConfig.storyKind) {
+      console.warn('Story kind missing, redirecting to Step 2');
+      navigate('/create/02', { replace: true });
+      return;
+    }
+    
+    if (!storyConfig.artStyle) {
+      console.warn('Art style missing, redirecting to Step 3');
+      navigate('/create/03', { replace: true });
+    }
+  }, [storyConfig, navigate]);
+
   // Debug logging
   console.log('=== CreateStep4 Debug ===');
   console.log('characterName:', storyConfig.characterName);
@@ -276,6 +296,26 @@ export const CreateStep4 = () => {
 
   return (
     <div className="min-h-[calc(100vh-200px)] flex flex-col relative">
+
+      {/* Debug Section - Temporary for testing */}
+      {import.meta.env.DEV && (
+        <div className="fixed top-4 right-4 z-50 bg-gray-900/95 p-4 rounded-lg text-xs border border-white/20 shadow-xl max-w-xs">
+          <p className="text-white font-bold mb-2">Debug Info:</p>
+          <p className="text-green-400">Name: {storyConfig.characterName || 'EMPTY'}</p>
+          <p className="text-blue-400">Kind: {storyConfig.storyKind || 'EMPTY'}</p>
+          <p className="text-purple-400">Style: {storyConfig.artStyle || 'EMPTY'}</p>
+          <p className="text-yellow-400 mt-2">Config Loaded: {isConfigLoaded ? 'Yes' : 'No'}</p>
+          <button
+            onClick={() => {
+              localStorage.removeItem('storyConfig');
+              window.location.reload();
+            }}
+            className="mt-3 w-full px-2 py-1 bg-red-600 hover:bg-red-700 text-white rounded text-xs transition-colors"
+          >
+            Clear Config & Reload
+          </button>
+        </div>
+      )}
 
       {/* Config Warning */}
       {!isConfigLoaded && (
