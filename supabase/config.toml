@@ -1,6 +1,12 @@
 project_id = "pqtywzpgxpkkunkgsocy"
 
-[functions.generate-story]
+[functions.generate-story-part-1]
+verify_jwt = true
+
+[functions.generate-story-part-2]
+verify_jwt = true
+
+[functions.generate-story-part-3]
 verify_jwt = true
 
 [functions.generate-story-image]

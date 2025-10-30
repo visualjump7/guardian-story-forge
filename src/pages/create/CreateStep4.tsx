@@ -4,12 +4,10 @@ import { useStoryConfig } from '@/contexts/StoryConfigContext';
 import { useAgeBand } from '@/contexts/AgeBandContext';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, AlertCircle, Settings } from 'lucide-react';
-import { LibraryLimitDialog } from '@/components/LibraryLimitDialog';
+import { Loader2, AlertCircle } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { LoadingAnimation } from '@/components/LoadingAnimation';
 import { CreateProgressBar } from '@/components/create/CreateProgressBar';
-import { OptionsDialog } from '@/components/create/OptionsDialog';
 
 // Story Kind to Story Type mapping
 const STORY_KIND_TO_STORY_TYPE: Record<string, string> = {
@@ -164,13 +162,9 @@ const ART_STYLES: ArtStyleOption[] = [
 export const CreateStep4 = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { storyConfig, setGenerationMode } = useStoryConfig();
+  const { storyConfig } = useStoryConfig();
   const { selectedBand, isConfigLoaded } = useAgeBand();
   const [isGenerating, setIsGenerating] = useState(false);
-  const [showLibraryFullDialog, setShowLibraryFullDialog] = useState(false);
-  const [libraryCount, setLibraryCount] = useState(10);
-  const [modeChanged, setModeChanged] = useState(false);
-  const [optionsOpen, setOptionsOpen] = useState(false);
 
   const handleBack = () => navigate('/create/03');
 
@@ -193,8 +187,8 @@ export const CreateStep4 = () => {
   const handleGenerateStory = async () => {
     if (!isComplete()) {
       toast({
-        title: "Incomplete Story Magic",
-        description: "Please complete all steps before generating your story.",
+        title: "Incomplete Story",
+        description: "Please complete all steps.",
         variant: "destructive",
       });
       return;
@@ -203,70 +197,34 @@ export const CreateStep4 = () => {
     setIsGenerating(true);
 
     try {
-      const storyKind = storyConfig.storyKind || 'Action';
-      const themeId = STORY_KIND_TO_THEME[storyKind];
-      const narrativeStructure = STORY_KIND_TO_NARRATIVE[storyKind];
-      const storyType = STORY_KIND_TO_STORY_TYPE[storyKind];
-      const mappedArtStyle = ART_STYLE_MAPPING[storyConfig.artStyle || '3d'];
+      // Create the story record
+      const { data: storyData, error: storyError } = await supabase
+        .from('stories')
+        .insert({
+          hero_name: storyConfig.characterName,
+          genre: storyConfig.storyKind?.toLowerCase(),
+          art_style: storyConfig.artStyle,
+          title: `${storyConfig.characterName}'s Adventure`,
+          current_part: 1,
+          age_band: selectedBand,
+        })
+        .select()
+        .single();
 
-      console.log('Generating story with:', {
-        heroName: storyConfig.characterName,
-        storyKind,
-        storyType,
-        artStyle: mappedArtStyle,
-        themeId,
-        narrativeStructure,
-      });
-
-      const { data, error } = await supabase.functions.invoke('generate-story', {
-        body: {
-          heroName: storyConfig.characterName,
-          storyType: storyType,
-          themeId: themeId,
-          narrativeStructure: narrativeStructure,
-          storyLength: 'medium',
-          ageRange: '8-10',
-          artStyle: mappedArtStyle,
-          generationMode: storyConfig.generationMode,
-          selectedBand: selectedBand,
-        },
-      });
-
-      if (error) {
-        if (error.message?.includes('LIBRARY_FULL')) {
-          try {
-            const errorData = JSON.parse(error.message);
-            setLibraryCount(errorData.currentCount || 10);
-          } catch {
-            setLibraryCount(10);
-          }
-          setShowLibraryFullDialog(true);
-          setIsGenerating(false);
-          return;
-        }
-        throw error;
-      }
-
-      if (data?.storyId) {
-        toast({
-          title: "Story Created! ✨",
-          description: "Your magical story is ready!",
-        });
-        navigate(`/story/${data.storyId}`);
-      } else {
-        throw new Error('No story ID returned');
-      }
-    } catch (error: any) {
-      console.error('Story generation error:', error);
-      
-      if (error.message?.includes('LIBRARY_FULL')) {
-        setShowLibraryFullDialog(true);
-        return;
-      }
+      if (storyError) throw storyError;
 
       toast({
-        title: "Story Generation Failed",
-        description: error.message || "Failed to create your story. Please try again.",
+        title: "Starting Your Adventure! ✨",
+        description: "Your story is being created...",
+      });
+
+      // Navigate to interactive story reader
+      navigate(`/interactive-story/${storyData.id}`);
+    } catch (error: any) {
+      console.error('Story creation error:', error);
+      toast({
+        title: "Story Creation Failed",
+        description: error.message || "Failed to start your story.",
         variant: "destructive",
       });
     } finally {
@@ -450,22 +408,6 @@ export const CreateStep4 = () => {
       <div className="pb-8">
         <CreateProgressBar currentStep={4} onStepClick={handleProgressBarClick} />
       </div>
-
-      <LibraryLimitDialog
-        open={showLibraryFullDialog}
-        onOpenChange={setShowLibraryFullDialog}
-        currentCount={libraryCount}
-        onGoToLibrary={() => navigate("/library")}
-      />
-
-      <OptionsDialog
-        open={optionsOpen}
-        onOpenChange={setOptionsOpen}
-        generationMode={storyConfig.generationMode}
-        setGenerationMode={setGenerationMode}
-        modeChanged={modeChanged}
-        setModeChanged={setModeChanged}
-      />
     </div>
   );
 };

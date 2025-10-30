@@ -145,258 +145,74 @@ export type Database = {
       }
       stories: {
         Row: {
-          age_range: string | null
-          art_style: string | null
-          audio_url: string | null
-          back_matter: Json | null
-          character_archetype: string | null
-          character_sheet: Json | null
-          content: string
-          content_type: string | null
-          cover_image_url: string | null
+          age_band: string | null
+          art_style: string
           created_at: string | null
           created_by: string | null
-          excerpt: string | null
-          has_subplot: boolean | null
-          hero_name: string | null
+          current_part: number | null
+          genre: string
+          hero_name: string
           id: string
-          is_featured: boolean | null
-          is_public: boolean | null
-          media_url: string | null
-          mission: string | null
-          narrative_structure: string | null
-          narrative_type: string | null
-          page_count: number | null
-          secondary_theme_id: string | null
-          setting: string | null
-          source_version: string | null
-          story_json: Json | null
-          story_length: string | null
-          story_type: string | null
-          story_universe: string | null
-          theme_id: string | null
+          is_complete: boolean | null
           title: string
-          word_count: number | null
-          writing_style: string | null
         }
         Insert: {
-          age_range?: string | null
-          art_style?: string | null
-          audio_url?: string | null
-          back_matter?: Json | null
-          character_archetype?: string | null
-          character_sheet?: Json | null
-          content: string
-          content_type?: string | null
-          cover_image_url?: string | null
+          age_band?: string | null
+          art_style: string
           created_at?: string | null
           created_by?: string | null
-          excerpt?: string | null
-          has_subplot?: boolean | null
-          hero_name?: string | null
+          current_part?: number | null
+          genre: string
+          hero_name: string
           id?: string
-          is_featured?: boolean | null
-          is_public?: boolean | null
-          media_url?: string | null
-          mission?: string | null
-          narrative_structure?: string | null
-          narrative_type?: string | null
-          page_count?: number | null
-          secondary_theme_id?: string | null
-          setting?: string | null
-          source_version?: string | null
-          story_json?: Json | null
-          story_length?: string | null
-          story_type?: string | null
-          story_universe?: string | null
-          theme_id?: string | null
+          is_complete?: boolean | null
           title: string
-          word_count?: number | null
-          writing_style?: string | null
         }
         Update: {
-          age_range?: string | null
-          art_style?: string | null
-          audio_url?: string | null
-          back_matter?: Json | null
-          character_archetype?: string | null
-          character_sheet?: Json | null
-          content?: string
-          content_type?: string | null
-          cover_image_url?: string | null
+          age_band?: string | null
+          art_style?: string
           created_at?: string | null
           created_by?: string | null
-          excerpt?: string | null
-          has_subplot?: boolean | null
-          hero_name?: string | null
+          current_part?: number | null
+          genre?: string
+          hero_name?: string
           id?: string
-          is_featured?: boolean | null
-          is_public?: boolean | null
-          media_url?: string | null
-          mission?: string | null
-          narrative_structure?: string | null
-          narrative_type?: string | null
-          page_count?: number | null
-          secondary_theme_id?: string | null
-          setting?: string | null
-          source_version?: string | null
-          story_json?: Json | null
-          story_length?: string | null
-          story_type?: string | null
-          story_universe?: string | null
-          theme_id?: string | null
+          is_complete?: boolean | null
           title?: string
-          word_count?: number | null
-          writing_style?: string | null
         }
-        Relationships: [
-          {
-            foreignKeyName: "stories_secondary_theme_id_fkey"
-            columns: ["secondary_theme_id"]
-            isOneToOne: false
-            referencedRelation: "story_themes"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "stories_theme_id_fkey"
-            columns: ["theme_id"]
-            isOneToOne: false
-            referencedRelation: "story_themes"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       story_choices: {
         Row: {
-          choice_order: number | null
+          after_part: number
+          choice_number: number
           choice_text: string
           created_at: string | null
-          from_node_id: string
           id: string
-          to_node_id: string
+          story_id: string | null
+          was_selected: boolean | null
         }
         Insert: {
-          choice_order?: number | null
+          after_part: number
+          choice_number: number
           choice_text: string
           created_at?: string | null
-          from_node_id: string
           id?: string
-          to_node_id: string
+          story_id?: string | null
+          was_selected?: boolean | null
         }
         Update: {
-          choice_order?: number | null
+          after_part?: number
+          choice_number?: number
           choice_text?: string
           created_at?: string | null
-          from_node_id?: string
           id?: string
-          to_node_id?: string
+          story_id?: string | null
+          was_selected?: boolean | null
         }
         Relationships: [
           {
-            foreignKeyName: "story_choices_from_node_id_fkey"
-            columns: ["from_node_id"]
-            isOneToOne: false
-            referencedRelation: "story_nodes"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "story_choices_to_node_id_fkey"
-            columns: ["to_node_id"]
-            isOneToOne: false
-            referencedRelation: "story_nodes"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      story_images: {
-        Row: {
-          aspect_ratio: string | null
-          created_at: string | null
-          full_res_url: string | null
-          generated_by_trigger: string | null
-          generation_prompt: string | null
-          generation_seed: string | null
-          height_px: number | null
-          id: string
-          image_size_px: number | null
-          image_type: string | null
-          image_url: string
-          is_selected: boolean | null
-          is_suggested: boolean | null
-          is_upfront: boolean | null
-          page_beat: string | null
-          page_number: number | null
-          previous_version_id: string | null
-          storage_path: string | null
-          story_id: string
-          style_lock_data: Json | null
-          thumbnail_storage_path: string | null
-          thumbnail_url: string | null
-          version: number | null
-          width_px: number | null
-        }
-        Insert: {
-          aspect_ratio?: string | null
-          created_at?: string | null
-          full_res_url?: string | null
-          generated_by_trigger?: string | null
-          generation_prompt?: string | null
-          generation_seed?: string | null
-          height_px?: number | null
-          id?: string
-          image_size_px?: number | null
-          image_type?: string | null
-          image_url: string
-          is_selected?: boolean | null
-          is_suggested?: boolean | null
-          is_upfront?: boolean | null
-          page_beat?: string | null
-          page_number?: number | null
-          previous_version_id?: string | null
-          storage_path?: string | null
-          story_id: string
-          style_lock_data?: Json | null
-          thumbnail_storage_path?: string | null
-          thumbnail_url?: string | null
-          version?: number | null
-          width_px?: number | null
-        }
-        Update: {
-          aspect_ratio?: string | null
-          created_at?: string | null
-          full_res_url?: string | null
-          generated_by_trigger?: string | null
-          generation_prompt?: string | null
-          generation_seed?: string | null
-          height_px?: number | null
-          id?: string
-          image_size_px?: number | null
-          image_type?: string | null
-          image_url?: string
-          is_selected?: boolean | null
-          is_suggested?: boolean | null
-          is_upfront?: boolean | null
-          page_beat?: string | null
-          page_number?: number | null
-          previous_version_id?: string | null
-          storage_path?: string | null
-          story_id?: string
-          style_lock_data?: Json | null
-          thumbnail_storage_path?: string | null
-          thumbnail_url?: string | null
-          version?: number | null
-          width_px?: number | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "story_images_previous_version_id_fkey"
-            columns: ["previous_version_id"]
-            isOneToOne: false
-            referencedRelation: "story_images"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "story_images_story_id_fkey"
+            foreignKeyName: "story_choices_story_id_fkey"
             columns: ["story_id"]
             isOneToOne: false
             referencedRelation: "stories"
@@ -404,43 +220,31 @@ export type Database = {
           },
         ]
       }
-      story_nodes: {
+      story_parts: {
         Row: {
           content: string
           created_at: string | null
           id: string
-          image_url: string | null
-          is_ending_node: boolean | null
-          is_start_node: boolean | null
-          node_key: string
-          story_id: string
-          title: string | null
+          part_number: number
+          story_id: string | null
         }
         Insert: {
           content: string
           created_at?: string | null
           id?: string
-          image_url?: string | null
-          is_ending_node?: boolean | null
-          is_start_node?: boolean | null
-          node_key: string
-          story_id: string
-          title?: string | null
+          part_number: number
+          story_id?: string | null
         }
         Update: {
           content?: string
           created_at?: string | null
           id?: string
-          image_url?: string | null
-          is_ending_node?: boolean | null
-          is_start_node?: boolean | null
-          node_key?: string
-          story_id?: string
-          title?: string | null
+          part_number?: number
+          story_id?: string | null
         }
         Relationships: [
           {
-            foreignKeyName: "story_nodes_story_id_fkey"
+            foreignKeyName: "story_parts_story_id_fkey"
             columns: ["story_id"]
             isOneToOne: false
             referencedRelation: "stories"
@@ -544,35 +348,6 @@ export type Database = {
         }
         Relationships: []
       }
-      user_libraries: {
-        Row: {
-          id: string
-          saved_at: string | null
-          story_id: string
-          user_id: string
-        }
-        Insert: {
-          id?: string
-          saved_at?: string | null
-          story_id: string
-          user_id: string
-        }
-        Update: {
-          id?: string
-          saved_at?: string | null
-          story_id?: string
-          user_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "user_libraries_story_id_fkey"
-            columns: ["story_id"]
-            isOneToOne: false
-            referencedRelation: "stories"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       user_roles: {
         Row: {
           created_at: string | null
@@ -625,22 +400,7 @@ export type Database = {
           updated_at?: string | null
           user_id?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: "user_story_progress_current_node_id_fkey"
-            columns: ["current_node_id"]
-            isOneToOne: false
-            referencedRelation: "story_nodes"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "user_story_progress_story_id_fkey"
-            columns: ["story_id"]
-            isOneToOne: false
-            referencedRelation: "stories"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
     }
     Views: {
@@ -668,10 +428,7 @@ export type Database = {
         Args: { p_count?: number; p_user_id: string }
         Returns: boolean
       }
-      is_admin: {
-        Args: { _user_id: string }
-        Returns: boolean
-      }
+      is_admin: { Args: { _user_id: string }; Returns: boolean }
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"

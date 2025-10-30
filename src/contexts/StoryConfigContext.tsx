@@ -3,7 +3,6 @@ import React, { createContext, useContext, useState, useEffect, ReactNode } from
 export type CharacterType = 'Explorer' | 'Super Hero' | 'Creature' | 'Robot' | 'Warrior' | 'Surprise';
 export type StoryKind = 'Action' | 'Agent' | 'Fantasy' | 'Fairy Tale' | 'Explorer' | 'Superhero';
 export type StoryType = 'Adventure' | 'Mystery' | 'Magical' | 'Epic' | 'Space' | 'Surprise';
-export type Mission = 'Rescue' | 'Treasure' | 'Protect' | 'Ranch' | 'Escape' | 'Surprise';
 export type WritingStyle = 
   | 'interactive-playful'
   | 'rhyming-rhythmic'
@@ -13,26 +12,13 @@ export type WritingStyle =
   | 'gentle-reassuring'
   | 'Surprise';
 export type ArtStyle = '3d' | 'illustration' | 'storybook' | 'clay' | 'black-white' | 'anime';
-export type GenerationMode = 'express' | 'studio';
 
 interface StoryConfig {
   characterName: string;
   storyKind: StoryKind | null;
-  characterType: CharacterType | null;
-  storyType: StoryType | null;
-  mission: Mission | null;
-  writingStyle: WritingStyle | null;
   artStyle: ArtStyle | null;
-  generationMode: GenerationMode;
-  customCharacterDescription?: string;
-  customStoryTypeDescription?: string;
-  customMissionDescription?: string;
   assets: {
     storyKindIcon: string | null;
-    characterTypeIcon: string | null;
-    storyTypeIcon: string | null;
-    missionIcon: string | null;
-    writingStyleIcon: string | null;
     artStyleIcon: string | null;
   };
 }
@@ -41,48 +27,21 @@ interface StoryConfigContextType {
   storyConfig: StoryConfig;
   setCharacterName: (name: string) => void;
   setStoryKind: (kind: StoryKind, icon: string) => void;
-  setCharacterType: (type: CharacterType, icon: string) => void;
-  setStoryType: (type: StoryType, icon: string) => void;
-  setMission: (mission: Mission, icon: string) => void;
-  setWritingStyle: (style: WritingStyle, icon: string) => void;
   setArtStyle: (style: ArtStyle, icon: string) => void;
-  setGenerationMode: (mode: GenerationMode) => void;
-  setCustomCharacterDescription: (description: string) => void;
-  setCustomStoryTypeDescription: (description: string) => void;
-  setCustomMissionDescription: (description: string) => void;
   clearStoryKind: () => void;
-  clearCharacterType: () => void;
-  clearStoryType: () => void;
-  clearMission: () => void;
-  clearWritingStyle: () => void;
   clearArtStyle: () => void;
   resetConfig: () => void;
   isStep1Complete: () => boolean;
   isStep2Complete: () => boolean;
   isStep3Complete: () => boolean;
-  isStep4Complete: () => boolean;
-  isStep4_5Complete: () => boolean;
-  isStep5Complete: () => boolean;
 }
 
 const defaultConfig: StoryConfig = {
   characterName: '',
   storyKind: null,
-  characterType: null,
-  storyType: null,
-  mission: null,
-  writingStyle: null,
   artStyle: null,
-  generationMode: 'express',
-  customCharacterDescription: undefined,
-  customStoryTypeDescription: undefined,
-  customMissionDescription: undefined,
   assets: {
     storyKindIcon: null,
-    characterTypeIcon: null,
-    storyTypeIcon: null,
-    missionIcon: null,
-    writingStyleIcon: null,
     artStyleIcon: null,
   },
 };
@@ -111,98 +70,11 @@ export const StoryConfigProvider = ({ children }: { children: ReactNode }) => {
     }));
   };
 
-  const setCharacterType = (type: CharacterType, icon: string) => {
-    setStoryConfig(prev => ({
-      ...prev,
-      characterType: type,
-      customCharacterDescription: undefined, // Clear custom description when card is selected
-      assets: { ...prev.assets, characterTypeIcon: icon },
-    }));
-  };
-
-  const setStoryType = (type: StoryType, icon: string) => {
-    setStoryConfig(prev => ({
-      ...prev,
-      storyType: type,
-      assets: { ...prev.assets, storyTypeIcon: icon },
-    }));
-  };
-
-  const setMission = (mission: Mission, icon: string) => {
-    setStoryConfig(prev => ({
-      ...prev,
-      mission: mission,
-      assets: { ...prev.assets, missionIcon: icon },
-    }));
-  };
-
-  const setCustomCharacterDescription = (description: string) => {
-    setStoryConfig(prev => ({
-      ...prev,
-      customCharacterDescription: description,
-    }));
-  };
-
-  const setCustomStoryTypeDescription = (description: string) => {
-    setStoryConfig(prev => ({
-      ...prev,
-      customStoryTypeDescription: description,
-    }));
-  };
-
-  const setCustomMissionDescription = (description: string) => {
-    setStoryConfig(prev => ({
-      ...prev,
-      customMissionDescription: description,
-    }));
-  };
-
   const clearStoryKind = () => {
     setStoryConfig(prev => ({
       ...prev,
       storyKind: null,
       assets: { ...prev.assets, storyKindIcon: null },
-    }));
-  };
-
-  const clearCharacterType = () => {
-    setStoryConfig(prev => ({
-      ...prev,
-      characterType: null,
-      customCharacterDescription: undefined,
-      assets: { ...prev.assets, characterTypeIcon: null },
-    }));
-  };
-
-  const clearStoryType = () => {
-    setStoryConfig(prev => ({
-      ...prev,
-      storyType: null,
-      assets: { ...prev.assets, storyTypeIcon: null },
-    }));
-  };
-
-  const clearMission = () => {
-    setStoryConfig(prev => ({
-      ...prev,
-      mission: null,
-      assets: { ...prev.assets, missionIcon: null },
-    }));
-  };
-
-  const setWritingStyle = (style: WritingStyle, icon: string) => {
-    setStoryConfig(prev => ({
-      ...prev,
-      writingStyle: style,
-      assets: { ...prev.assets, writingStyleIcon: icon },
-    }));
-  };
-
-  const clearWritingStyle = () => {
-    setStoryConfig(prev => ({
-      ...prev,
-      writingStyle: null,
-      assets: { ...prev.assets, writingStyleIcon: null },
     }));
   };
 
@@ -222,10 +94,6 @@ export const StoryConfigProvider = ({ children }: { children: ReactNode }) => {
     }));
   };
 
-  const setGenerationMode = (mode: GenerationMode) => {
-    setStoryConfig(prev => ({ ...prev, generationMode: mode }));
-  };
-
   const resetConfig = () => {
     setStoryConfig(defaultConfig);
     localStorage.removeItem('storyConfig');
@@ -240,18 +108,6 @@ export const StoryConfigProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const isStep3Complete = () => {
-    return storyConfig.storyType !== null;
-  };
-
-  const isStep4Complete = () => {
-    return storyConfig.mission !== null;
-  };
-
-  const isStep4_5Complete = () => {
-    return storyConfig.writingStyle !== null;
-  };
-
-  const isStep5Complete = () => {
     return storyConfig.artStyle !== null;
   };
 
@@ -261,28 +117,13 @@ export const StoryConfigProvider = ({ children }: { children: ReactNode }) => {
         storyConfig,
         setCharacterName,
         setStoryKind,
-        setCharacterType,
-        setStoryType,
-        setMission,
-        setWritingStyle,
         setArtStyle,
-        setGenerationMode,
-        setCustomCharacterDescription,
-        setCustomStoryTypeDescription,
-        setCustomMissionDescription,
         clearStoryKind,
-        clearCharacterType,
-        clearStoryType,
-        clearMission,
-        clearWritingStyle,
         clearArtStyle,
         resetConfig,
         isStep1Complete,
         isStep2Complete,
         isStep3Complete,
-        isStep4Complete,
-        isStep4_5Complete,
-        isStep5Complete,
       }}
     >
       {children}
