@@ -100,6 +100,12 @@ export default function CreateStep2() {
     }
   }, [storyConfig.characterName, navigate]);
 
+  // Reset video states when selection changes
+  useEffect(() => {
+    setVideoLoaded(false);
+    setVideoError(false);
+  }, [selectedKind]);
+
   useEffect(() => {
     const wrapper = wrapperRef.current;
     if (!wrapper) return;
@@ -236,7 +242,7 @@ export default function CreateStep2() {
 
           <div className="hidden lg:flex flex-1 flex-col items-center justify-center gap-6">
           <div
-            className="w-full aspect-square bg-gradient-to-br from-gray-900 to-black rounded-lg border border-white/10 flex items-center justify-center overflow-hidden"
+            className="w-full aspect-square bg-gradient-to-br from-gray-900 to-black rounded-lg border border-white/10 flex items-center justify-center overflow-hidden relative"
             style={{ maxHeight: 'calc(100vh - 400px)' }}
           >
             {selectedKind ? (
@@ -257,19 +263,27 @@ export default function CreateStep2() {
                   muted
                   playsInline
                   className="w-full h-full object-cover"
-                  onLoadedData={() => {
+                  onLoadedData={(e) => {
                     console.log('Video loaded successfully:', selectedKind);
                     setVideoLoaded(true);
                     setVideoError(false);
+                    // Force play to overcome browser autoplay restrictions
+                    e.currentTarget.play().catch(err => {
+                      console.error('Autoplay prevented:', err);
+                    });
                   }}
                   onError={(e) => {
+                    const video = e.currentTarget;
                     console.error('Video load error:', {
                       kind: selectedKind,
                       src: STORY_KINDS.find(k => k.id === selectedKind)?.video,
-                      networkState: e.currentTarget.networkState,
-                      readyState: e.currentTarget.readyState,
+                      networkState: video.networkState,
+                      readyState: video.readyState,
+                      error: video.error?.message,
+                      errorCode: video.error?.code
                     });
                     setVideoError(true);
+                    setVideoLoaded(false);
                   }}
                 />
                 {videoError && (
