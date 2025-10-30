@@ -8,6 +8,7 @@ import Auth from "./pages/Auth";
 import Home from "./pages/Home";
 import StoryView from "./pages/StoryView";
 import FlipbookStoryView from "./pages/FlipbookStoryView";
+import InteractiveStoryView from "./pages/InteractiveStoryView";
 import Library from "./pages/Library";
 import Profile from "./pages/Profile";
 import Test from "./pages/Test";
@@ -46,6 +47,7 @@ const App = () => (
           </Route>
             <Route path="/story/:storyId" element={<StoryView />} />
             <Route path="/story/:storyId/flipbook" element={<FlipbookStoryView />} />
+            <Route path="/story/:storyId/interactive" element={<InteractiveStoryView />} />
             <Route path="/library" element={<Library />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/feedback" element={<Feedback />} />

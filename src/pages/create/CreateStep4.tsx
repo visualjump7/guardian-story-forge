@@ -203,32 +203,23 @@ export const CreateStep4 = () => {
     setIsGenerating(true);
 
     try {
-      const storyKind = storyConfig.storyKind || 'Action';
-      const themeId = STORY_KIND_TO_THEME[storyKind];
-      const narrativeStructure = STORY_KIND_TO_NARRATIVE[storyKind];
-      const storyType = STORY_KIND_TO_STORY_TYPE[storyKind];
-      const mappedArtStyle = ART_STYLE_MAPPING[storyConfig.artStyle || '3d'];
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        throw new Error('Not authenticated');
+      }
 
-      console.log('Generating story with:', {
+      console.log('Generating branched story Part 1 with:', {
         heroName: storyConfig.characterName,
-        storyKind,
-        storyType,
-        artStyle: mappedArtStyle,
-        themeId,
-        narrativeStructure,
+        genre: storyConfig.storyKind,
+        artStyle: storyConfig.artStyle,
       });
 
-      const { data, error } = await supabase.functions.invoke('generate-story', {
+      const { data, error } = await supabase.functions.invoke('generate-story-part-1', {
         body: {
           heroName: storyConfig.characterName,
-          storyType: storyType,
-          themeId: themeId,
-          narrativeStructure: narrativeStructure,
-          storyLength: 'medium',
-          ageRange: '8-10',
-          artStyle: mappedArtStyle,
-          generationMode: storyConfig.generationMode,
-          selectedBand: selectedBand,
+          genre: storyConfig.storyKind,
+          artStyle: storyConfig.artStyle,
+          userId: session.user.id,
         },
       });
 
@@ -247,12 +238,12 @@ export const CreateStep4 = () => {
         throw error;
       }
 
-      if (data?.storyId) {
+      if (data?.storyId && data?.nodeId) {
         toast({
-          title: "Story Created! ✨",
-          description: "Your magical story is ready!",
+          title: "Story Begins! ✨",
+          description: "Your adventure awaits!",
         });
-        navigate(`/story/${data.storyId}`);
+        navigate(`/story/${data.storyId}/interactive`);
       } else {
         throw new Error('No story ID returned');
       }
