@@ -176,7 +176,7 @@ export const CreateStep3 = () => {
   return (
     <div className="min-h-[calc(100vh-200px)] flex flex-col relative">
       <div className="flex-1 flex flex-col px-4 md:px-8 lg:px-12 py-8">
-      <div className="flex-1 flex flex-col lg:flex-row items-start lg:items-center gap-8">
+      <div className="flex-1 flex flex-col lg:flex-row items-start gap-8 lg:gap-12">
         <div className="w-full lg:w-auto flex flex-col flex-shrink-0">
           <h1 className="font-aoboshi text-lg md:text-xl lg:text-2xl text-white" style={{ marginBottom: '25px' }}>
             Choose your art style.
@@ -240,7 +240,7 @@ export const CreateStep3 = () => {
         <div className="flex-1 flex flex-col items-center gap-6">
           <div
             className="w-full aspect-square bg-gradient-to-br from-gray-900 to-black rounded-lg border border-white/10 flex items-center justify-center overflow-hidden relative"
-            style={{ maxHeight: '600px', maxWidth: '600px' }}
+            style={{ maxHeight: 'calc(100vh - 350px)', maxWidth: '100%' }}
           >
             {selectedStyle ? (
               <>
