@@ -89,22 +89,6 @@ export default function CreateStep2() {
   const { storyConfig, setStoryKind } = useStoryConfig();
   const [selectedKind, setSelectedKind] = useState<StoryKind | null>(storyConfig.storyKind);
   const wrapperRef = useRef<HTMLDivElement>(null);
-  const [videoError, setVideoError] = useState(false);
-  const [videoLoaded, setVideoLoaded] = useState(false);
-
-  // Navigation guard - redirect to Step 1 if character name is missing
-  useEffect(() => {
-    if (!storyConfig.characterName || storyConfig.characterName.trim().length < 2) {
-      console.warn('Character name missing, redirecting to Step 1');
-      navigate('/create/01', { replace: true });
-    }
-  }, [storyConfig.characterName, navigate]);
-
-  // Reset video states when selection changes
-  useEffect(() => {
-    setVideoLoaded(false);
-    setVideoError(false);
-  }, [selectedKind]);
 
   useEffect(() => {
     const wrapper = wrapperRef.current;
@@ -242,63 +226,19 @@ export default function CreateStep2() {
 
           <div className="hidden lg:flex flex-1 flex-col items-center justify-center gap-6">
           <div
-            className="w-full aspect-square bg-gradient-to-br from-gray-900 to-black rounded-lg border border-white/10 flex items-center justify-center overflow-hidden relative"
+            className="w-full aspect-square bg-gradient-to-br from-gray-900 to-black rounded-lg border border-white/10 flex items-center justify-center overflow-hidden"
             style={{ maxHeight: 'calc(100vh - 400px)' }}
           >
             {selectedKind ? (
-              <>
-                {!videoLoaded && !videoError && (
-                  <div className="absolute inset-0 flex items-center justify-center bg-black/60">
-                    <div className="text-center">
-                      <div className="w-12 h-12 border-4 border-white/20 border-t-white rounded-full animate-spin mx-auto mb-2"></div>
-                      <p className="text-white/80 text-sm">Loading preview...</p>
-                    </div>
-                  </div>
-                )}
-                <video
-                  key={selectedKind}
-                  src={STORY_KINDS.find(k => k.id === selectedKind)?.video}
-                  autoPlay
-                  loop
-                  muted
-                  playsInline
-                  className="w-full h-full object-cover"
-                  onLoadedData={(e) => {
-                    console.log('Video loaded successfully:', selectedKind);
-                    setVideoLoaded(true);
-                    setVideoError(false);
-                    // Force play to overcome browser autoplay restrictions
-                    e.currentTarget.play().catch(err => {
-                      console.error('Autoplay prevented:', err);
-                    });
-                  }}
-                  onError={(e) => {
-                    const video = e.currentTarget;
-                    console.error('Video load error:', {
-                      kind: selectedKind,
-                      src: STORY_KINDS.find(k => k.id === selectedKind)?.video,
-                      networkState: video.networkState,
-                      readyState: video.readyState,
-                      error: video.error?.message,
-                      errorCode: video.error?.code
-                    });
-                    setVideoError(true);
-                    setVideoLoaded(false);
-                  }}
-                />
-                {videoError && (
-                  <div className="absolute inset-0">
-                    <img
-                      src={STORY_KINDS.find(k => k.id === selectedKind)?.image}
-                      alt={selectedKind}
-                      className="w-full h-full object-cover"
-                    />
-                    <div className="absolute bottom-4 left-4 right-4 bg-black/60 backdrop-blur-sm p-2 rounded">
-                      <p className="text-white/80 text-xs text-center">Preview unavailable - showing thumbnail</p>
-                    </div>
-                  </div>
-                )}
-              </>
+              <video
+                key={selectedKind}
+                src={STORY_KINDS.find(k => k.id === selectedKind)?.video}
+                autoPlay
+                loop
+                muted
+                playsInline
+                className="w-full h-full object-cover"
+              />
             ) : (
               <div className="text-center">
                 <p className="text-white/60 text-lg font-inter">

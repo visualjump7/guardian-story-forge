@@ -9,7 +9,6 @@ export default function CreateStep1() {
   const navigate = useNavigate();
   const { storyConfig, setCharacterName } = useStoryConfig();
   const [localName, setLocalName] = useState(storyConfig.characterName);
-  const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved'>('idle');
 
   const validateName = (name: string): boolean => {
     if (!name.trim()) return false;
@@ -27,15 +26,8 @@ export default function CreateStep1() {
 
   const handleContinue = () => {
     if (validateName(localName)) {
-      setSaveStatus('saving');
       setCharacterName(localName);
-      
-      // Wait a tick to ensure localStorage update
-      setTimeout(() => {
-        setSaveStatus('saved');
-        console.log('Character name saved to localStorage:', localName);
-        navigate('/create/02');
-      }, 100);
+      navigate('/create/02');
     }
   };
 

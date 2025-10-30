@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useStoryConfig } from '@/contexts/StoryConfigContext';
 import { useAgeBand } from '@/contexts/AgeBandContext';
@@ -172,35 +172,6 @@ export const CreateStep4 = () => {
   const [modeChanged, setModeChanged] = useState(false);
   const [optionsOpen, setOptionsOpen] = useState(false);
 
-  // Navigation guards - redirect to previous steps if incomplete
-  useEffect(() => {
-    if (!storyConfig.characterName || storyConfig.characterName.trim().length < 2) {
-      console.warn('Character name missing, redirecting to Step 1');
-      navigate('/create/01', { replace: true });
-      return;
-    }
-    
-    if (!storyConfig.storyKind) {
-      console.warn('Story kind missing, redirecting to Step 2');
-      navigate('/create/02', { replace: true });
-      return;
-    }
-    
-    if (!storyConfig.artStyle) {
-      console.warn('Art style missing, redirecting to Step 3');
-      navigate('/create/03', { replace: true });
-    }
-  }, [storyConfig, navigate]);
-
-  // Debug logging
-  console.log('=== CreateStep4 Debug ===');
-  console.log('characterName:', storyConfig.characterName);
-  console.log('storyKind:', storyConfig.storyKind);
-  console.log('artStyle:', storyConfig.artStyle);
-  console.log('isComplete():', !!(storyConfig.characterName && storyConfig.storyKind && storyConfig.artStyle));
-  console.log('isConfigLoaded:', isConfigLoaded);
-  console.log('Button should be enabled:', !isGenerating && !!(storyConfig.characterName && storyConfig.storyKind && storyConfig.artStyle));
-
   const handleBack = () => navigate('/create/03');
 
   const handleProgressBarClick = (stepNumber: number) => {
@@ -232,23 +203,32 @@ export const CreateStep4 = () => {
     setIsGenerating(true);
 
     try {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) {
-        throw new Error('Not authenticated');
-      }
+      const storyKind = storyConfig.storyKind || 'Action';
+      const themeId = STORY_KIND_TO_THEME[storyKind];
+      const narrativeStructure = STORY_KIND_TO_NARRATIVE[storyKind];
+      const storyType = STORY_KIND_TO_STORY_TYPE[storyKind];
+      const mappedArtStyle = ART_STYLE_MAPPING[storyConfig.artStyle || '3d'];
 
-      console.log('Generating branched story Part 1 with:', {
+      console.log('Generating story with:', {
         heroName: storyConfig.characterName,
-        genre: storyConfig.storyKind,
-        artStyle: storyConfig.artStyle,
+        storyKind,
+        storyType,
+        artStyle: mappedArtStyle,
+        themeId,
+        narrativeStructure,
       });
 
-      const { data, error } = await supabase.functions.invoke('generate-story-part-1', {
+      const { data, error } = await supabase.functions.invoke('generate-story', {
         body: {
           heroName: storyConfig.characterName,
-          genre: storyConfig.storyKind,
-          artStyle: storyConfig.artStyle,
-          userId: session.user.id,
+          storyType: storyType,
+          themeId: themeId,
+          narrativeStructure: narrativeStructure,
+          storyLength: 'medium',
+          ageRange: '8-10',
+          artStyle: mappedArtStyle,
+          generationMode: storyConfig.generationMode,
+          selectedBand: selectedBand,
         },
       });
 
@@ -267,12 +247,12 @@ export const CreateStep4 = () => {
         throw error;
       }
 
-      if (data?.storyId && data?.nodeId) {
+      if (data?.storyId) {
         toast({
-          title: "Story Begins! ✨",
-          description: "Your adventure awaits!",
+          title: "Story Created! ✨",
+          description: "Your magical story is ready!",
         });
-        navigate(`/story/${data.storyId}/interactive`);
+        navigate(`/story/${data.storyId}`);
       } else {
         throw new Error('No story ID returned');
       }
@@ -296,26 +276,6 @@ export const CreateStep4 = () => {
 
   return (
     <div className="min-h-[calc(100vh-200px)] flex flex-col relative">
-
-      {/* Debug Section - Temporary for testing */}
-      {import.meta.env.DEV && (
-        <div className="fixed top-4 right-4 z-50 bg-gray-900/95 p-4 rounded-lg text-xs border border-white/20 shadow-xl max-w-xs">
-          <p className="text-white font-bold mb-2">Debug Info:</p>
-          <p className="text-green-400">Name: {storyConfig.characterName || 'EMPTY'}</p>
-          <p className="text-blue-400">Kind: {storyConfig.storyKind || 'EMPTY'}</p>
-          <p className="text-purple-400">Style: {storyConfig.artStyle || 'EMPTY'}</p>
-          <p className="text-yellow-400 mt-2">Config Loaded: {isConfigLoaded ? 'Yes' : 'No'}</p>
-          <button
-            onClick={() => {
-              localStorage.removeItem('storyConfig');
-              window.location.reload();
-            }}
-            className="mt-3 w-full px-2 py-1 bg-red-600 hover:bg-red-700 text-white rounded text-xs transition-colors"
-          >
-            Clear Config & Reload
-          </button>
-        </div>
-      )}
 
       {/* Config Warning */}
       {!isConfigLoaded && (
@@ -451,7 +411,7 @@ export const CreateStep4 = () => {
             {/* Let's Go Button */}
             <button
               onClick={handleGenerateStory}
-              disabled={isGenerating || !isComplete()}
+              disabled={isGenerating || !isComplete() || !isConfigLoaded}
               className="relative transition-all w-full md:w-auto"
               style={{
                 minWidth: '200px',
@@ -461,15 +421,15 @@ export const CreateStep4 = () => {
               <div
                 className="absolute inset-0 rounded-xl transition-all"
                 style={{
-                  border: !isGenerating && isComplete() ? '4px solid #20B000' : '4px solid #3C3C3C',
+                  border: !isGenerating && isComplete() && isConfigLoaded ? '4px solid #20B000' : '4px solid #3C3C3C',
                   background: 'rgba(9, 9, 9, 0.82)',
-                  opacity: !isGenerating && isComplete() ? 1 : 0.5,
+                  opacity: !isGenerating && isComplete() && isConfigLoaded ? 1 : 0.5,
                 }}
               />
               <span
                 className="absolute inset-0 flex items-center justify-center font-inter text-3xl font-bold transition-all"
                 style={{
-                  color: !isGenerating && isComplete() ? '#FFFFFF' : '#6B7280',
+                  color: !isGenerating && isComplete() && isConfigLoaded ? '#FFFFFF' : '#6B7280',
                 }}
               >
                 {isGenerating ? (
