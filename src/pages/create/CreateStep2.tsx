@@ -238,6 +238,7 @@ export default function CreateStep2() {
                 muted
                 playsInline
                 className="w-full h-full object-cover"
+                onError={(e) => console.error('Video failed to load:', STORY_KINDS.find(k => k.id === selectedKind)?.video, e)}
               />
             ) : (
               <div className="text-center">

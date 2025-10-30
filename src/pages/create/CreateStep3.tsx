@@ -247,6 +247,7 @@ export const CreateStep3 = () => {
                 muted
                 playsInline
                 className="w-full h-full object-cover"
+                onError={(e) => console.error('Video failed to load:', ART_STYLES.find(s => s.id === selectedStyle)?.video, e)}
               />
             ) : (
               <div className="text-center">

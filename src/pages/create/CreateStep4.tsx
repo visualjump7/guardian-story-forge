@@ -172,6 +172,15 @@ export const CreateStep4 = () => {
   const [modeChanged, setModeChanged] = useState(false);
   const [optionsOpen, setOptionsOpen] = useState(false);
 
+  // Debug logging
+  console.log('=== CreateStep4 Debug ===');
+  console.log('characterName:', storyConfig.characterName);
+  console.log('storyKind:', storyConfig.storyKind);
+  console.log('artStyle:', storyConfig.artStyle);
+  console.log('isComplete():', !!(storyConfig.characterName && storyConfig.storyKind && storyConfig.artStyle));
+  console.log('isConfigLoaded:', isConfigLoaded);
+  console.log('Button should be enabled:', !isGenerating && !!(storyConfig.characterName && storyConfig.storyKind && storyConfig.artStyle));
+
   const handleBack = () => navigate('/create/03');
 
   const handleProgressBarClick = (stepNumber: number) => {
@@ -402,7 +411,7 @@ export const CreateStep4 = () => {
             {/* Let's Go Button */}
             <button
               onClick={handleGenerateStory}
-              disabled={isGenerating || !isComplete() || !isConfigLoaded}
+              disabled={isGenerating || !isComplete()}
               className="relative transition-all w-full md:w-auto"
               style={{
                 minWidth: '200px',
@@ -412,15 +421,15 @@ export const CreateStep4 = () => {
               <div
                 className="absolute inset-0 rounded-xl transition-all"
                 style={{
-                  border: !isGenerating && isComplete() && isConfigLoaded ? '4px solid #20B000' : '4px solid #3C3C3C',
+                  border: !isGenerating && isComplete() ? '4px solid #20B000' : '4px solid #3C3C3C',
                   background: 'rgba(9, 9, 9, 0.82)',
-                  opacity: !isGenerating && isComplete() && isConfigLoaded ? 1 : 0.5,
+                  opacity: !isGenerating && isComplete() ? 1 : 0.5,
                 }}
               />
               <span
                 className="absolute inset-0 flex items-center justify-center font-inter text-3xl font-bold transition-all"
                 style={{
-                  color: !isGenerating && isComplete() && isConfigLoaded ? '#FFFFFF' : '#6B7280',
+                  color: !isGenerating && isComplete() ? '#FFFFFF' : '#6B7280',
                 }}
               >
                 {isGenerating ? (
