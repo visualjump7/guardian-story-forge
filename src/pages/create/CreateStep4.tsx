@@ -197,6 +197,13 @@ export const CreateStep4 = () => {
     setIsGenerating(true);
 
     try {
+      // Get current user
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (!user) {
+        throw new Error("You must be logged in to create a story");
+      }
+
       // Create the story record
       const { data: storyData, error: storyError } = await supabase
         .from('stories')
@@ -207,6 +214,7 @@ export const CreateStep4 = () => {
           title: `${storyConfig.characterName}'s Adventure`,
           current_part: 1,
           age_band: selectedBand,
+          created_by: user.id,
         })
         .select()
         .single();
