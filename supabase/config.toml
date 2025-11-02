@@ -9,18 +9,6 @@ verify_jwt = true
 [functions.generate-story-part-3]
 verify_jwt = true
 
-[functions.generate-story-image]
-verify_jwt = true
-
-[functions.generate-story-image-leonardo]
-verify_jwt = true
-
-[functions.generate-story-audio]
-verify_jwt = true
-
-[functions.generate-story-pdf]
-verify_jwt = true
-
 [functions.admin-reset-password]
 verify_jwt = true
 
@@ -29,3 +17,6 @@ verify_jwt = true
 
 [functions.merge-style-prompt]
 verify_jwt = false
+
+[functions.augment-character-sheet]
+verify_jwt = true
