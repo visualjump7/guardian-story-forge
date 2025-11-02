@@ -10,8 +10,6 @@ import { ShareDialog } from "@/components/ShareDialog";
 import { AppHeader } from "@/components/AppHeader";
 import { DesktopNav } from "@/components/DesktopNav";
 import { useAuth } from "@/hooks/useAuth";
-import { useLibraryCount } from "@/hooks/useLibraryCount";
-import { LibraryLimitDialog } from "@/components/LibraryLimitDialog";
 import { FixedFeedbackButton } from "@/components/FixedFeedbackButton";
 import { WelcomeVideoDialog } from "@/components/WelcomeVideoDialog";
 import { StoryConfigProvider, useStoryConfig } from "@/contexts/StoryConfigContext";
@@ -20,15 +18,12 @@ import { CreateProgressBar } from "@/components/create/CreateProgressBar";
 interface Story {
   id: string;
   title: string;
-  content: string;
-  hero_name: string | null;
-  story_type: string | null;
-  is_featured: boolean;
-  cover_image_url: string | null;
-  story_themes: {
-    name: string;
-    emoji: string;
-  } | null;
+  hero_name: string;
+  genre: string;
+  art_style: string;
+  is_complete: boolean;
+  current_part: number;
+  created_at: string;
 }
 
 const NAME_REGEX = /^[a-zA-Z\s'-]+$/;
@@ -42,9 +37,7 @@ const HomeContent = () => {
   const [loading, setLoading] = useState(true);
   const [shareDialogOpen, setShareDialogOpen] = useState(false);
   const [storyToShare, setStoryToShare] = useState<Story | null>(null);
-  const [showLibraryFullDialog, setShowLibraryFullDialog] = useState(false);
   const [showWelcomeVideo, setShowWelcomeVideo] = useState(false);
-  const { count: libraryCount, isFull } = useLibraryCount(user?.id || null);
   const { storyConfig, setCharacterName } = useStoryConfig();
   const [localName, setLocalName] = useState(storyConfig.characterName);
 
@@ -78,15 +71,13 @@ const HomeContent = () => {
     
     setProfile(profileData);
 
-    // Get featured stories
+    // Get user's stories (no featured stories in new schema)
     const { data: storiesData, error } = await supabase
       .from("stories")
-      .select(`
-        *,
-        story_themes!theme_id(name, emoji)
-      `)
-      .eq("is_featured", true)
-      .order("created_at", { ascending: false });
+      .select("*")
+      .eq("created_by", session.user.id)
+      .order("created_at", { ascending: false })
+      .limit(6);
 
     if (error) {
       toast.error("Failed to load stories");
@@ -98,7 +89,7 @@ const HomeContent = () => {
   };
 
   const handleReadStory = (storyId: string) => {
-    navigate(`/story/${storyId}`);
+    navigate(`/interactive-story/${storyId}`);
   };
 
   const handleShare = (e: React.MouseEvent, story: Story) => {
@@ -122,11 +113,6 @@ const HomeContent = () => {
   };
 
   const handleContinue = () => {
-    if (isFull) {
-      setShowLibraryFullDialog(true);
-      return;
-    }
-
     if (validateName(localName)) {
       setCharacterName(localName);
       navigate('/create/02');
@@ -134,11 +120,7 @@ const HomeContent = () => {
   };
 
   const handleCreateStoryClick = () => {
-    if (isFull) {
-      setShowLibraryFullDialog(true);
-    } else {
-      navigate("/create/01");
-    }
+    navigate("/create/01");
   };
 
   const isValid = validateName(localName);
@@ -289,14 +271,6 @@ const HomeContent = () => {
           storyTitle={storyToShare.title}
         />
       )}
-
-      {/* Library Full Dialog */}
-      <LibraryLimitDialog
-        open={showLibraryFullDialog}
-        onOpenChange={setShowLibraryFullDialog}
-        currentCount={libraryCount}
-        onGoToLibrary={() => navigate("/library")}
-      />
 
       {/* Welcome Video Dialog */}
       <WelcomeVideoDialog

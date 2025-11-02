@@ -17,26 +17,24 @@ export default function AdminDashboard() {
   }, []);
 
   const loadStats = async () => {
-    const [usersResult, storiesResult, featuredResult, publicResult] = await Promise.all([
+    const [usersResult, storiesResult, completeResult] = await Promise.all([
       supabase.from('profiles').select('*', { count: 'exact', head: true }),
       supabase.from('stories').select('*', { count: 'exact', head: true }),
-      supabase.from('stories').select('*', { count: 'exact', head: true }).eq('is_featured', true),
-      supabase.from('stories').select('*', { count: 'exact', head: true }).eq('is_public', true),
+      supabase.from('stories').select('*', { count: 'exact', head: true }).eq('is_complete', true),
     ]);
 
     setStats({
       totalUsers: usersResult.count || 0,
       totalStories: storiesResult.count || 0,
-      featuredStories: featuredResult.count || 0,
-      publicStories: publicResult.count || 0,
+      featuredStories: 0, // No longer used
+      publicStories: completeResult.count || 0, // Repurpose as complete stories
     });
   };
 
   const statCards = [
     { title: 'Total Users', value: stats.totalUsers, icon: Users, color: 'text-blue-600' },
     { title: 'Total Stories', value: stats.totalStories, icon: BookOpen, color: 'text-green-600' },
-    { title: 'Featured Stories', value: stats.featuredStories, icon: Star, color: 'text-yellow-600' },
-    { title: 'Public Stories', value: stats.publicStories, icon: TrendingUp, color: 'text-purple-600' },
+    { title: 'Complete Stories', value: stats.publicStories, icon: Star, color: 'text-yellow-600' },
   ];
 
   return (

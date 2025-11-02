@@ -13,12 +13,14 @@ import { useNavigate } from 'react-router-dom';
 interface Story {
   id: string;
   title: string;
+  hero_name: string;
+  genre: string;
+  art_style: string;
+  is_complete: boolean;
+  current_part: number;
   created_at: string;
-  is_public: boolean;
-  is_featured: boolean;
-  story_universe: string | null;
   created_by: string;
-  profiles: {
+  profiles?: {
     display_name: string;
   };
 }
@@ -38,7 +40,6 @@ export default function AdminStories() {
     const { data: storiesData, error } = await supabase
       .from('stories')
       .select('*')
-      .eq('is_featured', true)
       .order('created_at', { ascending: false });
 
     if (error) {
@@ -69,33 +70,6 @@ export default function AdminStories() {
     setLoading(false);
   };
 
-  const handleToggleFeatured = async (storyId: string, currentState: boolean) => {
-    const { error } = await supabase
-      .from('stories')
-      .update({ is_featured: !currentState })
-      .eq('id', storyId);
-
-    if (error) {
-      toast.error('Failed to update story');
-    } else {
-      toast.success(currentState ? 'Story unfeatured' : 'Story featured');
-      loadStories();
-    }
-  };
-
-  const handleTogglePublic = async (storyId: string, currentState: boolean) => {
-    const { error } = await supabase
-      .from('stories')
-      .update({ is_public: !currentState })
-      .eq('id', storyId);
-
-    if (error) {
-      toast.error('Failed to update story');
-    } else {
-      toast.success(currentState ? 'Story made private' : 'Story made public');
-      loadStories();
-    }
-  };
 
   const handleDeleteStory = async (storyId: string) => {
     if (!confirm('Are you sure you want to delete this story?')) return;
@@ -152,7 +126,7 @@ export default function AdminStories() {
                   <TableRow>
                     <TableHead>Title</TableHead>
                     <TableHead>Author</TableHead>
-                    <TableHead>Universe</TableHead>
+                    <TableHead>Genre</TableHead>
                     <TableHead>Status</TableHead>
                     <TableHead>Created</TableHead>
                     <TableHead>Actions</TableHead>
@@ -160,54 +134,29 @@ export default function AdminStories() {
                 </TableHeader>
                 <TableBody>
                   {filteredStories.map((story) => (
-                    <TableRow key={story.id}>
+                  <TableRow key={story.id}>
                       <TableCell 
                         className="font-medium cursor-pointer hover:text-primary"
-                        onClick={() => navigate(`/story/${story.id}`)}
+                        onClick={() => navigate(`/interactive-story/${story.id}`)}
                       >
                         {story.title}
                       </TableCell>
                       <TableCell>{story.profiles?.display_name}</TableCell>
                       <TableCell>
-                        {story.story_universe ? (
-                          <Badge variant="outline">{story.story_universe}</Badge>
-                        ) : (
-                          '-'
-                        )}
+                        <Badge variant="outline">{story.genre}</Badge>
                       </TableCell>
                       <TableCell>
                         <div className="flex gap-1">
-                          {story.is_featured && <Badge variant="default">Featured</Badge>}
-                          {story.is_public && <Badge variant="secondary">Public</Badge>}
+                          {story.is_complete ? (
+                            <Badge variant="default">Complete</Badge>
+                          ) : (
+                            <Badge variant="secondary">Part {story.current_part}/3</Badge>
+                          )}
                         </div>
                       </TableCell>
                       <TableCell>{new Date(story.created_at).toLocaleDateString()}</TableCell>
                       <TableCell>
                         <div className="flex gap-2">
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => navigate(`/admin/stories/${story.id}/edit`)}
-                            title="Edit story"
-                          >
-                            <Pencil className="h-4 w-4" />
-                          </Button>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => handleToggleFeatured(story.id, story.is_featured)}
-                            title="Toggle featured"
-                          >
-                            <Star className={`h-4 w-4 ${story.is_featured ? 'fill-yellow-500' : ''}`} />
-                          </Button>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => handleTogglePublic(story.id, story.is_public)}
-                            title="Toggle public"
-                          >
-                            {story.is_public ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
-                          </Button>
                           <Button
                             variant="outline"
                             size="sm"

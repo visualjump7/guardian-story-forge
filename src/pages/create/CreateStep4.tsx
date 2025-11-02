@@ -344,28 +344,6 @@ export const CreateStep4 = () => {
               </span>
             </button>
 
-            {/* Options Button */}
-            <button
-              onClick={() => setOptionsOpen(true)}
-              className="relative transition-all w-full md:w-auto"
-              style={{
-                minWidth: '180px',
-                height: '80px',
-              }}
-            >
-              <div
-                className="absolute inset-0 rounded-xl"
-                style={{
-                  border: '4px solid #005AFF',
-                  background: 'rgba(9, 9, 9, 0.82)',
-                }}
-              />
-              <span className="absolute inset-0 flex items-center justify-center gap-3 font-inter text-2xl font-bold text-white">
-                <Settings className="w-7 h-7" />
-                Options
-              </span>
-            </button>
-
             {/* Let's Go Button */}
             <button
               onClick={handleGenerateStory}
