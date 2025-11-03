@@ -93,7 +93,8 @@ serve(async (req) => {
     // Clean up whitespace
     finalPrompt = finalPrompt.replace(/\s+/g, ' ').trim();
 
-    console.log(`Merged prompt for style ${presetSlug}:`, finalPrompt.substring(0, 100) + "...");
+    const previewText = finalPrompt.substring(0, 100);
+    console.log("Merged prompt for style:", presetSlug, "Preview:", previewText + "...");
 
     return new Response(
       JSON.stringify({ 
